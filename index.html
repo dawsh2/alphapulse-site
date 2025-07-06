@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlphaPulse</title>
+    <style>
+        body {
+            font-family: Verdana, Geneva, sans-serif;
+            font-size: 10pt;
+            margin: 0;
+            padding: 0;
+            background-color: #f6f6ef;
+        }
+
+        .header {
+            background-color: #00aa44;
+            padding: 6px;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo {
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            font-size: 11pt;
+        }
+
+        .nav {
+            color: white;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+
+        .nav a:hover {
+            text-decoration: underline;
+        }
+
+        .tagline {
+            color: white;
+            font-size: 9pt;
+            margin-left: auto;
+        }
+
+        .main {
+            margin: 8px;
+        }
+
+        .item {
+            margin-bottom: 5px;
+            line-height: 1.2;
+        }
+
+        .item-line {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+
+        .rank {
+            color: #828282;
+            font-size: 9pt;
+            width: 20px;
+            text-align: right;
+        }
+
+        .vote {
+            width: 10px;
+            height: 10px;
+            border: 0;
+            background: url('data:image/gif;base64,R0lGODlhCgAKAKEDADQ0NKampvz8/P///yH5BAEKAAMALAAAAAAKAAoAAAIanI+pywgPYyoq3GR3jXhP6DUeaFgfOZHSVBUAOw==') no-repeat;
+            cursor: pointer;
+            margin-right: 4px;
+        }
+
+        .title {
+            color: black;
+            text-decoration: none;
+        }
+
+        .title:visited {
+            color: #828282;
+        }
+
+        .title:hover {
+            text-decoration: underline;
+        }
+
+        .domain {
+            color: #828282;
+            font-size: 8pt;
+        }
+
+        .subtext {
+            color: #828282;
+            font-size: 8pt;
+            margin-left: 24px;
+            margin-top: 2px;
+        }
+
+        .subtext a {
+            color: #828282;
+            text-decoration: none;
+        }
+
+        .subtext a:hover {
+            text-decoration: underline;
+        }
+
+        .comment-preview {
+            color: #828282;
+            font-size: 8pt;
+            margin-left: 24px;
+            margin-top: 2px;
+            font-style: italic;
+        }
+
+        .spacer {
+            height: 5px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            padding: 10px;
+            border-top: 1px solid #00aa44;
+            text-align: center;
+            font-size: 8pt;
+            color: #828282;
+        }
+
+        .footer a {
+            color: #828282;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="#" class="logo">AlphaPulse</a>
+            <div class="nav">
+                <a href="#">new</a> |
+                <a href="#">past</a> |
+                <a href="#">comments</a> |
+                <a href="#">ask</a> |
+                <a href="#">show</a> |
+                <a href="#">jobs</a> |
+                <a href="#">submit</a>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="item">
+            <div class="item-line">
+                <span class="rank">1.</span>
+                <span class="vote"></span>
+                <a href="#" class="title">Multi-Armed Bandits for Dynamic Portfolio Allocation</a>
+                <span class="domain">(arxiv.org)</span>
+            </div>
+            <div class="subtext">
+                147 points by alphapulse 3 hours ago | <a href="#">23 comments</a>
+            </div>
+            <div class="comment-preview">
+                "Finally someone tackles the exploration-exploitation tradeoff in portfolio management. The results on the synthetic data look promising but I'd love to see this tested on more realistic transaction costs..."
+            </div>
+        </div>
+
+        <div class="item">
+            <div class="item-line">
+                <span class="rank">2.</span>
+                <span class="vote"></span>
+                <a href="#" class="title">Why Your Backtests Are Lying to You (And How to Fix It)</a>
+                <span class="domain">(alphapulse.org)</span>
+            </div>
+            <div class="subtext">
+                89 points by quantdev 5 hours ago | <a href="#">31 comments</a>
+            </div>
+            <div class="comment-preview">
+                "The section on data snooping bias is spot on. I've seen so many strategies that look amazing in backtest and then immediately fail in paper trading..."
+            </div>
+        </div>
+
+        <div class="item">
+            <div class="item-line">
+                <span class="rank">3.</span>
+                <span class="vote"></span>
+                <a href="#" class="title">Attention Is All You Need for Price Prediction? A Critical Analysis</a>
+                <span class="domain">(papers.ssrn.com)</span>
+            </div>
+            <div class="subtext">
+                156 points by mltrader 6 hours ago | <a href="#">45 comments</a>
+            </div>
+            <div class="comment-preview">
+                "Great paper. The authors actually test on out-of-sample data and show that transformers aren't the magic bullet everyone thinks they are for financial time series..."
+            </div>
+        </div>
+
+        <div class="item">
+            <div class="item-line">
+                <span class="rank">4.</span>
+                <span class="vote"></span>
+                <a href="#" class="title">Show AP: Open source market data pipeline with 1ms latency</a>
+                <span class="domain">(github.com)</span>
+            </div>
+            <div class="subtext">
+                67 points by fastdata 7 hours ago | <a href="#">18 comments</a>
+            </div>
+            <div class="comment-preview">
+                "This is exactly what I've been looking for. The documentation is solid and the benchmarks are impressive. Already testing it with my crypto strategies..."
+            </div>
+        </div>
+
+        <div class="item">
+            <div class="item-line">
+                <span class="rank">5.</span>
+                <span class="vote"></span>
+                <a href="#" class="title">Alternative Data Is Dead. Long Live Alternative Data.</a>
+                <span class="domain">(institutionalinvestor.com)</span>
+            </div>
+            <div class="subtext">
+                234 points by altdataguy 8 hours ago | <a href="#">89 comments</a>
+            </div>
+            <div class="comment-preview">
+                "The alpha decay in alt data is real but this article misses the point. It's not about finding the one magic dataset, it's about systematic data discovery and rapid iteration..."
+            </div>
+        </div>
+
+        <div class="item">
+            <div class="item-line">
+                <span class="rank">6.</span>
+                <span class="vote"></span>
+                <a href="#" class="title">Ask AP: Best practices for factor model implementation?</a>
+                <span class="domain">(alphapulse.org)</span>
+            </div>
+            <div class="subtext">
+                42 points by newquant 9 hours ago | <a href="#">27 comments</a>
+            </div>
+            <div class="comment-preview">
+                "Start with Fama-French and build from there. Don't try to implement everything at once. Also, make sure you understand the difference between cross-sectional and time-series models..."
+            </div>
+        </div>
+
+        <div class="item">
+            <div class="item-line">
+                <span class="rank">7.</span>
+                <span class="vote"></span>
+                <a href="#" class="title">Hidden Markov Models for Regime Detection: A Practical Guide</a>
+                <span class="domain">(quantstart.com)</span>
+            </div>
+            <div class="subtext">
+                78 points by regimetrader 10 hours ago | <a href="#">15 comments</a>
+            </div>
+            <div class="comment-preview">
+                "Good introduction but the author doesn't mention the lookback bias issues with HMMs. You need to be really careful about using future information when estimating states..."
+            </div>
+        </div>
+
+        <div class="item">
+            <div class="item-line">
+                <span class="rank">8.</span>
+                <span class="vote"></span>
+                <a href="#" class="title">Crypto Market Making: What TradFi Gets Wrong</a>
+                <span class="domain">(medium.com)</span>
+            </div>
+            <div class="subtext">
+                123 points by defibuilder 12 hours ago | <a href="#">52 comments</a>
+            </div>
+            <div class="comment-preview">
+                "The MEV considerations are crucial. Traditional market making models break down when miners can reorder transactions. You need to think about this from first principles..."
+            </div>
+        </div>
+
+        <div class="item">
+            <div class="item-line">
+                <span class="rank">9.</span>
+                <span class="vote"></span>
+                <a href="#" class="title">Why I Stopped Using Sharpe Ratio (And What I Use Instead)</a>
+                <span class="domain">(riskfolio-lib.readthedocs.io)</span>
+            </div>
+            <div class="subtext">
+                91 points by riskmanager 14 hours ago | <a href="#">38 comments</a>
+            </div>
+            <div class="comment-preview">
+                "Calmar ratio and Sortino ratio are better but they're still not perfect. The real issue is that all these metrics assume normally distributed returns which is obviously wrong..."
+            </div>
+        </div>
+
+        <div class="item">
+            <div class="item-line">
+                <span class="rank">10.</span>
+                <span class="vote"></span>
+                <a href="#" class="title">Show AP: Backtesting framework that doesn't suck</a>
+                <span class="domain">(alphapulse.org)</span>
+            </div>
+            <div class="subtext">
+                156 points by backtestbuilder 16 hours ago | <a href="#">47 comments</a>
+            </div>
+            <div class="comment-preview">
+                "Love the transaction cost modeling and the slippage simulation. Finally someone who understands that backtesting is about finding what won't work, not what will..."
+            </div>
+        </div>
+
+        <div class="spacer"></div>
+        <div style="text-align: center; font-size: 8pt; color: #828282;">
+            <a href="#">More</a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <a href="#">About</a> |
+        <a href="#">Contact</a> |
+        <a href="#">Submit</a> |
+        <a href="#">RSS</a> |
+        <a href="#">Newsletter</a>
+    </div>
+</body>
+</html>
