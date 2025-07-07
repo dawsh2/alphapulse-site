@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#00aa44" id="theme-color">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>AlphaPulse</title>
     <style>
         body {
@@ -144,10 +146,23 @@
         .footer {
             margin-top: 20px;
             padding: 10px;
-            border-top: 1px solid #00aa44;
+            border-top: 1px solid #00aa44; /* Default green, will be overridden by JS */
             text-align: center;
             font-size: 8pt;
             color: #828282;
+            transition: border-color 0.3s ease;
+        }
+
+        .footer.market-up {
+            border-top-color: #00aa44; /* Green for up days */
+        }
+
+        .footer.market-down {
+            border-top-color: #cc4444; /* Red for down days */
+        }
+
+        .footer.market-flat {
+            border-top-color: #666666; /* Gray for flat/unchanged */
         }
 
         .footer a {
@@ -357,20 +372,31 @@
                 };
                 
                 const header = document.querySelector('.header');
+                const footer = document.querySelector('.footer');
                 const change = mockMarketData.change;
                 
                 // Remove existing market classes
                 header.classList.remove('market-up', 'market-down', 'market-flat');
+                footer.classList.remove('market-up', 'market-down', 'market-flat');
                 
                 // Add appropriate class based on market direction
                 if (change > 0.1) {
                     header.classList.add('market-up');
+                    footer.classList.add('market-up');
+                    // Update theme color for iOS Safari
+                    document.getElementById('theme-color').setAttribute('content', '#00aa44');
                     console.log(`Market UP: ${change.toFixed(2)} (${mockMarketData.changePercent}%)`);
                 } else if (change < -0.1) {
                     header.classList.add('market-down');
+                    footer.classList.add('market-down');
+                    // Update theme color for iOS Safari
+                    document.getElementById('theme-color').setAttribute('content', '#cc4444');
                     console.log(`Market DOWN: ${change.toFixed(2)} (${mockMarketData.changePercent}%)`);
                 } else {
                     header.classList.add('market-flat');
+                    footer.classList.add('market-flat');
+                    // Update theme color for iOS Safari
+                    document.getElementById('theme-color').setAttribute('content', '#666666');
                     console.log(`Market FLAT: ${change.toFixed(2)} (${mockMarketData.changePercent}%)`);
                 }
                 
@@ -378,6 +404,7 @@
                 console.log('Error updating header color:', error);
                 // Default to green if something goes wrong
                 document.querySelector('.header').classList.add('market-up');
+                document.querySelector('.footer').classList.add('market-up');
             }
         }
 
