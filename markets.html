@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#00aa44" id="theme-color">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Markets - AlphaPulse</title>
+    <style>
+        body {
+            font-family: Verdana, Geneva, sans-serif;
+            font-size: 10pt;
+            margin: 0;
+            padding: 0;
+            background-color: #f6f6ef;
+        }
+
+        .header {
+            background-color: #00aa44;
+            padding: 6px;
+            transition: background-color 0.3s ease;
+        }
+
+        .header.market-up {
+            background-color: #00aa44;
+        }
+
+        .header.market-down {
+            background-color: #cc4444;
+        }
+
+        .header.market-flat {
+            background-color: #666666;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo {
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            font-size: 11pt;
+        }
+
+        .nav {
+            color: white;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+
+        .nav a:hover {
+            text-decoration: underline;
+        }
+
+        .nav a.active {
+            font-weight: bold;
+        }
+
+        .main {
+            margin: 8px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 10pt;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #828282;
+            padding-bottom: 2px;
+        }
+
+        .market-table {
+            background: white;
+            border: 1px solid #828282;
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 9pt;
+        }
+
+        .market-table th {
+            background: #f0f0f0;
+            padding: 4px 6px;
+            border: 1px solid #828282;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .market-table td {
+            padding: 3px 6px;
+            border: 1px solid #e0e0e0;
+            text-align: right;
+        }
+
+        .market-table td:first-child {
+            text-align: left;
+        }
+
+        .positive {
+            color: #008000;
+        }
+
+        .negative {
+            color: #ff0000;
+        }
+
+        .neutral {
+            color: #828282;
+        }
+
+        .ticker {
+            color: #000;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .ticker:hover {
+            text-decoration: underline;
+        }
+
+        .heatmap {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 2px;
+            margin-bottom: 10px;
+        }
+
+        .heatmap-cell {
+            padding: 8px 4px;
+            text-align: center;
+            font-size: 8pt;
+            border: 1px solid #ccc;
+            text-decoration: none;
+            color: black;
+        }
+
+        .heatmap-cell:hover {
+            opacity: 0.8;
+        }
+
+        .heat-strong-positive { background-color: #006600; color: white; }
+        .heat-positive { background-color: #00aa00; color: white; }
+        .heat-slight-positive { background-color: #88cc88; }
+        .heat-neutral { background-color: #f0f0f0; }
+        .heat-slight-negative { background-color: #cc8888; }
+        .heat-negative { background-color: #aa0000; color: white; }
+        .heat-strong-negative { background-color: #660000; color: white; }
+
+        .filters {
+            margin-bottom: 15px;
+            font-size: 9pt;
+        }
+
+        .filters select, .filters input {
+            font-size: 9pt;
+            margin-right: 10px;
+            padding: 2px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: white;
+            border: 1px solid #828282;
+            padding: 8px;
+        }
+
+        .stat-title {
+            font-size: 8pt;
+            color: #828282;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 12pt;
+            font-weight: bold;
+        }
+
+        .screener-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 4px;
+            font-size: 9pt;
+        }
+
+        .screener-row:hover {
+            background: #f8f8f8;
+        }
+
+        .rank-num {
+            width: 30px;
+            color: #828282;
+        }
+
+        .movers-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            font-size: 9pt;
+        }
+
+        .movers-table td {
+            padding: 4px 8px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .sector-rotation {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .timeframe-tabs {
+            margin-bottom: 10px;
+        }
+
+        .timeframe-tabs a {
+            color: #828282;
+            text-decoration: none;
+            margin-right: 15px;
+            font-size: 9pt;
+        }
+
+        .timeframe-tabs a.active {
+            color: #000;
+            font-weight: bold;
+        }
+
+        .timeframe-tabs a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="index.html" class="logo">AlphaPulse</a>
+            <div class="nav">
+                <a href="index.html">new</a> |
+                <a href="markets.html" class="active">markets</a> |
+                <a href="#">research</a> |
+                <a href="screener.html">tools</a> |
+                <a href="strategy-lab.html">lab</a> |
+                <a href="#">jobs</a> |
+                <a href="#">submit</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="main">
+        <!-- Market Overview Stats -->
+        <div class="section">
+            <div class="section-title">Market Overview</div>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-title">S&P 500</div>
+                    <div class="stat-value positive">4,847.23 (+0.67%)</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-title">NASDAQ</div>
+                    <div class="stat-value positive">15,234.11 (+1.12%)</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-title">VIX</div>
+                    <div class="stat-value negative">14.23 (-2.34%)</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-title">10Y Treasury</div>
+                    <div class="stat-value neutral">4.12% (+0.02)</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-title">DXY</div>
+                    <div class="stat-value positive">103.45 (+0.23%)</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-title">BTC</div>
+                    <div class="stat-value positive">$68,234 (+2.45%)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sector Heatmap -->
+        <div class="section">
+            <div class="section-title">Sector Performance (1D)</div>
+            <div class="timeframe-tabs">
+                <a href="#" class="active">1D</a>
+                <a href="#">5D</a>
+                <a href="#">1M</a>
+                <a href="#">3M</a>
+                <a href="#">YTD</a>
+            </div>
+            <div class="heatmap">
+                <a href="#" class="heatmap-cell heat-strong-positive">
+                    <div>Technology</div>
+                    <div>+2.34%</div>
+                </a>
+                <a href="#" class="heatmap-cell heat-positive">
+                    <div>Healthcare</div>
+                    <div>+1.67%</div>
+                </a>
+                <a href="#" class="heatmap-cell heat-positive">
+                    <div>Consumer Disc.</div>
+                    <div>+1.23%</div>
+                </a>
+                <a href="#" class="heatmap-cell heat-slight-positive">
+                    <div>Financials</div>
+                    <div>+0.78%</div>
+                </a>
+                <a href="#" class="heatmap-cell heat-slight-positive">
+                    <div>Industrials</div>
+                    <div>+0.45%</div>
+                </a>
+                <a href="#" class="heatmap-cell heat-neutral">
+                    <div>Communication</div>
+                    <div>+0.12%</div>
+                </a>
+                <a href="#" class="heatmap-cell heat-slight-negative">
+                    <div>Materials</div>
+                    <div>-0.34%</div>
+                </a>
+                <a href="#" class="heatmap-cell heat-negative">
+                    <div>Energy</div>
+                    <div>-1.23%</div>
+                </a>
+                <a href="#" class="heatmap-cell heat-negative">
+                    <div>Utilities</div>
+                    <div>-1.45%</div>
+                </a>
+                <a href="#" class="heatmap-cell heat-strong-negative">
+                    <div>Real Estate</div>
+                    <div>-2.12%</div>
+                </a>
+                <a href="#" class="heatmap-cell heat-slight-negative">
+                    <div>Cons. Staples</div>
+                    <div>-0.67%</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Top Movers -->
+        <div class="section">
+            <div class="section-title">Notable Moves (Volume > 10M)</div>
+            <table class="market-table">
+                <thead>
+                    <tr>
+                        <th>Symbol</th>
+                        <th>Price</th>
+                        <th>Change</th>
+                        <th>% Change</th>
+                        <th>Volume</th>
+                        <th>Market Cap</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><a href="#" class="ticker">NVDA</a></td>
+                        <td>$892.34</td>
+                        <td class="positive">+$23.45</td>
+                        <td class="positive">+2.70%</td>
+                        <td>45.2M</td>
+                        <td>$2.18T</td>
+                    </tr>
+                    <tr>
+                        <td><a href="#" class="ticker">TSLA</a></td>
+                        <td>$247.12</td>
+                        <td class="positive">+$8.90</td>
+                        <td class="positive">+3.74%</td>
+                        <td>78.3M</td>
+                        <td>$784B</td>
+                    </tr>
+                    <tr>
+                        <td><a href="#" class="ticker">META</a></td>
+                        <td>$456.78</td>
+                        <td class="positive">+$12.34</td>
+                        <td class="positive">+2.78%</td>
+                        <td>34.1M</td>
+                        <td>$1.16T</td>
+                    </tr>
+                    <tr>
+                        <td><a href="#" class="ticker">AMZN</a></td>
+                        <td>$167.89</td>
+                        <td class="negative">-$4.21</td>
+                        <td class="negative">-2.45%</td>
+                        <td>52.7M</td>
+                        <td>$1.73T</td>
+                    </tr>
+                    <tr>
+                        <td><a href="#" class="ticker">GOOGL</a></td>
+                        <td>$145.67</td>
+                        <td class="negative">-$2.89</td>
+                        <td class="negative">-1.95%</td>
+                        <td>28.9M</td>
+                        <td>$1.81T</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Market Breadth -->
+        <div class="section">
+            <div class="section-title">Market Breadth</div>
+            <table class="market-table">
+                <thead>
+                    <tr>
+                        <th>Index</th>
+                        <th>Advancing</th>
+                        <th>Declining</th>
+                        <th>Unchanged</th>
+                        <th>Advance/Decline</th>
+                        <th>New Highs</th>
+                        <th>New Lows</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>S&P 500</td>
+                        <td class="positive">342</td>
+                        <td class="negative">158</td>
+                        <td class="neutral">3</td>
+                        <td class="positive">2.16</td>
+                        <td class="positive">23</td>
+                        <td class="negative">4</td>
+                    </tr>
+                    <tr>
+                        <td>NASDAQ</td>
+                        <td class="positive">2,847</td>
+                        <td class="negative">1,239</td>
+                        <td class="neutral">67</td>
+                        <td class="positive">2.30</td>
+                        <td class="positive">89</td>
+                        <td class="negative">12</td>
+                    </tr>
+                    <tr>
+                        <td>NYSE</td>
+                        <td class="positive">1,923</td>
+                        <td class="negative">1,045</td>
+                        <td class="neutral">34</td>
+                        <td class="positive">1.84</td>
+                        <td class="positive">56</td>
+                        <td class="negative">18</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Economic Events -->
+        <div class="section">
+            <div class="section-title">Economic Calendar (This Week)</div>
+            <table class="market-table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Event</th>
+                        <th>Impact</th>
+                        <th>Forecast</th>
+                        <th>Previous</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Wed 8:30</td>
+                        <td>Core CPI (MoM)</td>
+                        <td class="negative">High</td>
+                        <td>0.3%</td>
+                        <td>0.3%</td>
+                    </tr>
+                    <tr>
+                        <td>Thu 8:30</td>
+                        <td>Initial Jobless Claims</td>
+                        <td class="neutral">Medium</td>
+                        <td>220K</td>
+                        <td>218K</td>
+                    </tr>
+                    <tr>
+                        <td>Fri 8:30</td>
+                        <td>Retail Sales (MoM)</td>
+                        <td class="neutral">Medium</td>
+                        <td>0.4%</td>
+                        <td>0.7%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Unusual Activity -->
+        <div class="section">
+            <div class="section-title">Unusual Options Activity</div>
+            <table class="market-table">
+                <thead>
+                    <tr>
+                        <th>Symbol</th>
+                        <th>Strike</th>
+                        <th>Exp</th>
+                        <th>Type</th>
+                        <th>Volume</th>
+                        <th>OI</th>
+                        <th>Vol/OI</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><a href="#" class="ticker">AAPL</a></td>
+                        <td>$185</td>
+                        <td>Jan 17</td>
+                        <td class="positive">CALL</td>
+                        <td>12,450</td>
+                        <td>8,234</td>
+                        <td class="positive">1.51</td>
+                    </tr>
+                    <tr>
+                        <td><a href="#" class="ticker">SPY</a></td>
+                        <td>$485</td>
+                        <td>Jan 10</td>
+                        <td class="negative">PUT</td>
+                        <td>34,890</td>
+                        <td>15,672</td>
+                        <td class="positive">2.23</td>
+                    </tr>
+                    <tr>
+                        <td><a href="#" class="ticker">QQQ</a></td>
+                        <td>$400</td>
+                        <td>Jan 24</td>
+                        <td class="positive">CALL</td>
+                        <td>18,923</td>
+                        <td>12,345</td>
+                        <td class="positive">1.53</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Market-responsive header color (same as index.html)
+        async function updateHeaderColor() {
+            try {
+                const mockMarketData = {
+                    symbol: 'SPY',
+                    change: Math.random() * 10 - 5,
+                    changePercent: (Math.random() * 2 - 1).toFixed(2)
+                };
+                
+                const header = document.querySelector('.header');
+                const change = mockMarketData.change;
+                
+                header.classList.remove('market-up', 'market-down', 'market-flat');
+                
+                if (change > 0.1) {
+                    header.classList.add('market-up');
+                    document.getElementById('theme-color').setAttribute('content', '#00aa44');
+                } else if (change < -0.1) {
+                    header.classList.add('market-down');
+                    document.getElementById('theme-color').setAttribute('content', '#cc4444');
+                } else {
+                    header.classList.add('market-flat');
+                    document.getElementById('theme-color').setAttribute('content', '#666666');
+                }
+                
+            } catch (error) {
+                console.log('Error updating header color:', error);
+                document.querySelector('.header').classList.add('market-up');
+            }
+        }
+
+        updateHeaderColor();
+        setInterval(updateHeaderColor, 5 * 60 * 1000);
+    </script>
+</body>
+</html>

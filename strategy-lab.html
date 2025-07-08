@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#00aa44" id="theme-color">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Strategy Lab - AlphaPulse</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Verdana, Geneva, sans-serif;
+            font-size: 10pt;
+            background: #f6f6ef;
+            color: #000;
+        }
+        
+        .header {
+            background: #00aa44;
+            padding: 6px;
+            transition: background-color 0.3s ease;
+        }
+
+        .header.market-up {
+            background-color: #00aa44;
+        }
+
+        .header.market-down {
+            background-color: #cc4444;
+        }
+
+        .header.market-flat {
+            background-color: #666666;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo {
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            font-size: 11pt;
+        }
+        
+        .nav {
+            color: white;
+        }
+        
+        .nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+        
+        .nav a:hover {
+            text-decoration: underline;
+        }
+        
+        .nav a.active {
+            font-weight: bold;
+        }
+        
+        .main-container {
+            max-width: 1200px;
+            margin: 8px auto;
+            background: #fff;
+        }
+        
+        .strategy-header {
+            background: #f6f6ef;
+            padding: 8px;
+            border: 1px solid #00aa44;
+            margin-bottom: 10px;
+        }
+        
+        .strategy-title {
+            font-size: 11pt;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .strategy-meta {
+            font-size: 8pt;
+            color: #828282;
+        }
+        
+        .strategy-meta span {
+            margin-right: 15px;
+        }
+        
+        .workflow-nav {
+            background: #f6f6ef;
+            border: 1px solid #00aa44;
+            padding: 4px 8px;
+            margin-bottom: 10px;
+        }
+        
+        .workflow-nav a {
+            color: #828282;
+            text-decoration: none;
+            margin-right: 15px;
+            font-size: 8pt;
+        }
+        
+        .workflow-nav a.active {
+            color: #000;
+            font-weight: bold;
+        }
+        
+        .workflow-nav a:hover {
+            text-decoration: underline;
+        }
+        
+        .content-area {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .main-content {
+            flex: 1;
+        }
+        
+        .sidebar {
+            width: 300px;
+        }
+        
+        .panel {
+            background: #fff;
+            border: 1px solid #00aa44;
+            margin-bottom: 10px;
+        }
+        
+        .panel-header {
+            background: #f6f6ef;
+            padding: 4px 8px;
+            border-bottom: 1px solid #00aa44;
+            font-weight: bold;
+            font-size: 9pt;
+        }
+        
+        .panel-content {
+            padding: 8px;
+        }
+        
+        .code-block {
+            background: #f6f6ef;
+            border: 1px solid #ddd;
+            padding: 8px;
+            font-family: monospace;
+            font-size: 9pt;
+            line-height: 1.4;
+            overflow-x: auto;
+            white-space: pre;
+        }
+        
+        .metrics-table {
+            width: 100%;
+            font-size: 8pt;
+        }
+        
+        .metrics-table td {
+            padding: 2px 4px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .metrics-table .metric-label {
+            color: #828282;
+        }
+        
+        .metrics-table .metric-value {
+            text-align: right;
+            font-weight: bold;
+        }
+        
+        .positive {
+            color: #00aa00;
+        }
+        
+        .negative {
+            color: #ff0000;
+        }
+        
+        .log-container {
+            max-height: 200px;
+            overflow-y: auto;
+            background: #f6f6ef;
+            border: 1px solid #ddd;
+            padding: 4px;
+            font-family: monospace;
+            font-size: 8pt;
+        }
+        
+        .log-entry {
+            margin-bottom: 2px;
+            line-height: 1.3;
+        }
+        
+        .log-time {
+            color: #828282;
+        }
+        
+        .log-signal {
+            color: #00aa44;
+            font-weight: bold;
+        }
+        
+        .log-trade {
+            color: #00aa00;
+            font-weight: bold;
+        }
+        
+        .log-risk {
+            color: #ff0000;
+            font-weight: bold;
+        }
+        
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .analysis-item {
+            background: #f6f6ef;
+            border: 1px solid #ddd;
+            padding: 6px;
+        }
+        
+        .analysis-title {
+            font-weight: bold;
+            font-size: 8pt;
+            margin-bottom: 4px;
+            color: #00aa44;
+        }
+        
+        .analysis-content {
+            font-family: monospace;
+            font-size: 7pt;
+            color: #000;
+            line-height: 1.3;
+        }
+        
+        .action-links {
+            margin-top: 10px;
+            font-size: 8pt;
+        }
+        
+        .action-links a {
+            color: #00aa44;
+            text-decoration: none;
+            margin-right: 15px;
+        }
+        
+        .action-links a:hover {
+            text-decoration: underline;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 4px;
+        }
+        
+        .status-green {
+            background: #00aa00;
+        }
+        
+        .status-yellow {
+            background: #ffaa00;
+        }
+        
+        .status-red {
+            background: #ff0000;
+        }
+        
+        .jupiter-panel {
+            display: none;
+        }
+        
+        .jupiter-panel.active {
+            display: block;
+        }
+        
+        .config-panel.active {
+            display: block;
+        }
+        
+        .chart-placeholder {
+            height: 150px;
+            background: #f6f6ef;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #828282;
+            font-size: 8pt;
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="index.html" class="logo">AlphaPulse</a>
+            <div class="nav">
+                <a href="index.html">new</a> |
+                <a href="markets.html">markets</a> |
+                <a href="#">research</a> |
+                <a href="screener.html">tools</a> |
+                <a href="strategy-lab.html" class="active">lab</a> |
+                <a href="#">jobs</a> |
+                <a href="#">submit</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="strategy-header">
+            <div class="strategy-title">advanced_composite_system</div>
+            <div class="strategy-meta">
+                <span>SPY | 5m</span>
+                <span>4,892 signals cached</span>
+                <span>252 day lookback</span>
+                <span><span class="status-indicator status-green"></span>ready</span>
+                <span><span class="status-indicator status-yellow"></span>analyzing</span>
+            </div>
+        </div>
+
+        <div class="workflow-nav">
+            <a href="#" class="active" onclick="showPanel('config')">config</a>
+            <a href="#" onclick="showPanel('jupyter')">jupyter</a>
+            <a href="#" onclick="showPanel('validation')">validation</a>
+            <a href="#" onclick="showPanel('execution')">execution</a>
+        </div>
+
+        <div class="content-area">
+            <div class="main-content">
+                <div class="panel">
+                    <div class="panel-header">Strategy Configuration</div>
+                    <div class="panel-content">
+                        <div id="config-panel" class="config-panel active">
+                            <div class="code-block"># Production ensemble
+name: advanced_composite_system
+symbols: ["SPY"]
+timeframe: "5m"
+
+strategy: [
+  # Trend component (35% weight)
+  {
+    weight: 0.35,
+    strategy: [
+      {sma_crossover: {fast_period: 10, slow_period: 30, weight: 0.6}},
+      {momentum: {period: 14, weight: 0.4}}
+    ],
+    constraints: "signal > 0.5 AND intraday AND volume > sma(volume, 50) * 0.8"
+  },
+  
+  # Mean reversion component (35% weight)
+  {
+    weight: 0.35,
+    bollinger_bands: {period: 20, std: 2.0},
+    constraints: "volatility_percentile(50) < 0.7",
+    risk: {stop_loss: 0.0015}
+  },
+  
+  # Breakout component (30% weight)
+  {
+    weight: 0.3,
+    breakout_strategy: {lookback: 20, constraints: 0.002},
+    constraints: "volatility_regime() == 'high'"
+  },
+  
+  # Overall system requires minimum signal
+  {constraints: signal > 0.5}
+]</div>
+                        </div>
+
+                        <div id="jupyter-panel" class="jupiter-panel">
+                            <div class="analysis-grid">
+                                <div class="analysis-item">
+                                    <div class="analysis-title">Signal Correlation</div>
+                                    <div class="analysis-content">sma_cross  momentum  bollinger  breakout
+    1.00      0.23      -0.41      0.15
+    0.23      1.00      -0.18      0.34
+   -0.41     -0.18       1.00     -0.07
+    0.15      0.34      -0.07      1.00</div>
+                                </div>
+                                <div class="analysis-item">
+                                    <div class="analysis-title">Regime Performance</div>
+                                    <div class="analysis-content">High Vol: +0.85% daily avg
+Low Vol:  +0.23% daily avg
+Trending: +1.12% daily avg
+Choppy:   -0.15% daily avg
+
+Best: Trend + High Vol
+Worst: Mean Rev + Choppy</div>
+                                </div>
+                            </div>
+                            <div class="analysis-grid">
+                                <div class="analysis-item">
+                                    <div class="analysis-title">Parameter Robustness</div>
+                                    <div class="analysis-content">SMA Fast (8-12): Stable ±5%
+SMA Slow (25-35): Stable ±8%
+BB Period (15-25): Stable ±3%
+BB Std (1.5-2.5): Sensitive ±15%
+
+→ Consider wider BB std range</div>
+                                </div>
+                                <div class="analysis-item">
+                                    <div class="analysis-title">Stop Loss Analysis</div>
+                                    <div class="analysis-content">No SL:     +0.64% avg, -8.2% MDD
+0.001 SL:  +0.51% avg, -4.1% MDD
+0.0015 SL: +0.48% avg, -3.2% MDD
+0.002 SL:  +0.42% avg, -2.8% MDD
+
+→ 0.0015 optimal risk/reward</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="action-links">
+                            <a href="#" onclick="runValidation()">run validation</a>
+                            <a href="#">export jupyter</a>
+                            <a href="#">clone strategy</a>
+                            <a href="#">share</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="panel">
+                    <div class="panel-header">Performance</div>
+                    <div class="panel-content">
+                        <table class="metrics-table">
+                            <tr>
+                                <td class="metric-label">Sharpe Ratio</td>
+                                <td class="metric-value positive">2.47</td>
+                            </tr>
+                            <tr>
+                                <td class="metric-label">Annual Return</td>
+                                <td class="metric-value positive">18.3%</td>
+                            </tr>
+                            <tr>
+                                <td class="metric-label">Max Drawdown</td>
+                                <td class="metric-value negative">-3.2%</td>
+                            </tr>
+                            <tr>
+                                <td class="metric-label">Win Rate</td>
+                                <td class="metric-value">0.73</td>
+                            </tr>
+                            <tr>
+                                <td class="metric-label">Calmar Ratio</td>
+                                <td class="metric-value positive">5.72</td>
+                            </tr>
+                        </table>
+                        <div class="chart-placeholder">
+                            [Equity Curve Chart]
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">Execution Monitor</div>
+                    <div class="panel-content">
+                        <div class="log-container" id="execution-log">
+                            <div class="log-entry">
+                                <span class="log-time">14:32:15</span> 
+                                <span class="log-signal">SIGNAL</span> trend=0.72, mean_rev=0.35, breakout=0.18
+                            </div>
+                            <div class="log-entry">
+                                <span class="log-time">14:32:16</span> 
+                                <span class="log-trade">ENTRY</span> SPY @ 421.85, size=0.25%, signal=0.68
+                            </div>
+                            <div class="log-entry">
+                                <span class="log-time">14:45:22</span> 
+                                <span class="log-risk">RISK</span> volatility_percentile=0.82 > 0.7, reducing exposure
+                            </div>
+                            <div class="log-entry">
+                                <span class="log-time">14:45:23</span> 
+                                <span class="log-trade">PARTIAL EXIT</span> SPY @ 422.12, +0.064%, size reduced to 0.15%
+                            </div>
+                            <div class="log-entry">
+                                <span class="log-time">15:01:08</span> 
+                                <span class="log-signal">SIGNAL</span> trend=0.45, mean_rev=0.68, breakout=0.22
+                            </div>
+                            <div class="log-entry">
+                                <span class="log-time">15:01:09</span> 
+                                <span class="log-trade">REBALANCE</span> SPY weight: 0.15% → 0.22%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showPanel(panelName) {
+            // Update navigation
+            document.querySelectorAll('.workflow-nav a').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Show/hide panels
+            if (panelName === 'jupyter') {
+                document.getElementById('config-panel').style.display = 'none';
+                document.getElementById('jupyter-panel').classList.add('active');
+            } else {
+                document.getElementById('config-panel').style.display = 'block';
+                document.getElementById('jupyter-panel').classList.remove('active');
+            }
+        }
+        
+        function runValidation() {
+            const log = document.getElementById('execution-log');
+            const newEntry = document.createElement('div');
+            newEntry.className = 'log-entry';
+            newEntry.innerHTML = `
+                <span class="log-time">${new Date().toLocaleTimeString()}</span> 
+                <span class="log-signal">VALIDATION</span> Event system run completed, 1,247 events processed
+            `;
+            log.appendChild(newEntry);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        // Market-responsive header color (same as index.html)
+        async function updateHeaderColor() {
+            try {
+                const mockMarketData = {
+                    symbol: 'SPY',
+                    change: Math.random() * 10 - 5,
+                    changePercent: (Math.random() * 2 - 1).toFixed(2)
+                };
+                
+                const header = document.querySelector('.header');
+                const change = mockMarketData.change;
+                
+                header.classList.remove('market-up', 'market-down', 'market-flat');
+                
+                if (change > 0.1) {
+                    header.classList.add('market-up');
+                    document.getElementById('theme-color').setAttribute('content', '#00aa44');
+                } else if (change < -0.1) {
+                    header.classList.add('market-down');
+                    document.getElementById('theme-color').setAttribute('content', '#cc4444');
+                } else {
+                    header.classList.add('market-flat');
+                    document.getElementById('theme-color').setAttribute('content', '#666666');
+                }
+                
+            } catch (error) {
+                console.log('Error updating header color:', error);
+                document.querySelector('.header').classList.add('market-up');
+            }
+        }
+
+        updateHeaderColor();
+        setInterval(updateHeaderColor, 5 * 60 * 1000);
+        
+        // Simulate status updates
+        setInterval(() => {
+            const indicators = document.querySelectorAll('.status-indicator');
+            indicators.forEach(indicator => {
+                const classes = ['status-green', 'status-yellow', 'status-red'];
+                const currentClass = classes.find(cls => indicator.classList.contains(cls));
+                const newClass = classes[Math.floor(Math.random() * classes.length)];
+                if (currentClass !== newClass && Math.random() > 0.8) {
+                    indicator.classList.remove(currentClass);
+                    indicator.classList.add(newClass);
+                }
+            });
+        }, 2000);
+    </script>
+</body>
+</html>
