@@ -146,7 +146,7 @@
         .footer {
             margin-top: 20px;
             padding: 10px;
-            border-top: 1px solid #00aa44; /* Default green, will be overridden by JS */
+            border-top: 1px solid #00aa44;
             text-align: center;
             font-size: 8pt;
             color: #828282;
@@ -154,26 +154,42 @@
         }
 
         .footer.market-up {
-            border-top-color: #00aa44; /* Green for up days */
+            border-top-color: #00aa44;
         }
 
         .footer.market-down {
-            border-top-color: #cc4444; /* Red for down days */
+            border-top-color: #cc4444;
         }
 
         .footer.market-flat {
-            border-top-color: #666666; /* Gray for flat/unchanged */
+            border-top-color: #666666;
         }
 
+        /* Dynamic link colors */
         .footer a {
             color: #828282;
             text-decoration: none;
             margin: 0 5px;
+            transition: color 0.3s ease;
         }
 
         .footer a:hover {
             text-decoration: underline;
         }
+
+        .footer.market-up a:hover {
+            color: #00aa44;
+        }
+
+        .footer.market-down a:hover {
+            color: #cc4444;
+        }
+
+        .footer.market-flat a:hover {
+            color: #666666;
+        }
+
+
     </style>
 </head>
 <body>
@@ -183,10 +199,8 @@
             <div class="nav">
                 <a href="index.html" class="active">new</a> |
                 <a href="markets.html">markets</a> |
-                <a href="#">research</a> |
                 <a href="screener.html">tools</a> |
                 <a href="strategy-lab.html">lab</a> |
-                <a href="#">jobs</a> |
                 <a href="#">submit</a>
             </div>
 

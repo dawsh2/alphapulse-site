@@ -229,10 +229,39 @@
             background: #00aa44;
             color: white;
             border-color: #00aa44;
+            transition: all 0.3s ease;
         }
 
         .btn.primary:hover {
             background: #008833;
+        }
+
+        /* Dynamic primary button theming */
+        .header.market-up ~ .main .btn.primary {
+            background: #00aa44;
+            border-color: #00aa44;
+        }
+
+        .header.market-up ~ .main .btn.primary:hover {
+            background: #008833;
+        }
+
+        .header.market-down ~ .main .btn.primary {
+            background: #cc4444;
+            border-color: #cc4444;
+        }
+
+        .header.market-down ~ .main .btn.primary:hover {
+            background: #aa3333;
+        }
+
+        .header.market-flat ~ .main .btn.primary {
+            background: #666666;
+            border-color: #666666;
+        }
+
+        .header.market-flat ~ .main .btn.primary:hover {
+            background: #555555;
         }
 
         .results-count {
@@ -262,6 +291,20 @@
         .sort-indicator {
             color: #00aa44;
             font-size: 8pt;
+            transition: color 0.3s ease;
+        }
+
+        /* Dynamic sort indicator theming */
+        .header.market-up ~ .main .sort-indicator {
+            color: #00aa44;
+        }
+
+        .header.market-down ~ .main .sort-indicator {
+            color: #cc4444;
+        }
+
+        .header.market-flat ~ .main .sort-indicator {
+            color: #666666;
         }
     </style>
 </head>
@@ -272,10 +315,8 @@
             <div class="nav">
                 <a href="index.html">new</a> |
                 <a href="markets.html">markets</a> |
-                <a href="#">research</a> |
                 <a href="screener.html" class="active">tools</a> |
                 <a href="strategy-lab.html">lab</a> |
-                <a href="#">jobs</a> |
                 <a href="#">submit</a>
             </div>
         </div>
