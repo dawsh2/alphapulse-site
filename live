@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#00aa44" id="theme-color">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Live Trading - AlphaPulse</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Verdana, Geneva, sans-serif;
+            font-size: 10pt;
+            background: #f6f6ef;
+            color: #000;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #00aa44;
+            padding: 6px;
+            transition: background-color 0.3s ease;
+            position: relative;
+            z-index: 1000;
+        }
+
+        .header.market-up {
+            background-color: #00aa44;
+        }
+
+        .header.market-down {
+            background-color: #cc4444;
+        }
+
+        .header.market-flat {
+            background-color: #666666;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo {
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            font-size: 11pt;
+        }
+        
+        .nav {
+            color: white;
+        }
+        
+        .nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+        
+        .nav a:hover {
+            text-decoration: underline;
+        }
+        
+        .nav a.active {
+            font-weight: bold;
+        }
+        
+        .trading-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            grid-template-rows: auto 1fr;
+            height: calc(100vh - 30px);
+            gap: 8px;
+            padding: 8px;
+        }
+        
+        .strategy-status {
+            grid-column: 1 / -1;
+            background: #fff;
+            border: 1px solid #00aa44;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: border-color 0.3s ease;
+        }
+
+        .header.market-up ~ .trading-container .strategy-status {
+            border-color: #00aa44;
+        }
+
+        .header.market-down ~ .trading-container .strategy-status {
+            border-color: #cc4444;
+        }
+
+        .header.market-flat ~ .trading-container .strategy-status {
+            border-color: #666666;
+        }
+        
+        .strategy-name {
+            font-weight: bold;
+            font-size: 11pt;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 4px;
+        }
+        
+        .status-green {
+            background: #00aa00;
+        }
+        
+        .status-red {
+            background: #ff0000;
+        }
+        
+        .status-yellow {
+            background: #ffaa00;
+        }
+        
+        .pnl-display {
+            font-weight: bold;
+            font-size: 11pt;
+        }
+        
+        .pnl-positive {
+            color: #00aa00;
+        }
+        
+        .pnl-negative {
+            color: #ff0000;
+        }
+        
+        .quick-controls {
+            margin-left: auto;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .control-btn {
+            background: #f6f6ef;
+            border: 1px solid #00aa44;
+            padding: 4px 8px;
+            font-size: 8pt;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .header.market-up ~ .trading-container .control-btn {
+            border-color: #00aa44;
+        }
+
+        .header.market-down ~ .trading-container .control-btn {
+            border-color: #cc4444;
+        }
+
+        .header.market-flat ~ .trading-container .control-btn {
+            border-color: #666666;
+        }
+        
+        .control-btn:hover {
+            background: #ddd;
+        }
+        
+        .control-btn.danger {
+            background: #ffeeee;
+            border-color: #ff0000;
+            color: #ff0000;
+        }
+        
+        .control-btn.success {
+            background: #eeffee;
+            border-color: #00aa00;
+            color: #00aa00;
+        }
+        
+        .chart-container {
+            background: #fff;
+            border: 1px solid #00aa44;
+            position: relative;
+            transition: border-color 0.3s ease;
+        }
+
+        .header.market-up ~ .trading-container .chart-container {
+            border-color: #00aa44;
+        }
+
+        .header.market-down ~ .trading-container .chart-container {
+            border-color: #cc4444;
+        }
+
+        .header.market-flat ~ .trading-container .chart-container {
+            border-color: #666666;
+        }
+        
+        .tradingview-widget-container {
+            height: 100%;
+            width: 100%;
+        }
+        
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .panel {
+            background: #fff;
+            border: 1px solid #00aa44;
+            display: flex;
+            flex-direction: column;
+            transition: border-color 0.3s ease;
+        }
+
+        .header.market-up ~ .trading-container .panel {
+            border-color: #00aa44;
+        }
+
+        .header.market-down ~ .trading-container .panel {
+            border-color: #cc4444;
+        }
+
+        .header.market-flat ~ .trading-container .panel {
+            border-color: #666666;
+        }
+        
+        .panel-header {
+            background: #f6f6ef;
+            padding: 4px 8px;
+            border-bottom: 1px solid #00aa44;
+            font-weight: bold;
+            font-size: 9pt;
+            transition: border-color 0.3s ease;
+        }
+
+        .header.market-up ~ .trading-container .panel-header {
+            border-bottom-color: #00aa44;
+        }
+
+        .header.market-down ~ .trading-container .panel-header {
+            border-bottom-color: #cc4444;
+        }
+
+        .header.market-flat ~ .trading-container .panel-header {
+            border-bottom-color: #666666;
+        }
+        
+        .panel-content {
+            padding: 8px;
+            flex: 1;
+        }
+        
+        .positions-panel {
+            flex: 0 0 200px;
+        }
+        
+        .event-log-panel {
+            flex: 1;
+            min-height: 0;
+        }
+        
+        .positions-table {
+            width: 100%;
+            font-size: 8pt;
+            border-collapse: collapse;
+        }
+        
+        .positions-table th {
+            background: #f6f6ef;
+            padding: 2px 4px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 7pt;
+            color: #828282;
+        }
+        
+        .positions-table td {
+            padding: 2px 4px;
+            border-bottom: 1px solid #eee;
+            font-size: 8pt;
+        }
+        
+        .position-long {
+            color: #00aa00;
+        }
+        
+        .position-short {
+            color: #ff0000;
+        }
+        
+        .event-log {
+            height: 100%;
+            overflow-y: auto;
+            background: #f6f6ef;
+            border: 1px solid #ddd;
+            padding: 4px;
+            font-family: monospace;
+            font-size: 7pt;
+            line-height: 1.4;
+        }
+        
+        .log-entry {
+            margin-bottom: 2px;
+            white-space: nowrap;
+        }
+        
+        .log-time {
+            color: #828282;
+        }
+        
+        .log-signal {
+            color: #00aa44;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .header.market-up ~ .trading-container .log-signal {
+            color: #00aa44;
+        }
+
+        .header.market-down ~ .trading-container .log-signal {
+            color: #cc4444;
+        }
+
+        .header.market-flat ~ .trading-container .log-signal {
+            color: #666666;
+        }
+        
+        .log-trade {
+            color: #0066cc;
+            font-weight: bold;
+        }
+        
+        .log-risk {
+            color: #ff6600;
+            font-weight: bold;
+        }
+        
+        .log-error {
+            color: #ff0000;
+            font-weight: bold;
+        }
+        
+        .log-system {
+            color: #666666;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .metric-item {
+            text-align: center;
+        }
+        
+        .metric-label {
+            font-size: 7pt;
+            color: #828282;
+            display: block;
+        }
+        
+        .metric-value {
+            font-size: 9pt;
+            font-weight: bold;
+        }
+        
+        .emergency-stop {
+            background: #ff0000 !important;
+            color: white !important;
+            border-color: #ff0000 !important;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 300px;
+            text-align: center;
+        }
+        
+        .modal-buttons {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="index.html" class="logo">AlphaPulse</a>
+            <div class="nav">
+                <a href="index.html">new</a> |
+                <a href="markets.html">markets</a> |
+                <a href="screener.html">tools</a> |
+                <a href="strategy-lab.html">lab</a> |
+                <a href="live-trading.html" class="active">live</a> |
+                <a href="#">submit</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="trading-container">
+        <div class="strategy-status">
+            <div class="strategy-name">
+                adaptive_ensemble
+                <span class="status-indicator status-green"></span>
+                <span style="font-size: 8pt; color: #828282;">ACTIVE</span>
+            </div>
+            <div style="font-size: 8pt; color: #828282;">
+                SPY | 5m | Started: 09:30:00
+            </div>
+            <div class="pnl-display pnl-positive" id="pnl-display">
+                +$1,247.83 (+0.62%)
+            </div>
+            <div style="font-size: 8pt; color: #828282;">
+                Signals: 47 | Trades: 12 | Win Rate: 83%
+            </div>
+            <div class="quick-controls">
+                <button class="control-btn" onclick="pauseStrategy()">PAUSE</button>
+                <button class="control-btn" onclick="showModal('position-modal')">POSITION</button>
+                <button class="control-btn danger emergency-stop" onclick="showModal('emergency-modal')">EMERGENCY STOP</button>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="tradingview-widget-container">
+                <div id="tradingview_chart"></div>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="panel positions-panel">
+                <div class="panel-header">Current Positions</div>
+                <div class="panel-content">
+                    <table class="positions-table">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Side</th>
+                                <th>Size</th>
+                                <th>Entry</th>
+                                <th>P&L</th>
+                            </tr>
+                        </thead>
+                        <tbody id="positions-table">
+                            <tr>
+                                <td>SPY</td>
+                                <td class="position-long">LONG</td>
+                                <td>0.25%</td>
+                                <td>$421.85</td>
+                                <td class="position-long">+$247</td>
+                            </tr>
+                            <tr>
+                                <td>QQQ</td>
+                                <td class="position-long">LONG</td>
+                                <td>0.15%</td>
+                                <td>$367.22</td>
+                                <td class="position-long">+$89</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="metrics-grid" style="margin-top: 10px;">
+                        <div class="metric-item">
+                            <span class="metric-label">Exposure</span>
+                            <span class="metric-value">0.40%</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Cash</span>
+                            <span class="metric-value">99.60%</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Daily Vol</span>
+                            <span class="metric-value">1.2%</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Max DD</span>
+                            <span class="metric-value">-0.15%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel event-log-panel">
+                <div class="panel-header">Event Log</div>
+                <div class="panel-content">
+                    <div class="event-log" id="event-log">
+                        <div class="log-entry">
+                            <span class="log-time">09:30:00</span> 
+                            <span class="log-system">SYSTEM</span> Strategy adaptive_ensemble started
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">09:30:15</span> 
+                            <span class="log-signal">SIGNAL</span> trend=0.72, mean_rev=0.35, breakout=0.18
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">09:30:16</span> 
+                            <span class="log-trade">ENTRY</span> SPY @ $421.85, size=0.25%, signal=0.68
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">09:45:22</span> 
+                            <span class="log-risk">RISK</span> volatility_percentile=0.82 > 0.7, reducing exposure
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">09:45:23</span> 
+                            <span class="log-trade">PARTIAL EXIT</span> SPY @ $422.12, +$64, size reduced to 0.15%
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">10:01:08</span> 
+                            <span class="log-signal">SIGNAL</span> trend=0.45, mean_rev=0.68, breakout=0.22
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">10:01:09</span> 
+                            <span class="log-trade">ENTRY</span> QQQ @ $367.22, size=0.15%, signal=0.61
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">10:15:33</span> 
+                            <span class="log-system">SYSTEM</span> Heartbeat OK, latency=2.3ms
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">10:30:45</span> 
+                            <span class="log-signal">SIGNAL</span> trend=0.58, mean_rev=0.42, breakout=0.31
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">10:30:46</span> 
+                            <span class="log-trade">REBALANCE</span> SPY weight: 0.15% → 0.22%
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">10:45:12</span> 
+                            <span class="log-risk">RISK</span> Max position size reached, skipping QQQ signal
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">11:00:00</span> 
+                            <span class="log-system">SYSTEM</span> Hourly performance: +$1,247.83 (+0.62%)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emergency Stop Modal -->
+    <div id="emergency-modal" class="modal">
+        <div class="modal-content">
+            <h3 style="color: #ff0000; margin-bottom: 10px;">⚠️ EMERGENCY STOP</h3>
+            <p style="font-size: 9pt; margin-bottom: 15px;">
+                This will immediately close all positions and halt the strategy.
+                This action cannot be undone.
+            </p>
+            <div class="modal-buttons">
+                <button class="control-btn danger" onclick="emergencyStop()">STOP ALL</button>
+                <button class="control-btn" onclick="hideModal('emergency-modal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Position Management Modal -->
+    <div id="position-modal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 10px;">Position Management</h3>
+            <div style="font-size: 8pt; text-align: left; margin-bottom: 15px;">
+                <div>Max Position Size: <input type="text" value="0.5%" style="width: 50px; font-size: 8pt;"></div>
+                <div style="margin-top: 5px;">Risk Per Trade: <input type="text" value="0.1%" style="width: 50px; font-size: 8pt;"></div>
+                <div style="margin-top: 5px;">Stop Loss: <input type="text" value="0.15%" style="width: 50px; font-size: 8pt;"></div>
+            </div>
+            <div class="modal-buttons">
+                <button class="control-btn success" onclick="updatePositions()">Update</button>
+                <button class="control-btn" onclick="hideModal('position-modal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script>
+        let isStrategyActive = true;
+        let pnl = 1247.83;
+        let pnlPercent = 0.62;
+
+        // Initialize TradingView Chart
+        function initTradingViewChart() {
+            if (typeof TradingView !== 'undefined') {
+                new TradingView.widget({
+                    "width": "100%",
+                    "height": "100%",
+                    "symbol": "NASDAQ:SPY",
+                    "interval": "5",
+                    "timezone": "America/New_York",
+                    "theme": "light",
+                    "style": "1",
+                    "locale": "en",
+                    "toolbar_bg": "#f6f6ef",
+                    "enable_publishing": false,
+                    "hide_side_toolbar": false,
+                    "allow_symbol_change": true,
+                    "container_id": "tradingview_chart",
+                    "hide_legend": false,
+                    "save_image": false,
+                    "studies": [
+                        "MASimple@tv-basicstudies",
+                        "RSI@tv-basicstudies"
+                    ]
+                });
+            } else {
+                // Retry after a short delay if TradingView hasn't loaded yet
+                setTimeout(initTradingViewChart, 100);
+            }
+        }
+
+        // Market-responsive header color
+        async function updateHeaderColor() {
+            try {
+                const mockMarketData = {
+                    change: Math.random() * 10 - 5
+                };
+                
+                const header = document.querySelector('.header');
+                const change = mockMarketData.change;
+                
+                header.classList.remove('market-up', 'market-down', 'market-flat');
+                
+                if (change > 0.1) {
+                    header.classList.add('market-up');
+                    document.getElementById('theme-color').setAttribute('content', '#00aa44');
+                } else if (change < -0.1) {
+                    header.classList.add('market-down');
+                    document.getElementById('theme-color').setAttribute('content', '#cc4444');
+                } else {
+                    header.classList.add('market-flat');
+                    document.getElementById('theme-color').setAttribute('content', '#666666');
+                }
+            } catch (error) {
+                document.querySelector('.header').classList.add('market-up');
+            }
+        }
+
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function pauseStrategy() {
+            const btn = event.target;
+            const indicator = document.querySelector('.status-indicator');
+            const status = document.querySelector('.strategy-status span[style*="color: #828282"]');
+            
+            if (isStrategyActive) {
+                btn.textContent = 'RESUME';
+                btn.classList.add('success');
+                indicator.classList.remove('status-green');
+                indicator.classList.add('status-yellow');
+                status.textContent = 'PAUSED';
+                addLogEntry('SYSTEM', 'Strategy paused by user');
+                isStrategyActive = false;
+            } else {
+                btn.textContent = 'PAUSE';
+                btn.classList.remove('success');
+                indicator.classList.remove('status-yellow');
+                indicator.classList.add('status-green');
+                status.textContent = 'ACTIVE';
+                addLogEntry('SYSTEM', 'Strategy resumed by user');
+                isStrategyActive = true;
+            }
+        }
+
+        function emergencyStop() {
+            const indicator = document.querySelector('.status-indicator');
+            const status = document.querySelector('.strategy-status span[style*="color: #828282"]');
+            
+            indicator.classList.remove('status-green', 'status-yellow');
+            indicator.classList.add('status-red');
+            status.textContent = 'STOPPED';
+            
+            addLogEntry('SYSTEM', 'EMERGENCY STOP - All positions closed');
+            addLogEntry('TRADE', 'CLOSE ALL SPY @ $422.45, +$267');
+            addLogEntry('TRADE', 'CLOSE ALL QQQ @ $367.89, +$102');
+            
+            // Clear positions table
+            document.getElementById('positions-table').innerHTML = '<tr><td colspan="5" style="text-align: center; color: #828282;">No positions</td></tr>';
+            
+            hideModal('emergency-modal');
+            isStrategyActive = false;
+        }
+
+        function updatePositions() {
+            addLogEntry('SYSTEM', 'Position limits updated by user');
+            hideModal('position-modal');
+        }
+
+        function addLogEntry(type, message) {
+            const log = document.getElementById('event-log');
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', { hour12: false });
+            
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            
+            let typeClass = 'log-system';
+            if (type === 'SIGNAL') typeClass = 'log-signal';
+            else if (type === 'TRADE' || type === 'ENTRY' || type === 'EXIT') typeClass = 'log-trade';
+            else if (type === 'RISK') typeClass = 'log-risk';
+            else if (type === 'ERROR') typeClass = 'log-error';
+            
+            entry.innerHTML = `
+                <span class="log-time">${timeStr}</span> 
+                <span class="${typeClass}">${type}</span> ${message}
+            `;
+            
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function updatePnL() {
+            if (!isStrategyActive) return;
+            
+            // Simulate P&L changes
+            const change = (Math.random() - 0.5) * 20;
+            pnl += change;
+            pnlPercent = (pnl / 200000) * 100; // Assuming $200k account
+            
+            const pnlDisplay = document.getElementById('pnl-display');
+            const sign = pnl >= 0 ? '+' : '';
+            const pnlSign = pnlPercent >= 0 ? '+' : '';
+            
+            pnlDisplay.textContent = `${sign}$${pnl.toFixed(2)} (${pnlSign}${pnlPercent.toFixed(2)}%)`;
+            pnlDisplay.className = `pnl-display ${pnl >= 0 ? 'pnl-positive' : 'pnl-negative'}`;
+        }
+
+        function simulateTrading() {
+            if (!isStrategyActive) return;
+            
+            if (Math.random() < 0.1) {  // 10% chance of new signal
+                const signals = [
+                    'trend=0.72, mean_rev=0.35, breakout=0.18',
+                    'trend=0.45, mean_rev=0.68, breakout=0.22',
+                    'trend=0.58, mean_rev=0.42, breakout=0.31'
+                ];
+                addLogEntry('SIGNAL', signals[Math.floor(Math.random() * signals.length)]);
+            }
+            
+            if (Math.random() < 0.05) {  // 5% chance of trade
+                const trades = [
+                    'ENTRY SPY @ $422.15, size=0.2%, signal=0.65',
+                    'PARTIAL EXIT QQQ @ $368.45, +$45, size reduced',
+                    'REBALANCE SPY weight: 0.2% → 0.25%'
+                ];
+                addLogEntry('TRADE', trades[Math.floor(Math.random() * trades.length)]);
+            }
+            
+            if (Math.random() < 0.02) {  // 2% chance of risk event
+                const risks = [
+                    'volatility_percentile=0.85 > 0.7, reducing exposure',
+                    'Max position size reached, skipping signal',
+                    'Stop loss triggered on position'
+                ];
+                addLogEntry('RISK', risks[Math.floor(Math.random() * risks.length)]);
+            }
+        }
+
+        // Initialize - wait for page to fully load
+        window.addEventListener('load', function() {
+            initTradingViewChart();
+            updateHeaderColor();
+            setInterval(updateHeaderColor, 5 * 60 * 1000);
+            setInterval(updatePnL, 3000);
+            setInterval(simulateTrading, 2000);
+        });
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
