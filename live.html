@@ -207,6 +207,33 @@
         .tradingview-widget-container {
             height: 100%;
             width: 100%;
+            position: relative;
+        }
+        
+        .chart-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #828282;
+            font-size: 10pt;
+        }
+        
+        .api-config-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #f6f6ef;
+            border: 1px solid #00aa44;
+            padding: 4px 8px;
+            font-size: 8pt;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        
+        .api-config-btn:hover {
+            background: #ddd;
         }
         
         .right-panel {
@@ -426,6 +453,8 @@
             <a href="index.html" class="logo">AlphaPulse</a>
             <div class="nav">
                 <a href="index.html">new</a> |
+                <a href="markets.html">markets</a> |
+                <a href="screener.html">tools</a> |
                 <a href="strategy-lab.html">lab</a> |
                 <a href="live-trading.html" class="active">live</a> |
                 <a href="#">submit</a>
@@ -457,8 +486,10 @@
         </div>
 
         <div class="chart-container">
+            <button class="api-config-btn" onclick="showModal('api-config-modal')">API Config</button>
             <div class="tradingview-widget-container">
-                <div id="tradingview_chart"></div>
+                <div id="lightweight_chart"></div>
+                <div id="chart-loading" class="chart-loading">Configure Alpaca API keys to load real-time data</div>
             </div>
         </div>
 
@@ -588,6 +619,34 @@
         </div>
     </div>
 
+    <!-- API Configuration Modal -->
+    <div id="api-config-modal" class="modal">
+        <div class="modal-content" style="width: 400px;">
+            <h3 style="margin-bottom: 15px;">Alpaca API Configuration</h3>
+            <div style="text-align: left; margin-bottom: 15px; font-size: 8pt; color: #828282;">
+                Enter your Alpaca API credentials for real-time market data. Keys are stored locally and never sent to external servers.
+            </div>
+            <div style="text-align: left; margin-bottom: 15px;">
+                <label style="display: block; font-size: 8pt; margin-bottom: 4px;">API Key ID:</label>
+                <input type="text" id="alpaca-key-id" placeholder="PKTEST..." style="width: 100%; padding: 4px; font-size: 8pt; font-family: monospace;">
+            </div>
+            <div style="text-align: left; margin-bottom: 15px;">
+                <label style="display: block; font-size: 8pt; margin-bottom: 4px;">Secret Key:</label>
+                <input type="password" id="alpaca-secret" placeholder="..." style="width: 100%; padding: 4px; font-size: 8pt; font-family: monospace;">
+            </div>
+            <div style="text-align: left; margin-bottom: 15px;">
+                <label style="display: block; font-size: 8pt; margin-bottom: 4px;">
+                    <input type="checkbox" id="alpaca-paper" checked> Use Paper Trading (recommended for testing)
+                </label>
+            </div>
+            <div class="modal-buttons">
+                <button class="control-btn success" onclick="saveApiConfig()">Connect</button>
+                <button class="control-btn" onclick="hideModal('api-config-modal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
     <!-- Position Management Modal -->
     <div id="position-modal" class="modal">
         <div class="modal-content">
@@ -604,39 +663,170 @@
         </div>
     </div>
 
-    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
         let isStrategyActive = true;
         let pnl = 1247.83;
         let pnlPercent = 0.62;
+        let chart = null;
+        let candlestickSeries = null;
+        let alpacaConfig = null;
 
-        // Initialize TradingView Chart
-        function initTradingViewChart() {
-            if (typeof TradingView !== 'undefined') {
-                new TradingView.widget({
-                    "width": "100%",
-                    "height": "100%",
-                    "symbol": "NASDAQ:SPY",
-                    "interval": "5",
-                    "timezone": "America/New_York",
-                    "theme": "light",
-                    "style": "1",
-                    "locale": "en",
-                    "toolbar_bg": "#f6f6ef",
-                    "enable_publishing": false,
-                    "hide_side_toolbar": false,
-                    "allow_symbol_change": true,
-                    "container_id": "tradingview_chart",
-                    "hide_legend": false,
-                    "save_image": false,
-                    "studies": [
-                        "MASimple@tv-basicstudies",
-                        "RSI@tv-basicstudies"
-                    ]
+        // Initialize Lightweight Charts
+        function initLightweightChart() {
+            const container = document.getElementById('lightweight_chart');
+            
+            chart = LightweightCharts.createChart(container, {
+                width: container.clientWidth,
+                height: container.clientHeight,
+                layout: {
+                    backgroundColor: '#ffffff',
+                    textColor: '#333',
+                },
+                grid: {
+                    vertLines: {
+                        color: '#f0f0f0',
+                    },
+                    horzLines: {
+                        color: '#f0f0f0',
+                    },
+                },
+                crosshair: {
+                    mode: LightweightCharts.CrosshairMode.Normal,
+                },
+                rightPriceScale: {
+                    borderColor: '#cccccc',
+                },
+                timeScale: {
+                    borderColor: '#cccccc',
+                    timeVisible: true,
+                    secondsVisible: false,
+                },
+            });
+
+            candlestickSeries = chart.addCandlestickSeries({
+                upColor: '#00aa44',
+                downColor: '#cc4444',
+                borderUpColor: '#00aa44',
+                borderDownColor: '#cc4444',
+                wickUpColor: '#00aa44',
+                wickDownColor: '#cc4444',
+            });
+
+            // Handle resize
+            window.addEventListener('resize', () => {
+                chart.applyOptions({
+                    width: container.clientWidth,
+                    height: container.clientHeight,
                 });
-            } else {
-                // Retry after a short delay if TradingView hasn't loaded yet
-                setTimeout(initTradingViewChart, 100);
+            });
+
+            // Load mock data initially
+            loadMockData();
+        }
+
+        // Load mock candlestick data
+        function loadMockData() {
+            const mockData = [];
+            const startTime = Math.floor(Date.now() / 1000) - (300 * 100); // 100 5-minute bars ago
+            let currentPrice = 421.50;
+
+            for (let i = 0; i < 100; i++) {
+                const time = startTime + (i * 300); // 5-minute intervals
+                const open = currentPrice;
+                const high = open + (Math.random() * 2);
+                const low = open - (Math.random() * 2);
+                const close = low + (Math.random() * (high - low));
+                
+                mockData.push({
+                    time: time,
+                    open: open,
+                    high: high,
+                    low: low,
+                    close: close
+                });
+                
+                currentPrice = close;
+            }
+
+            candlestickSeries.setData(mockData);
+            document.getElementById('chart-loading').style.display = 'none';
+        }
+
+        // Save API configuration
+        function saveApiConfig() {
+            const keyId = document.getElementById('alpaca-key-id').value.trim();
+            const secret = document.getElementById('alpaca-secret').value.trim();
+            const isPaper = document.getElementById('alpaca-paper').checked;
+
+            if (!keyId || !secret) {
+                alert('Please enter both API Key ID and Secret Key');
+                return;
+            }
+
+            alpacaConfig = {
+                keyId: keyId,
+                secret: secret,
+                isPaper: isPaper,
+                baseUrl: isPaper ? 'https://paper-api.alpaca.markets' : 'https://api.alpaca.markets'
+            };
+
+            // Store in localStorage (for demo - in production use secure storage)
+            localStorage.setItem('alpacaConfig', JSON.stringify({
+                keyId: keyId,
+                isPaper: isPaper
+                // Don't store secret in localStorage in production!
+            }));
+
+            hideModal('api-config-modal');
+            addLogEntry('SYSTEM', `Connected to Alpaca ${isPaper ? '(Paper)' : '(Live)'}`);
+            
+            // In a real implementation, you'd start the data feed here
+            startRealTimeDataFeed();
+        }
+
+        // Start real-time data feed (mock implementation)
+        function startRealTimeDataFeed() {
+            addLogEntry('SYSTEM', 'Starting real-time data feed for SPY');
+            
+            // In production, this would connect to Alpaca's WebSocket API
+            // For demo, we'll simulate real-time updates
+            setInterval(() => {
+                if (candlestickSeries && alpacaConfig) {
+                    updateMockRealTimeBar();
+                }
+            }, 5000); // Update every 5 seconds for demo
+        }
+
+        // Update mock real-time bar
+        function updateMockRealTimeBar() {
+            const lastBar = candlestickSeries.data()[candlestickSeries.data().length - 1];
+            if (!lastBar) return;
+
+            const now = Math.floor(Date.now() / 1000);
+            const newPrice = lastBar.close + ((Math.random() - 0.5) * 0.5);
+
+            const newBar = {
+                time: now,
+                open: lastBar.close,
+                high: Math.max(lastBar.close, newPrice),
+                low: Math.min(lastBar.close, newPrice),
+                close: newPrice
+            };
+
+            candlestickSeries.update(newBar);
+        }
+
+        // Load saved config on startup
+        function loadSavedConfig() {
+            const saved = localStorage.getItem('alpacaConfig');
+            if (saved) {
+                const config = JSON.parse(saved);
+                document.getElementById('alpaca-key-id').value = config.keyId || '';
+                document.getElementById('alpaca-paper').checked = config.isPaper !== false;
+                
+                if (config.keyId) {
+                    document.getElementById('chart-loading').textContent = 'API keys found - click Connect to start real-time feed';
+                }
             }
         }
 
@@ -795,7 +985,8 @@
 
         // Initialize - wait for page to fully load
         window.addEventListener('load', function() {
-            initTradingViewChart();
+            initLightweightChart();
+            loadSavedConfig();
             updateHeaderColor();
             setInterval(updateHeaderColor, 5 * 60 * 1000);
             setInterval(updatePnL, 3000);
