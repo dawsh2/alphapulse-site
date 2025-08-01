@@ -673,55 +673,61 @@
 
         // Initialize Lightweight Charts
         function initLightweightChart() {
-            const container = document.getElementById('lightweight_chart');
-            
-            chart = LightweightCharts.createChart(container, {
-                width: container.clientWidth,
-                height: container.clientHeight,
-                layout: {
-                    backgroundColor: '#ffffff',
-                    textColor: '#333',
-                },
-                grid: {
-                    vertLines: {
-                        color: '#f0f0f0',
-                    },
-                    horzLines: {
-                        color: '#f0f0f0',
-                    },
-                },
-                crosshair: {
-                    mode: LightweightCharts.CrosshairMode.Normal,
-                },
-                rightPriceScale: {
-                    borderColor: '#cccccc',
-                },
-                timeScale: {
-                    borderColor: '#cccccc',
-                    timeVisible: true,
-                    secondsVisible: false,
-                },
-            });
-
-            candlestickSeries = chart.addCandlestickSeries({
-                upColor: '#00aa44',
-                downColor: '#cc4444',
-                borderUpColor: '#00aa44',
-                borderDownColor: '#cc4444',
-                wickUpColor: '#00aa44',
-                wickDownColor: '#cc4444',
-            });
-
-            // Handle resize
-            window.addEventListener('resize', () => {
-                chart.applyOptions({
+            if (typeof LightweightCharts !== 'undefined') {
+                const container = document.getElementById('lightweight_chart');
+                
+                chart = LightweightCharts.createChart(container, {
                     width: container.clientWidth,
                     height: container.clientHeight,
+                    layout: {
+                        backgroundColor: '#ffffff',
+                        textColor: '#333',
+                    },
+                    grid: {
+                        vertLines: {
+                            color: '#f0f0f0',
+                        },
+                        horzLines: {
+                            color: '#f0f0f0',
+                        },
+                    },
+                    crosshair: {
+                        mode: LightweightCharts.CrosshairMode.Normal,
+                    },
+                    rightPriceScale: {
+                        borderColor: '#cccccc',
+                    },
+                    timeScale: {
+                        borderColor: '#cccccc',
+                        timeVisible: true,
+                        secondsVisible: false,
+                    },
                 });
-            });
 
-            // Load mock data initially
-            loadMockData();
+                candlestickSeries = chart.addCandlestickSeries({
+                    upColor: '#00aa44',
+                    downColor: '#cc4444',
+                    borderUpColor: '#00aa44',
+                    borderDownColor: '#cc4444',
+                    wickUpColor: '#00aa44',
+                    wickDownColor: '#cc4444',
+                });
+
+                // Handle resize
+                window.addEventListener('resize', () => {
+                    chart.applyOptions({
+                        width: container.clientWidth,
+                        height: container.clientHeight,
+                    });
+                });
+
+                // Load mock data initially
+                loadMockData();
+            } else {
+                // Retry after a short delay if LightweightCharts hasn't loaded yet
+                console.log('LightweightCharts not yet loaded, retrying...');
+                setTimeout(initLightweightChart, 100);
+            }
         }
 
         // Load mock candlestick data
