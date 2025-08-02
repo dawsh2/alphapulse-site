@@ -101,6 +101,7 @@
         .status-green { background: #4ec9b0; }
         .status-red { background: #f48771; }
         .status-yellow { background: #dcdcaa; }
+        .status-dot.mock { background: #4488cc; }
         .pnl-display { 
             font-weight: 600; 
             font-size: 14px; 
@@ -457,6 +458,7 @@
     <script>
         const API_BASE_URL = 'http://localhost:5001/api';
         let authToken = null, currentUser = null, chart = null, candlestickSeries = null, alpacaConnected = false;
+        let useMockData = false;
 
         window.addEventListener('load', initApp);
 
@@ -511,20 +513,65 @@
                     document.getElementById('strategy-toggle').textContent = 'START';
                     addLogEntry('SYSTEM', `Alpaca connected - ${result.account_type}`);
                 } else {
-                    statusDiv.className = 'connection-status error';
-                    statusDiv.innerHTML = `<strong>❌ Failed</strong><br>${result.message || 'Check keys'}`;
-                    bannerDiv.textContent = '❌ CONNECTION FAILED';
-                    bannerDiv.style.background = '#cc4444';
-                    addLogEntry('ERROR', `Connection failed: ${result.message}`);
+                    // Enable mock mode
+                    useMockData = true;
+                    statusDiv.className = 'connection-status connected';
+                    statusDiv.innerHTML = `<strong>🎮 Demo Mode</strong><br>Simulated data`;
+                    bannerDiv.textContent = '🎮 DEMO MODE - SIMULATED DATA';
+                    bannerDiv.style.background = '#4488cc';
+                    
+                    document.getElementById('strategy-status').textContent = 'DEMO';
+                    document.querySelector('.status-indicator').className = 'status-indicator status-yellow';
+                    document.getElementById('strategy-toggle').disabled = false;
+                    document.getElementById('strategy-toggle').textContent = 'START DEMO';
+                    addLogEntry('SYSTEM', 'Running in demo mode with simulated data');
                 }
             } catch (error) {
                 console.error('Connection test error:', error);
-                addLogEntry('ERROR', 'Failed to test connection');
+                // Enable mock mode on error
+                useMockData = true;
+                const statusDiv = document.getElementById('connection-status');
+                const bannerDiv = document.getElementById('live-banner');
+                statusDiv.className = 'connection-status connected';
+                statusDiv.innerHTML = `<strong>🎮 Demo Mode</strong><br>Simulated data`;
+                bannerDiv.textContent = '🎮 DEMO MODE - SIMULATED DATA';
+                bannerDiv.style.background = '#4488cc';
+                
+                document.getElementById('strategy-status').textContent = 'DEMO';
+                document.querySelector('.status-indicator').className = 'status-indicator status-yellow';
+                document.getElementById('strategy-toggle').disabled = false;
+                document.getElementById('strategy-toggle').textContent = 'START DEMO';
+                addLogEntry('SYSTEM', 'Running in demo mode with simulated data');
             }
         }
 
         async function loadAccountData() {
-            if (!authToken || !alpacaConnected) return;
+            if (!authToken || (!alpacaConnected && !useMockData)) return;
+            
+            if (useMockData) {
+                // Use mock account data
+                const mockData = {
+                    account_number: 'DEMO123456',
+                    status: 'ACTIVE',
+                    currency: 'USD',
+                    buying_power: '100000.00',
+                    cash: '100000.00',
+                    portfolio_value: '125000.00',
+                    pattern_day_trader: false,
+                    trading_blocked: false,
+                    transfers_blocked: false,
+                    account_blocked: false,
+                    daytrade_count: 0,
+                    daytrading_buying_power: '400000.00'
+                };
+                
+                document.getElementById('account-value').textContent = `$${parseFloat(mockData.portfolio_value).toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                document.getElementById('buying-power').textContent = `$${parseFloat(mockData.buying_power).toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                document.getElementById('cash-balance').textContent = `$${parseFloat(mockData.cash).toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                document.getElementById('account-id').textContent = mockData.account_number;
+                return;
+            }
+            
             try {
                 const response = await fetch(`${API_BASE_URL}/account`, {
                     headers: { 'Authorization': `Bearer ${authToken}` }
@@ -552,7 +599,47 @@
         }
 
         async function loadPositions() {
-            if (!authToken || !alpacaConnected) return;
+            if (!authToken || (!alpacaConnected && !useMockData)) return;
+            
+            if (useMockData) {
+                // Use mock positions data
+                const mockPositions = [
+                    {
+                        symbol: 'AAPL',
+                        qty: '10',
+                        avg_entry_price: '150.25',
+                        current_price: '155.50',
+                        market_value: '1555.00',
+                        unrealized_pl: '52.50',
+                        unrealized_plpc: '0.0349'
+                    },
+                    {
+                        symbol: 'SPY',
+                        qty: '25',
+                        avg_entry_price: '445.00',
+                        current_price: '448.75',
+                        market_value: '11218.75',
+                        unrealized_pl: '93.75',
+                        unrealized_plpc: '0.0084'
+                    }
+                ];
+                
+                const tbody = document.getElementById('positions-tbody');
+                tbody.innerHTML = mockPositions.map(pos => `
+                    <tr>
+                        <td>${pos.symbol}</td>
+                        <td>${pos.qty}</td>
+                        <td>$${parseFloat(pos.avg_entry_price).toFixed(2)}</td>
+                        <td>$${parseFloat(pos.current_price).toFixed(2)}</td>
+                        <td>$${parseFloat(pos.market_value).toLocaleString()}</td>
+                        <td class="${parseFloat(pos.unrealized_pl) >= 0 ? 'profit' : 'loss'}">
+                            $${parseFloat(pos.unrealized_pl).toFixed(2)} (${(parseFloat(pos.unrealized_plpc) * 100).toFixed(2)}%)
+                        </td>
+                    </tr>
+                `).join('');
+                return;
+            }
+            
             try {
                 const response = await fetch(`${API_BASE_URL}/positions`, {
                     headers: { 'Authorization': `Bearer ${authToken}` }
@@ -659,7 +746,65 @@
         }
 
         async function loadRealMarketData() {
-            if (!authToken || !alpacaConnected || !candlestickSeries) return;
+            if (!authToken || (!alpacaConnected && !useMockData) || !candlestickSeries) return;
+            
+            if (useMockData) {
+                // Generate mock market data
+                const now = new Date();
+                const data = [];
+                let basePrice = 450;
+                
+                // Generate 100 5-minute bars
+                for (let i = 99; i >= 0; i--) {
+                    const time = new Date(now - i * 5 * 60 * 1000);
+                    const change = (Math.random() - 0.5) * 2;
+                    const open = basePrice;
+                    const close = basePrice + change;
+                    const high = Math.max(open, close) + Math.random();
+                    const low = Math.min(open, close) - Math.random();
+                    const volume = Math.floor(Math.random() * 1000000) + 500000;
+                    
+                    data.push({
+                        time: Math.floor(time.getTime() / 1000),
+                        open: open,
+                        high: high,
+                        low: low,
+                        close: close,
+                        volume: volume
+                    });
+                    
+                    basePrice = close;
+                }
+                
+                candlestickSeries.setData(data.map(bar => ({
+                    time: bar.time,
+                    open: bar.open,
+                    high: bar.high,
+                    low: bar.low,
+                    close: bar.close
+                })));
+                
+                // Update price periodically
+                setInterval(() => {
+                    if (useMockData && candlestickSeries) {
+                        const lastBar = data[data.length - 1];
+                        const newTime = Math.floor(Date.now() / 1000);
+                        const newPrice = lastBar.close + (Math.random() - 0.5) * 0.5;
+                        
+                        candlestickSeries.update({
+                            time: newTime,
+                            open: lastBar.close,
+                            high: Math.max(lastBar.close, newPrice) + Math.random() * 0.1,
+                            low: Math.min(lastBar.close, newPrice) - Math.random() * 0.1,
+                            close: newPrice
+                        });
+                    }
+                }, 5000);
+                
+                document.getElementById('chart-loading').style.display = 'none';
+                return;
+            }
+            
             try {
                 const response = await fetch(`${API_BASE_URL}/market-data/SPY?timeframe=5Min&limit=100`, {
                     headers: { 'Authorization': `Bearer ${authToken}` }
@@ -687,7 +832,7 @@
         }
 
         async function refreshData() {
-            if (alpacaConnected && authToken) {
+            if ((alpacaConnected || useMockData) && authToken) {
                 await loadAccountData();
                 await loadPositions();
             }

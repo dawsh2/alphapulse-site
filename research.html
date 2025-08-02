@@ -561,6 +561,17 @@
                 margin-left: 0;
                 width: 100%;
             }
+            
+            .container {
+                height: calc(100vh - 32px);
+                overflow: hidden;
+            }
+            
+            .notebook-content {
+                height: calc(100vh - 32px - 44px); /* Account for header and tabs */
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
         }
 
         @media screen and (max-width: 480px) {

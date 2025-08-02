@@ -36,26 +36,21 @@
             background: none;
             border: none;
             color: white;
-            font-size: 16px;
-            cursor: pointer;
-            padding: 4px;
-            margin-right: 12px;
-        }
-        
-        .mobile-sidebar-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 16px;
+            font-size: 20px;
             cursor: pointer;
             padding: 4px;
             margin-right: 12px;
         }
         
         @media screen and (max-width: 768px) {
-            .mobile-menu-btn, .mobile-sidebar-btn {
+            .mobile-menu-btn {
                 display: block;
+            }
+            
+            .sidebar {
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                height: calc(100vh - 32px);
             }
         }
 
@@ -842,6 +837,8 @@ The included momentum strategy demonstrates:
                     parameterHints: { enabled: false },
                     suggestOnTriggerCharacters: false,
                     acceptSuggestionOnEnter: 'off',
+                    cursorStyle: 'line-thin',
+                    cursorWidth: 2,
                     tabCompletion: 'off',
                     wordBasedSuggestions: false,
                     contextmenu: false,
@@ -871,6 +868,18 @@ The included momentum strategy demonstrates:
                         const viewport = document.querySelector('meta[name="viewport"]');
                         viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
                     }, 100);
+                });
+                
+                // Better cursor handling on mobile
+                editor.onMouseDown((e) => {
+                    if (isMobile) {
+                        // Get the position and set cursor there
+                        const position = e.target.position;
+                        if (position) {
+                            editor.setPosition(position);
+                            editor.focus();
+                        }
+                    }
                 });
                 
                 editor.onDidBlurEditorText(() => {
@@ -922,6 +931,11 @@ The included momentum strategy demonstrates:
 
             // Hide welcome message
             document.getElementById('welcomeMessage').style.display = 'none';
+            
+            // Auto-collapse sidebar on mobile after file selection
+            if (window.innerWidth <= 768) {
+                document.querySelector('.sidebar').classList.add('mobile-hidden');
+            }
 
             // Get file extension for language detection
             const ext = filename.split('.').pop();
