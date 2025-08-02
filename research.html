@@ -396,6 +396,17 @@
             font-size: inherit;
             line-height: 1.5;
         }
+        
+        /* Prevent zoom on iOS when focusing inputs */
+        @media screen and (max-width: 768px) {
+            .code-input {
+                font-size: 16px !important;
+            }
+            
+            .markdown-content[contenteditable] {
+                font-size: 16px !important;
+            }
+        }
 
         .code-output {
             background: #252526;
@@ -827,6 +838,26 @@ Analysis complete. Use analysis.plot() to visualize results.</div>
                     </div>
                 </div>
             </div>
+            
+            <!-- Blank Cell for New Text Entry -->
+            <div class="cell new-cell">
+                <div class="cell-header">
+                    <span class="cell-type">NEW CELL</span>
+                    <div class="cell-actions">
+                        <button class="cell-action" onclick="convertToCode(this)">Code</button>
+                        <button class="cell-action" onclick="convertToMarkdown(this)">Markdown</button>
+                    </div>
+                </div>
+                <div class="cell-content">
+                    <div style="padding: 20px; text-align: center; color: #858585;">
+                        <p style="margin-bottom: 10px;">Click to add a new cell</p>
+                        <div style="display: flex; gap: 10px; justify-content: center;">
+                            <button class="btn-small" onclick="addNewCell('code', this)" style="background: #4ec9b0; color: white;">+ Code</button>
+                            <button class="btn-small" onclick="addNewCell('markdown', this)" style="background: #569cd6; color: white;">+ Markdown</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -976,6 +1007,76 @@ validation.plot_out_of_sample_performance()`
             
             sidebar.classList.toggle('mobile-visible');
             overlay.classList.toggle('active');
+        }
+        
+        // Function to add new cell
+        function addNewCell(type, button) {
+            const newCellDiv = button.closest('.new-cell');
+            
+            const newCell = document.createElement('div');
+            newCell.className = 'cell ' + (type === 'code' ? 'code' : 'markdown');
+            
+            if (type === 'code') {
+                newCell.innerHTML = `
+                    <div class="cell-header">
+                        <span class="cell-type">CODE</span>
+                        <div class="cell-actions">
+                            <button class="cell-action" onclick="runCell(this.parentElement.parentElement.parentElement.querySelector('.run-button'))">Run</button>
+                            <button class="cell-action" onclick="this.closest('.cell').remove()">Delete</button>
+                        </div>
+                    </div>
+                    <div class="cell-content">
+                        <div class="code-editor">
+                            <textarea class="code-input" placeholder="# Enter your code here"></textarea>
+                            <button class="run-button" onclick="runCell(this)">▶ Run</button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                newCell.innerHTML = `
+                    <div class="cell-header">
+                        <span class="cell-type">MARKDOWN</span>
+                        <div class="cell-actions">
+                            <button class="cell-action" onclick="editMarkdown(this)">Edit</button>
+                            <button class="cell-action" onclick="this.closest('.cell').remove()">Delete</button>
+                        </div>
+                    </div>
+                    <div class="cell-content">
+                        <div class="markdown-content" contenteditable="true" style="min-height: 50px; cursor: text;">
+                            <p>Enter your markdown text here...</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Insert new cell before the "new cell" placeholder
+            newCellDiv.insertAdjacentElement('beforebegin', newCell);
+            
+            // Focus the new cell
+            if (type === 'code') {
+                newCell.querySelector('.code-input').focus();
+            } else {
+                const markdownContent = newCell.querySelector('.markdown-content');
+                markdownContent.focus();
+                // Select all text for easy replacement
+                const range = document.createRange();
+                range.selectNodeContents(markdownContent);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+            
+            // Mark as active
+            document.querySelectorAll('.cell').forEach(cell => cell.classList.remove('active'));
+            newCell.classList.add('active');
+        }
+        
+        // Function to edit markdown
+        function editMarkdown(button) {
+            const cell = button.closest('.cell');
+            const content = cell.querySelector('.markdown-content');
+            content.contentEditable = true;
+            content.focus();
         }
     </script>
 </body>

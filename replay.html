@@ -600,29 +600,33 @@
             display: none;
         }
         
-        /* Mobile overlay controls */
-        .mobile-overlay-controls {
+        /* Mobile controls at bottom */
+        .mobile-controls-container {
             display: none;
             position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(30, 30, 30, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid #3e3e42;
-            border-radius: 8px;
-            padding: 8px;
-            gap: 8px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #252526;
+            border-top: 1px solid #3e3e42;
             z-index: 1100;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            padding: 12px;
+            padding-bottom: env(safe-area-inset-bottom, 12px);
+        }
+        
+        .mobile-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
         }
         
         .mobile-control-btn {
             background: #3e3e42;
             border: none;
             color: #cccccc;
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             border-radius: 6px;
             display: flex;
             align-items: center;
@@ -640,26 +644,22 @@
         .mobile-control-btn.play {
             background: #007acc;
             color: white;
-            width: 44px;
-            height: 44px;
-            font-size: 16px;
         }
         
         /* Mobile info drawer */
         .mobile-info-drawer {
             display: none;
             position: fixed;
-            bottom: 0;
+            bottom: 60px; /* Above controls */
             left: 0;
             right: 0;
             background: #1e1e1e;
             border-top: 1px solid #3e3e42;
-            max-height: 50vh;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
+            max-height: 60vh;
             z-index: 1050;
-            transform: translateY(100%);
+            transform: translateY(calc(100% + 60px));
             transition: transform 0.3s ease;
+            border-radius: 12px 12px 0 0;
         }
         
         .mobile-info-drawer.open {
@@ -667,23 +667,57 @@
         }
         
         .drawer-handle {
-            position: absolute;
-            top: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(30, 30, 30, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid #3e3e42;
-            border-bottom: none;
+            background: #2d2d30;
+            padding: 12px;
+            cursor: pointer;
+            text-align: center;
             border-radius: 12px 12px 0 0;
-            padding: 8px 20px;
+            border-bottom: 1px solid #3e3e42;
+        }
+        
+        .drawer-handle-bar {
+            width: 40px;
+            height: 4px;
+            background: #666;
+            border-radius: 2px;
+            margin: 0 auto 8px;
+        }
+        
+        .drawer-tabs {
+            display: flex;
+            background: #252526;
+            border-bottom: 1px solid #3e3e42;
+        }
+        
+        .drawer-tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
             cursor: pointer;
             font-size: 12px;
+            color: #858585;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .drawer-tab.active {
             color: #cccccc;
+            border-bottom-color: #007acc;
         }
         
         .drawer-content {
-            padding: 20px;
+            height: calc(60vh - 100px);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .drawer-pane {
+            display: none;
+            padding: 16px;
+        }
+        
+        .drawer-pane.active {
+            display: block;
         }
         
         /* Mobile Responsive Design */
@@ -731,15 +765,15 @@
             }
             
             .chart-container {
-                height: calc(100vh - 32px - 100px); /* Account for header and strategy controls */
+                height: calc(100vh - 32px - 100px - 60px); /* Account for header, strategy controls, and bottom controls */
             }
             
             .right-panel {
                 display: none !important;
             }
             
-            .mobile-overlay-controls {
-                display: flex;
+            .mobile-controls-container {
+                display: block;
             }
             
             .mobile-info-drawer {
@@ -751,16 +785,9 @@
                 display: none !important;
             }
             
-            /* Move OHLC info to bottom corner */
+            /* Hide OHLC info on mobile - it's in the drawer */
             .bar-info-overlay {
-                top: auto !important;
-                bottom: 70px !important;
-                left: 10px !important;
-                right: auto !important;
-                font-size: 10px;
-                padding: 8px;
-                min-width: auto;
-                background: rgba(30, 30, 30, 0.9);
+                display: none !important;
             }
         }
 
@@ -1112,21 +1139,71 @@
             </div>
         </div>
         
-        <!-- Mobile Overlay Controls -->
-        <div class="mobile-overlay-controls" id="mobileOverlayControls">
-            <button class="mobile-control-btn" onclick="stepBackwardMobile()">◀</button>
-            <button class="mobile-control-btn play" id="mobilePlayBtn" onclick="togglePlayPauseMobile()">▶</button>
-            <button class="mobile-control-btn" onclick="stepForwardMobile()">▶</button>
+        <!-- Mobile Controls Container -->
+        <div class="mobile-controls-container" id="mobileControlsContainer">
+            <div class="mobile-controls">
+                <button class="mobile-control-btn" onclick="stepBackwardMobile()">◀◀</button>
+                <button class="mobile-control-btn play" id="mobilePlayBtn" onclick="togglePlayPauseMobile()">▶</button>
+                <button class="mobile-control-btn" onclick="stepForwardMobile()">▶▶</button>
+            </div>
         </div>
         
         <!-- Mobile Info Drawer -->
         <div class="mobile-info-drawer" id="mobileInfoDrawer">
             <div class="drawer-handle" onclick="toggleInfoDrawer()">
-                <span id="drawerHandleText">Event Log ▲</span>
+                <div class="drawer-handle-bar"></div>
+                <span id="drawerHandleText">View Details</span>
+            </div>
+            <div class="drawer-tabs">
+                <div class="drawer-tab active" onclick="switchDrawerTab('state')">State</div>
+                <div class="drawer-tab" onclick="switchDrawerTab('indicators')">Indicators</div>
+                <div class="drawer-tab" onclick="switchDrawerTab('events')">Events</div>
             </div>
             <div class="drawer-content">
-                <div id="mobileEventLog" style="font-family: 'SF Mono', Monaco, monospace; font-size: 11px; line-height: 1.6;">
-                    <!-- Events will be copied here -->
+                <div class="drawer-pane active" id="statePane">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div style="background: #252526; padding: 12px; border-radius: 6px;">
+                            <div style="color: #858585; font-size: 11px; margin-bottom: 4px;">Position</div>
+                            <div id="mobilePosition" style="color: #cccccc; font-weight: 600; font-size: 16px;">FLAT</div>
+                        </div>
+                        <div style="background: #252526; padding: 12px; border-radius: 6px;">
+                            <div style="color: #858585; font-size: 11px; margin-bottom: 4px;">P&L</div>
+                            <div id="mobilePnL" style="color: #cccccc; font-weight: 600; font-size: 16px;">$0.00</div>
+                        </div>
+                        <div style="background: #252526; padding: 12px; border-radius: 6px;">
+                            <div style="color: #858585; font-size: 11px; margin-bottom: 4px;">Signal</div>
+                            <div id="mobileSignal" style="color: #cccccc; font-weight: 600; font-size: 16px;">NONE</div>
+                        </div>
+                        <div style="background: #252526; padding: 12px; border-radius: 6px;">
+                            <div style="color: #858585; font-size: 11px; margin-bottom: 4px;">Exposure</div>
+                            <div id="mobileExposure" style="color: #cccccc; font-weight: 600; font-size: 16px;">0%</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="drawer-pane" id="indicatorsPane">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                        <div style="background: #252526; padding: 10px; border-radius: 4px;">
+                            <div style="color: #858585; font-size: 11px;">RSI(14)</div>
+                            <div id="mobileRsi" style="color: #4ec9b0; font-weight: 600;">--</div>
+                        </div>
+                        <div style="background: #252526; padding: 10px; border-radius: 4px;">
+                            <div style="color: #858585; font-size: 11px;">MACD</div>
+                            <div id="mobileMacd" style="color: #4ec9b0; font-weight: 600;">--</div>
+                        </div>
+                        <div style="background: #252526; padding: 10px; border-radius: 4px;">
+                            <div style="color: #858585; font-size: 11px;">BB %B</div>
+                            <div id="mobileBbPercent" style="color: #4ec9b0; font-weight: 600;">--</div>
+                        </div>
+                        <div style="background: #252526; padding: 10px; border-radius: 4px;">
+                            <div style="color: #858585; font-size: 11px;">Volume MA</div>
+                            <div id="mobileVolMa" style="color: #4ec9b0; font-weight: 600;">--</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="drawer-pane" id="eventsPane">
+                    <div id="mobileEventLog" style="font-family: 'SF Mono', Monaco, monospace; font-size: 11px; line-height: 1.6;">
+                        <!-- Events will be copied here -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -2064,10 +2141,10 @@
             
             if (drawer.classList.contains('open')) {
                 drawer.classList.remove('open');
-                handle.textContent = 'Event Log ▲';
+                handle.textContent = 'View Details';
             } else {
                 drawer.classList.add('open');
-                handle.textContent = 'Event Log ▼';
+                handle.textContent = 'Hide Details';
                 
                 // Copy event log content
                 const desktopLog = document.getElementById('eventLog');
@@ -2076,17 +2153,29 @@
             }
         }
         
+        function switchDrawerTab(tab) {
+            // Update active tab
+            document.querySelectorAll('.drawer-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update active pane
+            document.querySelectorAll('.drawer-pane').forEach(p => p.classList.remove('active'));
+            document.getElementById(tab + 'Pane').classList.add('active');
+        }
+        
         // Update mobile controls visibility when strategy is loaded
         function showMobileControls() {
             if (window.innerWidth <= 768) {
-                document.getElementById('mobileOverlayControls').style.display = 'flex';
+                document.getElementById('mobileControlsContainer').style.display = 'block';
+                document.getElementById('mobileInfoDrawer').style.display = 'block';
             }
         }
         
         // Hide mobile controls when changing strategy
         function hideMobileControls() {
             if (window.innerWidth <= 768) {
-                document.getElementById('mobileOverlayControls').style.display = 'none';
+                document.getElementById('mobileControlsContainer').style.display = 'none';
+                document.getElementById('mobileInfoDrawer').style.display = 'none';
             }
         }
     </script>
