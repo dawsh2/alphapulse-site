@@ -35,6 +35,93 @@
         .header.market-down { background-color: #007acc !important; }
         .header.market-flat { background-color: #007acc !important; }
         .header-content { display: flex; align-items: center; width: 100%; }
+        
+        /* Live indicator */
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: white;
+            background: rgba(0,0,0,0.2);
+            padding: 4px 8px;
+            border-radius: 12px;
+            margin-left: auto;
+            margin-right: 10px;
+        }
+        
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #4ec9b0;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        .live-dot.demo {
+            background: #dcdcaa;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        
+        /* Strategy status bar */
+        .strategy-status {
+            background: #2d2d30;
+            padding: 8px 16px;
+            border-bottom: 1px solid #3e3e42;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+        }
+        
+        .strategy-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .strategy-name {
+            color: #4ec9b0;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .strategy-meta {
+            color: #858585;
+            font-size: 10px;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        .status-running {
+            background: rgba(78, 201, 176, 0.1);
+            color: #4ec9b0;
+            border: 1px solid rgba(78, 201, 176, 0.3);
+        }
+        
+        .status-stopped {
+            background: rgba(244, 135, 113, 0.1);
+            color: #f48771;
+            border: 1px solid rgba(244, 135, 113, 0.3);
+        }
+        
+        .status-demo {
+            background: rgba(220, 220, 170, 0.1);
+            color: #dcdcaa;
+            border: 1px solid rgba(220, 220, 170, 0.3);
+        }
         .logo { 
             font-weight: bold; 
             color: white; 
@@ -192,12 +279,36 @@
             transform: translateY(0);
         }
         
+        /* Swipe indicator */
+        .swipe-indicator {
+            display: none;
+            position: absolute;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #666;
+            font-size: 11px;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            transition: opacity 0.3s ease;
+            z-index: 500;
+        }
+        
+        .swipe-indicator.hidden {
+            opacity: 0;
+        }
+        
         .drawer-handle {
             padding: 12px;
             text-align: center;
             cursor: pointer;
             background: #2d2d30;
             border-bottom: 1px solid #3e3e42;
+            border-radius: 12px 12px 0 0;
         }
         
         .drawer-handle-bar {
@@ -395,6 +506,10 @@
                 display: block;
             }
             
+            .swipe-indicator {
+                display: flex;
+            }
+            
             .trading-container {
                 height: calc(100vh - 70px - 56px) !important;
                 padding-bottom: 56px;
@@ -537,11 +652,27 @@
                 <a href="deploy.html" class="active">Deploy</a>
             </div>
             <div class="auth-status" id="auth-status">Loading...</div>
+            <div class="live-indicator" id="liveIndicator">
+                <div class="live-dot" id="liveDot"></div>
+                <span id="liveText">LIVE</span>
+            </div>
             <a href="#" class="login-link" onclick="return false;">login</a>
         </div>
     </div>
     
     <div class="live-banner" id="live-banner">📈 LIVE DATA MODE - Connecting...</div>
+    
+    <!-- Strategy Status Bar -->
+    <div class="strategy-status">
+        <div class="strategy-info">
+            <div class="strategy-name" id="strategyName">No Strategy Loaded</div>
+            <div class="strategy-meta" id="strategyMeta">Select a strategy to begin</div>
+        </div>
+        <div class="status-indicator status-stopped" id="statusIndicator">
+            <span>●</span>
+            <span id="statusText">STOPPED</span>
+        </div>
+    </div>
 
     <div class="trading-container">
         <div class="strategy-status">
@@ -563,6 +694,11 @@
             <div class="tradingview-widget-container">
                 <div id="lightweight_chart"></div>
                 <div id="chart-loading" class="chart-loading">Loading chart...</div>
+            </div>
+            <!-- Swipe Indicator -->
+            <div class="swipe-indicator" id="swipeIndicator">
+                <span>⬆</span>
+                <span>Swipe up for positions & logs</span>
             </div>
         </div>
 
@@ -597,9 +733,8 @@
     
     <!-- Mobile Controls -->
     <div class="mobile-controls-container" id="mobileControls">
-        <button class="control-btn" onclick="toggleStrategy()" style="flex: 1;">START</button>
-        <button class="control-btn danger" onclick="emergencyStop()" style="flex: 1;">STOP</button>
-        <button class="control-btn" onclick="toggleDrawer()" style="min-width: 80px;">INFO</button>
+        <button class="control-btn" id="mobileControlBtn" onclick="toggleStrategy()" style="flex: 1;">PAUSE</button>
+        <button class="control-btn danger" onclick="emergencyStop()" style="flex: 1;">EMERGENCY STOP</button>
     </div>
     
     <!-- Mobile Drawer -->
@@ -1077,9 +1212,43 @@
             initMobileNav();
         });
 
+        // Initialize mode (demo vs live)
+        let isDemoMode = false;
+        
+        function initializeMode() {
+            const authStatus = document.getElementById('auth-status');
+            const liveIndicator = document.getElementById('liveIndicator');
+            const liveDot = document.getElementById('liveDot');
+            const liveText = document.getElementById('liveText');
+            const statusIndicator = document.getElementById('statusIndicator');
+            const strategyName = document.getElementById('strategyName');
+            const strategyMeta = document.getElementById('strategyMeta');
+            
+            // Check if we have valid auth (simplified check)
+            if (!authStatus || authStatus.textContent.includes('Demo') || authStatus.textContent.includes('Loading')) {
+                isDemoMode = true;
+                
+                // Update UI for demo mode
+                liveDot.classList.add('demo');
+                liveText.textContent = 'DEMO';
+                statusIndicator.className = 'status-indicator status-demo';
+                
+                // Update strategy info
+                strategyName.textContent = 'demo_strategy';
+                strategyMeta.textContent = 'SPY • 5m • Demo data';
+                
+                // Hide auth status in demo mode
+                authStatus.style.display = 'none';
+            } else {
+                // Live mode
+                strategyMeta.textContent = 'SPY • 5m • Live data';
+            }
+        }
+        
         // Initialize on load
         document.addEventListener('DOMContentLoaded', function() {
             initMobileNav();
+            setTimeout(initializeMode, 1000); // Wait for auth check
         });
 
         window.addEventListener('load', function() {
@@ -1089,8 +1258,45 @@
         // Mobile drawer functions
         function toggleDrawer() {
             const drawer = document.getElementById('mobileDrawer');
+            const swipeIndicator = document.getElementById('swipeIndicator');
             drawer.classList.toggle('open');
+            
+            if (drawer.classList.contains('open') && swipeIndicator) {
+                swipeIndicator.classList.add('hidden');
+            } else if (swipeIndicator) {
+                swipeIndicator.classList.remove('hidden');
+            }
         }
+        
+        // Add swipe gesture support
+        let startY = 0;
+        let startTime = 0;
+        
+        document.addEventListener('touchstart', function(e) {
+            if (window.innerWidth <= 768) {
+                startY = e.touches[0].clientY;
+                startTime = Date.now();
+            }
+        });
+        
+        document.addEventListener('touchend', function(e) {
+            if (window.innerWidth <= 768) {
+                const endY = e.changedTouches[0].clientY;
+                const endTime = Date.now();
+                const distance = startY - endY;
+                const duration = endTime - startTime;
+                const drawer = document.getElementById('mobileDrawer');
+                
+                // Swipe up gesture (distance > 50px, duration < 500ms)
+                if (distance > 50 && duration < 500 && !drawer.classList.contains('open')) {
+                    toggleDrawer();
+                }
+                // Swipe down gesture on drawer
+                else if (distance < -50 && duration < 500 && drawer.classList.contains('open') && e.target.closest('.mobile-drawer')) {
+                    toggleDrawer();
+                }
+            }
+        });
         
         function switchDrawerTab(tabName) {
             // Update active tab
@@ -1126,15 +1332,30 @@
         };
         
         function toggleStrategy() {
-            // TODO: Implement strategy toggle
             const btn = event.target;
-            if (btn.textContent === 'START' || btn.textContent === 'START DEMO') {
+            const mobileBtn = document.getElementById('mobileControlBtn');
+            const statusIndicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            
+            if (btn.textContent === 'START' || btn.textContent === 'START DEMO' || btn.textContent === 'RESUME') {
                 btn.textContent = 'PAUSE';
+                if (mobileBtn) mobileBtn.textContent = 'PAUSE';
                 btn.classList.add('danger');
+                if (mobileBtn) mobileBtn.classList.add('danger');
+                
+                statusIndicator.className = 'status-indicator status-running';
+                statusText.textContent = 'RUNNING';
+                
                 addLogEntry('SYSTEM', 'Strategy started');
             } else {
-                btn.textContent = 'START';
+                btn.textContent = 'RESUME';
+                if (mobileBtn) mobileBtn.textContent = 'RESUME';
                 btn.classList.remove('danger');
+                if (mobileBtn) mobileBtn.classList.remove('danger');
+                
+                statusIndicator.className = 'status-indicator status-stopped';
+                statusText.textContent = 'PAUSED';
+                
                 addLogEntry('SYSTEM', 'Strategy paused');
             }
         }
