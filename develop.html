@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Develop - AlphaPulse</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -249,13 +249,29 @@
             }
             
             .nav {
-                flex-wrap: wrap;
-                gap: 8px;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: #007acc;
+                flex-direction: column;
+                gap: 0;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+                z-index: 1000;
+            }
+            
+            .nav.mobile-hidden {
+                display: none;
             }
             
             .nav a {
-                font-size: 11px;
-                padding: 3px 6px;
+                padding: 12px 16px;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                font-size: 14px;
+            }
+            
+            .nav a:last-child {
+                border-bottom: none;
             }
             
             .header {
@@ -681,20 +697,25 @@ The included momentum strategy demonstrates:
         let monacoReady = false;
         require.config({ paths: { vs: 'https://unpkg.com/monaco-editor@0.44.0/min/vs' } });
         require(['vs/editor/editor.main'], function () {
+            const isMobile = window.innerWidth <= 768;
             editor = monaco.editor.create(document.getElementById('monaco-editor'), {
                 value: '',
                 language: 'python',
                 theme: 'vs-dark',
-                fontSize: 14,
+                fontSize: isMobile ? 12 : 14,
                 fontFamily: "'SF Mono', Monaco, Consolas, monospace",
-                lineNumbers: 'on',
-                minimap: { enabled: true },
+                lineNumbers: isMobile ? 'off' : 'on',
+                minimap: { enabled: !isMobile },
                 scrollBeyondLastLine: false,
                 automaticLayout: true,
                 wordWrap: 'bounded',
                 renderLineHighlight: 'line',
                 cursorBlinking: 'smooth',
-                smoothScrolling: true
+                smoothScrolling: true,
+                folding: !isMobile,
+                glyphMargin: !isMobile,
+                lineDecorationsWidth: isMobile ? 5 : 10,
+                lineNumbersMinChars: isMobile ? 0 : 3
             });
 
             monacoReady = true;

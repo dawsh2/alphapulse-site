@@ -35,6 +35,27 @@
             padding: 4px;
             margin-right: 12px;
         }
+        
+        .mobile-sidebar-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 4px;
+            margin-right: 12px;
+        }
+        
+        @media screen and (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .mobile-sidebar-btn {
+                display: block;
+            }
+        }
 
         .logo {
             font-weight: bold;
@@ -431,11 +452,8 @@
             display: none;
         }
         
-        /* Mobile Responsive Design */
+        /* Mobile Responsive Design - continued */
         @media screen and (max-width: 768px) {
-            .mobile-menu-btn {
-                display: block !important;
-            }
             
             .header {
                 height: auto;
@@ -494,6 +512,21 @@
                 transform: translateX(0);
             }
             
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 998;
+            }
+            
+            .sidebar-overlay.active {
+                display: block;
+            }
+            
             .main-content {
                 margin-left: 0;
                 width: 100%;
@@ -533,6 +566,7 @@
 <body>
     <div class="header">
         <button class="mobile-menu-btn" onclick="toggleMobileNav()">☰</button>
+        <button class="mobile-sidebar-btn" onclick="toggleMobileSidebar()">📁</button>
         <a href="index.html" class="logo">AlphaPulse</a>
         <div class="nav" id="nav">
             <a href="develop.html">Develop</a>
@@ -542,8 +576,10 @@
         </div>
     </div>
 
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
+    
     <div class="main-container">
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar">
             <div class="sidebar-header">Recent Notebooks</div>
             <div class="sidebar-section">
                 <div class="sidebar-item active" onclick="loadNotebook('strategy_analysis')">
@@ -860,6 +896,15 @@ validation.plot_out_of_sample_performance()`
         window.addEventListener('load', function() {
             initMobileNav();
         });
+        
+        // Mobile sidebar functionality
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            sidebar.classList.toggle('mobile-visible');
+            overlay.classList.toggle('active');
+        }
     </script>
 </body>
 </html>

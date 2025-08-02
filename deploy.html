@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#007acc" id="theme-color">
     <title>Live Trading - AlphaPulse</title>
     <style>
@@ -264,16 +264,18 @@
             margin-right: 12px;
         }
         
+        @media screen and (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+        
         .nav.mobile-hidden {
             display: none;
         }
         
-        /* Mobile Responsive Design */
+        /* Mobile Responsive Design - continued */
         @media screen and (max-width: 768px) {
-            .mobile-menu-btn {
-                display: block !important;
-            }
-            
             .header {
                 height: auto;
                 min-height: 32px;
@@ -281,6 +283,7 @@
                 flex-wrap: wrap;
                 position: relative;
                 padding-top: env(safe-area-inset-top, 8px);
+                z-index: 1001;
             }
             
             .nav {
@@ -315,9 +318,41 @@
                 padding-bottom: env(safe-area-inset-bottom, 15px);
             }
             
+            .trading-container {
+                grid-template-columns: 1fr !important;
+                grid-template-rows: auto auto 1fr;
+            }
+            
             .chart-container {
-                height: calc(50vh - 100px) !important;
+                height: calc(40vh - 100px) !important;
                 min-height: 300px;
+                order: 1;
+            }
+            
+            .right-panel {
+                order: 2;
+                flex-direction: row;
+                height: auto;
+                max-height: 300px;
+                overflow-x: auto;
+                gap: 1px;
+            }
+            
+            .panel {
+                min-width: 250px;
+                flex-shrink: 0;
+            }
+            
+            .strategy-status {
+                flex-direction: column;
+                gap: 8px;
+                text-align: center;
+            }
+            
+            .quick-controls {
+                margin-left: 0;
+                justify-content: center;
+                flex-wrap: wrap;
             }
         }
 
