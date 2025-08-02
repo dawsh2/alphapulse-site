@@ -29,6 +29,7 @@
             display: flex;
             align-items: center;
             padding: 0 12px;
+            width: 100%;
         }
         
         .mobile-menu-btn {
@@ -445,11 +446,30 @@
             
             .mobile-editor-controls {
                 display: flex !important;
-                position: absolute;
+                position: fixed;
                 top: 10px;
                 right: 10px;
                 gap: 8px;
-                z-index: 1000;
+                z-index: 10001;
+                background: rgba(30, 30, 30, 0.9);
+                backdrop-filter: blur(10px);
+                padding: 8px;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            }
+            
+            .editor-container.mobile-fullscreen {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 10000;
+                background: #1e1e1e;
+            }
+            
+            .editor-container.mobile-fullscreen #monaco-editor {
+                height: 100vh !important;
             }
             
             .mobile-control-btn {
@@ -879,10 +899,17 @@ The included momentum strategy demonstrates:
                     // Show controls when editing
                     controls.style.display = 'flex';
                     
+                    // Enter fullscreen mode
+                    const editorContainer = document.querySelector('.editor-container');
+                    editorContainer.classList.add('mobile-fullscreen');
+                    
                     // Force viewport back to normal scale after focus
                     setTimeout(() => {
                         const viewport = document.querySelector('meta[name="viewport"]');
                         viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+                        
+                        // Resize editor for fullscreen
+                        editor.layout();
                     }, 100);
                 });
                 
@@ -1855,9 +1882,19 @@ signal_generation:
         // Function to exit mobile editing mode
         function exitMobileEditing() {
             if (editor) {
+                // Exit fullscreen mode
+                const editorContainer = document.querySelector('.editor-container');
+                editorContainer.classList.remove('mobile-fullscreen');
+                
+                // Blur editor
                 editor.getAction('editor.action.escape')?.run();
                 document.activeElement.blur();
-                document.getElementById('mobileDoneBtn').style.display = 'none';
+                
+                // Hide controls
+                document.getElementById('mobileEditorControls').style.display = 'none';
+                
+                // Resize editor
+                setTimeout(() => editor.layout(), 100);
             }
         }
         

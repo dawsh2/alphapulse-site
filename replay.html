@@ -29,6 +29,7 @@
             align-items: center;
             padding: 0 12px;
             font-size: 12px;
+            width: 100%;
         }
         
         .mobile-menu-btn {
@@ -599,6 +600,92 @@
             display: none;
         }
         
+        /* Mobile overlay controls */
+        .mobile-overlay-controls {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid #3e3e42;
+            border-radius: 8px;
+            padding: 8px;
+            gap: 8px;
+            z-index: 1100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+        
+        .mobile-control-btn {
+            background: #3e3e42;
+            border: none;
+            color: #cccccc;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .mobile-control-btn:active {
+            transform: scale(0.95);
+            background: #525252;
+        }
+        
+        .mobile-control-btn.play {
+            background: #007acc;
+            color: white;
+            width: 44px;
+            height: 44px;
+            font-size: 16px;
+        }
+        
+        /* Mobile info drawer */
+        .mobile-info-drawer {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #1e1e1e;
+            border-top: 1px solid #3e3e42;
+            max-height: 50vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            z-index: 1050;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .mobile-info-drawer.open {
+            transform: translateY(0);
+        }
+        
+        .drawer-handle {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid #3e3e42;
+            border-bottom: none;
+            border-radius: 12px 12px 0 0;
+            padding: 8px 20px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #cccccc;
+        }
+        
+        .drawer-content {
+            padding: 20px;
+        }
+        
         /* Mobile Responsive Design */
         @media screen and (max-width: 768px) {
             
@@ -640,19 +727,40 @@
             
             .replay-container {
                 grid-template-columns: 1fr !important;
-                grid-template-rows: auto 1fr auto;
+                grid-template-rows: auto 1fr;
+            }
+            
+            .chart-container {
+                height: calc(100vh - 32px - 100px); /* Account for header and strategy controls */
             }
             
             .right-panel {
-                grid-row: 3;
-                flex-direction: row;
-                height: 200px;
-                overflow-x: auto;
+                display: none !important;
             }
             
-            .panel {
-                min-width: 250px;
-                margin: 1px;
+            .mobile-overlay-controls {
+                display: flex;
+            }
+            
+            .mobile-info-drawer {
+                display: block;
+            }
+            
+            /* Hide desktop replay controls on mobile */
+            .replay-controls {
+                display: none !important;
+            }
+            
+            /* Move OHLC info to bottom corner */
+            .bar-info-overlay {
+                top: auto !important;
+                bottom: 70px !important;
+                left: 10px !important;
+                right: auto !important;
+                font-size: 10px;
+                padding: 8px;
+                min-width: auto;
+                background: rgba(30, 30, 30, 0.9);
             }
         }
 
@@ -1000,6 +1108,25 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Overlay Controls -->
+        <div class="mobile-overlay-controls" id="mobileOverlayControls">
+            <button class="mobile-control-btn" onclick="stepBackwardMobile()">◀</button>
+            <button class="mobile-control-btn play" id="mobilePlayBtn" onclick="togglePlayPauseMobile()">▶</button>
+            <button class="mobile-control-btn" onclick="stepForwardMobile()">▶</button>
+        </div>
+        
+        <!-- Mobile Info Drawer -->
+        <div class="mobile-info-drawer" id="mobileInfoDrawer">
+            <div class="drawer-handle" onclick="toggleInfoDrawer()">
+                <span id="drawerHandleText">Event Log ▲</span>
+            </div>
+            <div class="drawer-content">
+                <div id="mobileEventLog" style="font-family: 'SF Mono', Monaco, monospace; font-size: 11px; line-height: 1.6;">
+                    <!-- Events will be copied here -->
                 </div>
             </div>
         </div>
@@ -1546,6 +1673,9 @@
                 document.getElementById('strategyInfo').style.display = 'flex';
                 document.getElementById('replayControls').style.display = 'flex';
                 
+                // Show mobile controls if on mobile
+                showMobileControls();
+                
                 // Initialize/regenerate data for new strategy
                 generateMockDataForStrategy(strategy, symbol, timeframe, startDate, endDate);
                 
@@ -1912,6 +2042,53 @@
                     break;
             }
         });
+        
+        // Mobile-specific functions
+        function togglePlayPauseMobile() {
+            togglePlayPause();
+            const mobileBtn = document.getElementById('mobilePlayBtn');
+            mobileBtn.textContent = isPlaying ? '⏸' : '▶';
+        }
+        
+        function stepForwardMobile() {
+            stepForward();
+        }
+        
+        function stepBackwardMobile() {
+            stepBackward();
+        }
+        
+        function toggleInfoDrawer() {
+            const drawer = document.getElementById('mobileInfoDrawer');
+            const handle = document.getElementById('drawerHandleText');
+            
+            if (drawer.classList.contains('open')) {
+                drawer.classList.remove('open');
+                handle.textContent = 'Event Log ▲';
+            } else {
+                drawer.classList.add('open');
+                handle.textContent = 'Event Log ▼';
+                
+                // Copy event log content
+                const desktopLog = document.getElementById('eventLog');
+                const mobileLog = document.getElementById('mobileEventLog');
+                mobileLog.innerHTML = desktopLog.innerHTML;
+            }
+        }
+        
+        // Update mobile controls visibility when strategy is loaded
+        function showMobileControls() {
+            if (window.innerWidth <= 768) {
+                document.getElementById('mobileOverlayControls').style.display = 'flex';
+            }
+        }
+        
+        // Hide mobile controls when changing strategy
+        function hideMobileControls() {
+            if (window.innerWidth <= 768) {
+                document.getElementById('mobileOverlayControls').style.display = 'none';
+            }
+        }
     </script>
 </body>
 </html>
