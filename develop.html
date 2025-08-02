@@ -24,6 +24,17 @@
             align-items: center;
             padding: 0 12px;
         }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 4px;
+            margin-right: 12px;
+        }
 
         .logo {
             font-weight: bold;
@@ -67,6 +78,11 @@
             border-right: 1px solid #3e3e42;
             display: flex;
             flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+        
+        .sidebar.mobile-hidden {
+            transform: translateX(-100%);
         }
 
         .sidebar-header {
@@ -189,24 +205,28 @@
 
         /* Mobile Responsive Design */
         @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+            
             .main-container {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto 1fr;
+                grid-template-columns: 300px 1fr;
+                position: relative;
             }
             
             .sidebar {
-                border-right: none;
-                border-bottom: 1px solid #3e3e42;
-                max-height: 50vh;
-                overflow-y: auto;
+                position: absolute;
+                left: 0;
+                top: 0;
+                height: 100%;
+                z-index: 1000;
+                box-shadow: 2px 0 5px rgba(0,0,0,0.3);
+                border-right: 1px solid #3e3e42;
+                max-height: none;
             }
             
-            .file-tree {
-                max-height: 150px;
-            }
-            
-            .test-output {
-                max-height: 100px;
+            .editor-container {
+                grid-column: 1 / -1;
             }
             
             .nav {
@@ -234,11 +254,11 @@
 
         @media (max-width: 480px) {
             .sidebar {
-                max-height: 40vh;
+                width: 280px;
             }
             
-            .file-tree {
-                max-height: 100px;
+            .main-container {
+                grid-template-columns: 280px 1fr;
             }
             
             .test-btn {
@@ -251,7 +271,7 @@
             }
             
             .test-output {
-                max-height: 80px;
+                max-height: 120px;
                 font-size: 10px;
             }
             
@@ -409,6 +429,7 @@
 </head>
 <body>
     <div class="header">
+        <button class="mobile-menu-btn" onclick="toggleMobileSidebar()">☰</button>
         <a href="index.html" class="logo">AlphaPulse</a>
         <div class="nav">
             <a href="develop.html" class="active">Develop</a>
@@ -1551,6 +1572,35 @@ signal_generation:
                 testingIcon.textContent = '▼';
             }
         }
+
+        // Mobile sidebar toggle functionality
+        function toggleMobileSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('mobile-hidden');
+        }
+
+        // Initialize mobile sidebar state
+        function initMobileSidebar() {
+            if (window.innerWidth <= 768) {
+                const sidebar = document.querySelector('.sidebar');
+                sidebar.classList.add('mobile-hidden');
+            }
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const sidebar = document.querySelector('.sidebar');
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('mobile-hidden');
+            } else if (!sidebar.classList.contains('mobile-hidden')) {
+                sidebar.classList.add('mobile-hidden');
+            }
+        });
+
+        // Initialize on load
+        window.addEventListener('load', function() {
+            initMobileSidebar();
+        });
     </script>
 </body>
 </html>
