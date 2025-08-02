@@ -16,7 +16,13 @@
             background: #1e1e1e;
             color: #d4d4d4;
             height: 100vh;
+            height: -webkit-fill-available;
+            min-height: -webkit-fill-available;
             overflow: hidden;
+        }
+        
+        html {
+            height: -webkit-fill-available;
         }
 
         .app-container {
@@ -372,6 +378,7 @@
                 height: auto;
                 min-height: 32px;
                 padding: 8px 12px;
+                padding-top: env(safe-area-inset-top, 8px);
                 flex-wrap: wrap;
                 position: relative;
             }
@@ -447,6 +454,7 @@
         @media (max-width: 480px) {
             .header {
                 padding: 6px 8px;
+                padding-top: env(safe-area-inset-top, 6px);
             }
             
             .logo {
@@ -513,9 +521,6 @@
                     <div class="subtext">
                         <span style="color: #4ec9b0; font-weight: 500;">147 points</span> by <a href="#" style="color: #569cd6;">alphapulse</a> 3 hours ago | <a href="#">23 comments</a>
                     </div>
-                    <div class="comment-preview">
-                        "Finally someone tackles the exploration-exploitation tradeoff in portfolio management. The results on the synthetic data look promising but I'd love to see this tested on more realistic transaction costs..."
-                    </div>
                 </div>
 
                 <div class="item" onclick="openThread(2, 'Why Your Backtests Are Lying to You (And How to Fix It)', 'alphapulse.org', '89 points', 'quantdev', '5 hours ago', 31)">
@@ -527,9 +532,6 @@
                     </div>
                     <div class="subtext">
                         <span style="color: #4ec9b0; font-weight: 500;">89 points</span> by <a href="#" style="color: #569cd6;">quantdev</a> 5 hours ago | <a href="#">31 comments</a>
-                    </div>
-                    <div class="comment-preview">
-                        "The section on data snooping bias is spot on. I've seen so many strategies that look amazing in backtest and then immediately fail in paper trading..."
                     </div>
                 </div>
 
@@ -543,9 +545,6 @@
                     <div class="subtext">
                         <span style="color: #4ec9b0; font-weight: 500;">156 points</span> by <a href="#" style="color: #569cd6;">mltrader</a> 6 hours ago | <a href="#">45 comments</a>
                     </div>
-                    <div class="comment-preview">
-                        "Great paper. The authors actually test on out-of-sample data and show that transformers aren't the magic bullet everyone thinks they are for financial time series..."
-                    </div>
                 </div>
 
                 <div class="item" onclick="openThread(4, 'Show AP: Open source market data pipeline with 1ms latency', 'github.com', '67 points', 'fastdata', '7 hours ago', 18)">
@@ -557,9 +556,6 @@
                     </div>
                     <div class="subtext">
                         <span style="color: #4ec9b0; font-weight: 500;">67 points</span> by <a href="#" style="color: #569cd6;">fastdata</a> 7 hours ago | <a href="#">18 comments</a>
-                    </div>
-                    <div class="comment-preview">
-                        "This is exactly what I've been looking for. The documentation is solid and the benchmarks are impressive. Already testing it with my crypto strategies..."
                     </div>
                 </div>
 
@@ -573,9 +569,6 @@
                     <div class="subtext">
                         <span style="color: #4ec9b0; font-weight: 500;">234 points</span> by <a href="#" style="color: #569cd6;">altdataguy</a> 8 hours ago | <a href="#">89 comments</a>
                     </div>
-                    <div class="comment-preview">
-                        "The alpha decay in alt data is real but this article misses the point. It's not about finding the one magic dataset, it's about systematic data discovery and rapid iteration..."
-                    </div>
                 </div>
 
                 <div class="item" onclick="openThread(6, 'Ask AP: Best practices for factor model implementation?', 'alphapulse.org', '42 points', 'newquant', '9 hours ago', 27)">
@@ -587,9 +580,6 @@
                     </div>
                     <div class="subtext">
                         <span style="color: #4ec9b0; font-weight: 500;">42 points</span> by <a href="#" style="color: #569cd6;">newquant</a> 9 hours ago | <a href="#">27 comments</a>
-                    </div>
-                    <div class="comment-preview">
-                        "Start with Fama-French and build from there. Don't try to implement everything at once. Also, make sure you understand the difference between cross-sectional and time-series models..."
                     </div>
                 </div>
 
@@ -603,9 +593,6 @@
                     <div class="subtext">
                         <span style="color: #4ec9b0; font-weight: 500;">78 points</span> by <a href="#" style="color: #569cd6;">regimetrader</a> 10 hours ago | <a href="#">15 comments</a>
                     </div>
-                    <div class="comment-preview">
-                        "Good introduction but the author doesn't mention the lookback bias issues with HMMs. You need to be really careful about using future information when estimating states..."
-                    </div>
                 </div>
 
                 <div class="item" onclick="openThread(8, 'Crypto Market Making: What TradFi Gets Wrong', 'medium.com', '123 points', 'defibuilder', '12 hours ago', 52)">
@@ -617,9 +604,6 @@
                     </div>
                     <div class="subtext">
                         <span style="color: #4ec9b0; font-weight: 500;">123 points</span> by <a href="#" style="color: #569cd6;">defibuilder</a> 12 hours ago | <a href="#">52 comments</a>
-                    </div>
-                    <div class="comment-preview">
-                        "The MEV considerations are crucial. Traditional market making models break down when miners can reorder transactions. You need to think about this from first principles..."
                     </div>
                 </div>
 
@@ -633,9 +617,6 @@
                     <div class="subtext">
                         <span style="color: #4ec9b0; font-weight: 500;">91 points</span> by <a href="#" style="color: #569cd6;">riskmanager</a> 14 hours ago | <a href="#">38 comments</a>
                     </div>
-                    <div class="comment-preview">
-                        "Calmar ratio and Sortino ratio are better but they're still not perfect. The real issue is that all these metrics assume normally distributed returns which is obviously wrong..."
-                    </div>
                 </div>
 
                 <div class="item" onclick="openThread(10, 'Show AP: Backtesting framework that doesn\'t suck', 'alphapulse.org', '156 points', 'backtestbuilder', '16 hours ago', 47)">
@@ -647,9 +628,6 @@
                     </div>
                     <div class="subtext">
                         <span style="color: #4ec9b0; font-weight: 500;">156 points</span> by <a href="#" style="color: #569cd6;">backtestbuilder</a> 16 hours ago | <a href="#">47 comments</a>
-                    </div>
-                    <div class="comment-preview">
-                        "Love the transaction cost modeling and the slippage simulation. Finally someone who understands that backtesting is about finding what won't work, not what will..."
                     </div>
                 </div>
 
@@ -768,6 +746,36 @@
             if (e.key === 'Escape' && currentThread) {
                 closeComments();
             }
+        });
+        
+        // Mobile navigation functionality
+        function toggleMobileNav() {
+            const nav = document.getElementById('nav');
+            nav.classList.toggle('mobile-hidden');
+        }
+
+        // Initialize mobile nav state
+        function initMobileNav() {
+            const nav = document.getElementById('nav');
+            if (window.innerWidth <= 768) {
+                nav.classList.add('mobile-hidden');
+            } else {
+                nav.classList.remove('mobile-hidden');
+            }
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            initMobileNav();
+        });
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            initMobileNav();
+        });
+
+        window.addEventListener('load', function() {
+            initMobileNav();
         });
     </script>
 </body>

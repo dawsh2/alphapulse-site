@@ -13,7 +13,13 @@
             background: #1e1e1e;
             color: #d4d4d4;
             height: 100vh;
+            height: -webkit-fill-available;
+            min-height: -webkit-fill-available;
             overflow: hidden;
+        }
+        
+        html {
+            height: -webkit-fill-available;
         }
 
         .header {
@@ -234,6 +240,12 @@
             .editor-container {
                 grid-column: 1 / -1;
                 width: 100% !important;
+                margin-left: 0 !important;
+            }
+            
+            .header {
+                z-index: 1001;
+                position: relative;
             }
             
             .nav {
@@ -250,6 +262,7 @@
                 height: auto;
                 min-height: 32px;
                 padding: 8px 12px;
+                padding-top: env(safe-area-inset-top, 8px);
                 flex-wrap: wrap;
             }
             
@@ -289,6 +302,7 @@
             
             .header {
                 padding: 6px 8px;
+                padding-top: env(safe-area-inset-top, 6px);
             }
             
             .logo {
