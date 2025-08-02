@@ -52,6 +52,20 @@
         }
         .nav a:hover { background: rgba(255,255,255,0.1); }
         .nav a.active { background: rgba(255,255,255,0.2); }
+        
+        .login-link {
+            color: white;
+            text-decoration: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            transition: background 0.2s;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .login-link:hover {
+            background: rgba(255,255,255,0.1);
+        }
         .auth-status { 
             margin-left: auto; 
             color: white; 
@@ -397,6 +411,7 @@
                 <a href="deploy.html" class="active">Deploy</a>
             </div>
             <div class="auth-status" id="auth-status">Loading...</div>
+            <a href="#" class="login-link" onclick="return false;">Login</a>
         </div>
     </div>
     

@@ -79,6 +79,21 @@
             background: rgba(255,255,255,0.2);
         }
         
+        .login-link {
+            color: white;
+            text-decoration: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            transition: background 0.2s;
+            font-size: 12px;
+            margin-left: auto;
+            cursor: pointer;
+        }
+        
+        .login-link:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
         .header-actions {
             display: flex;
             gap: 12px;
@@ -791,6 +806,7 @@
                 <a href="deploy.html">Deploy</a>
             </nav>
             <div class="header-actions">
+                <a href="#" class="login-link" onclick="return false;">Login</a>
             </div>
         </div>
         
