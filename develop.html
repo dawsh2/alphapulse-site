@@ -187,6 +187,11 @@
             overflow: hidden;
         }
         
+        /* Mobile Editor (textarea) */
+        .mobile-editor {
+            display: block;
+        }
+        
         .editor-textarea {
             position: absolute;
             top: 0;
@@ -229,6 +234,18 @@
         .editor-highlight code {
             background: none !important;
             padding: 0 !important;
+        }
+        
+        /* Desktop Editor (Monaco) */
+        .desktop-editor {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+        
+        #monaco-editor {
+            width: 100%;
+            height: 100%;
         }
         
         /* Action Panel */
@@ -381,6 +398,16 @@
             .main-container {
                 grid-template-columns: 250px 1fr;
             }
+            
+            /* Hide mobile editor on desktop */
+            .mobile-editor {
+                display: none;
+            }
+            
+            /* Show desktop editor on desktop */
+            .desktop-editor {
+                display: block;
+            }
         }
         
         /* Welcome screen */
@@ -455,17 +482,25 @@
                 </div>
                 
                 <div class="editor-wrapper" id="editorWrapper">
-                    <div class="editor-highlight" id="editorHighlight">
-                        <pre><code class="language-python" id="highlightedCode"></code></pre>
+                    <!-- Mobile Editor -->
+                    <div class="mobile-editor" id="mobileEditor">
+                        <div class="editor-highlight" id="editorHighlight">
+                            <pre><code class="language-python" id="highlightedCode"></code></pre>
+                        </div>
+                        <textarea 
+                            class="editor-textarea" 
+                            id="editorTextarea"
+                            autocomplete="off"
+                            autocorrect="off"
+                            autocapitalize="off"
+                            spellcheck="false"
+                        ></textarea>
                     </div>
-                    <textarea 
-                        class="editor-textarea" 
-                        id="editorTextarea"
-                        autocomplete="off"
-                        autocorrect="off"
-                        autocapitalize="off"
-                        spellcheck="false"
-                    ></textarea>
+                    
+                    <!-- Desktop Editor -->
+                    <div class="desktop-editor" id="desktopEditor">
+                        <div id="monaco-editor"></div>
+                    </div>
                     
                     <div class="welcome" id="welcome" style="display: none;">
                         <h2>AlphaPulse Development</h2>
@@ -505,11 +540,16 @@
         </div>
     </div>
     
+    <!-- Mobile: Prism.js for syntax highlighting -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+    
+    <!-- Desktop: Monaco Editor -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+    
     <script src="mobile-components.js"></script>
     <script>
         // File contents
@@ -598,14 +638,25 @@ risk:
         
         let currentFile = 'strategy.py';
         let sidebarOpen = false;
+        let monacoEditor = null;
+        let isDesktop = window.innerWidth > 768;
         
         // Initialize editor
         function initEditor() {
-            const textarea = document.getElementById('editorTextarea');
-            const highlight = document.getElementById('editorHighlight');
+            if (isDesktop) {
+                initMonacoEditor();
+            } else {
+                initMobileEditor();
+            }
             
             // Load initial file
             loadFile(currentFile);
+        }
+        
+        // Initialize mobile editor
+        function initMobileEditor() {
+            const textarea = document.getElementById('editorTextarea');
+            const highlight = document.getElementById('editorHighlight');
             
             // Sync scroll
             textarea.addEventListener('scroll', () => {
@@ -620,15 +671,44 @@ risk:
             });
         }
         
-        function loadFile(filename) {
-            currentFile = filename;
-            const textarea = document.getElementById('editorTextarea');
-            const code = document.getElementById('highlightedCode');
-            
-            // Update content
-            textarea.value = files[filename] || '';
-            
-            // Update language
+        // Initialize Monaco Editor for desktop
+        function initMonacoEditor() {
+            require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' }});
+            require(['vs/editor/editor.main'], function() {
+                monacoEditor = monaco.editor.create(document.getElementById('monaco-editor'), {
+                    value: files[currentFile] || '',
+                    language: getMonacoLanguage(currentFile),
+                    theme: 'vs-dark',
+                    automaticLayout: true,
+                    minimap: {
+                        enabled: true
+                    },
+                    fontSize: 14,
+                    fontFamily: "'SF Mono', Monaco, Consolas, monospace",
+                    scrollBeyondLastLine: false,
+                    lineNumbers: 'on',
+                    renderWhitespace: 'selection',
+                    wordWrap: 'off',
+                    folding: true,
+                    glyphMargin: true,
+                    contextmenu: true,
+                    quickSuggestions: true,
+                    suggestOnTriggerCharacters: true,
+                    acceptSuggestionOnEnter: 'on',
+                    tabCompletion: 'on',
+                    parameterHints: {
+                        enabled: true
+                    }
+                });
+                
+                // Update file content on change
+                monacoEditor.onDidChangeModelContent(() => {
+                    files[currentFile] = monacoEditor.getValue();
+                });
+            });
+        }
+        
+        function getMonacoLanguage(filename) {
             const ext = filename.split('.').pop();
             const langMap = {
                 'py': 'python',
@@ -637,7 +717,36 @@ risk:
                 'json': 'json',
                 'md': 'markdown'
             };
-            code.className = `language-${langMap[ext] || 'plaintext'}`;
+            return langMap[ext] || 'plaintext';
+        }
+        
+        function loadFile(filename) {
+            currentFile = filename;
+            
+            if (isDesktop && monacoEditor) {
+                // Update Monaco editor
+                monacoEditor.setValue(files[filename] || '');
+                monaco.editor.setModelLanguage(monacoEditor.getModel(), getMonacoLanguage(filename));
+            } else {
+                // Update mobile editor
+                const textarea = document.getElementById('editorTextarea');
+                const code = document.getElementById('highlightedCode');
+                
+                textarea.value = files[filename] || '';
+                
+                // Update language for Prism
+                const ext = filename.split('.').pop();
+                const langMap = {
+                    'py': 'python',
+                    'yaml': 'yaml',
+                    'yml': 'yaml',
+                    'json': 'json',
+                    'md': 'markdown'
+                };
+                code.className = `language-${langMap[ext] || 'plaintext'}`;
+                
+                updateHighlight();
+            }
             
             // Update UI
             document.getElementById('filename').textContent = filename;
@@ -647,8 +756,6 @@ risk:
             
             // Hide welcome
             document.getElementById('welcome').style.display = 'none';
-            
-            updateHighlight();
             
             // Close sidebar on mobile
             if (window.innerWidth <= 768) {
@@ -798,6 +905,20 @@ execution:
         function runCode() {
             runBacktest();
         }
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            const wasDesktop = isDesktop;
+            isDesktop = window.innerWidth > 768;
+            
+            // If switching between mobile and desktop, reinitialize editor
+            if (wasDesktop !== isDesktop) {
+                if (isDesktop && !monacoEditor) {
+                    initMonacoEditor();
+                }
+                loadFile(currentFile);
+            }
+        });
         
         // Initialize on load
         window.addEventListener('load', initEditor);
