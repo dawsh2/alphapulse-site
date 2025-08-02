@@ -632,9 +632,10 @@
                     </div>
                 </div>
 
-                <div style="text-align: center; margin-top: 30px;">
-                    <a href="#" style="color: #4ec9b0; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" 
-                       onmouseover="this.style.color='#6edcc0'" onmouseout="this.style.color='#4ec9b0'">More</a>
+                <div style="text-align: center; margin-top: 30px; margin-bottom: 30px; padding-bottom: 20px;">
+                    <a href="#more" style="color: #4ec9b0; text-decoration: none; font-size: 16px; font-weight: 500; transition: color 0.2s; padding: 12px 24px; display: inline-block; border: 1px solid #4ec9b0; border-radius: 4px;" 
+                       onmouseover="this.style.color='#6edcc0'; this.style.borderColor='#6edcc0'" 
+                       onmouseout="this.style.color='#4ec9b0'; this.style.borderColor='#4ec9b0'">More</a>
                 </div>
             </div>
 
@@ -648,6 +649,13 @@
         let currentThread = null;
 
         function openThread(id, title, domain, points, author, time, commentCount) {
+            // On mobile, open link directly instead of splitscreen
+            if (window.innerWidth <= 768) {
+                // For now, just show an alert or navigate to a page
+                window.location.href = '#thread-' + id;
+                return;
+            }
+            
             // Update active state
             document.querySelectorAll('.item').forEach(item => item.classList.remove('active'));
             event.currentTarget.classList.add('active');

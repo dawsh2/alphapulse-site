@@ -41,6 +41,23 @@
             padding: 4px;
             margin-right: 12px;
         }
+        
+        .mobile-sidebar-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 4px;
+            margin-right: 12px;
+        }
+        
+        @media screen and (max-width: 768px) {
+            .mobile-menu-btn, .mobile-sidebar-btn {
+                display: block;
+            }
+        }
 
         .logo {
             font-weight: bold;
@@ -211,9 +228,6 @@
 
         /* Mobile Responsive Design */
         @media screen and (max-width: 768px) {
-            .mobile-menu-btn {
-                display: block !important;
-            }
             
             .main-container {
                 grid-template-columns: 1fr !important;
@@ -523,9 +537,10 @@
 </head>
 <body>
     <div class="header">
-        <button class="mobile-menu-btn" onclick="toggleMobileSidebar()">☰</button>
+        <button class="mobile-menu-btn" onclick="toggleMobileNav()">☰</button>
+        <button class="mobile-sidebar-btn" onclick="toggleMobileSidebar()">📁</button>
         <a href="index.html" class="logo">AlphaPulse</a>
-        <div class="nav">
+        <div class="nav" id="nav">
             <a href="develop.html" class="active">Develop</a>
             <a href="replay.html">Replay</a>
             <a href="research.html">Research</a>
