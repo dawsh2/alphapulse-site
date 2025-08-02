@@ -652,14 +652,14 @@
         .mobile-info-drawer {
             display: none;
             position: fixed;
-            bottom: 56px; /* Above controls */
+            bottom: 0;
             left: 0;
             right: 0;
             background: #1e1e1e;
-            border-top: 2px solid #3e3e42;
-            max-height: 60vh;
+            border-top: 1px solid #3e3e42;
+            height: 50vh;
             z-index: 1050;
-            transform: translateY(calc(100% - 40px)); /* Show just the handle */
+            transform: translateY(100%);
             transition: transform 0.3s ease;
             border-radius: 12px 12px 0 0;
         }
@@ -832,6 +832,29 @@
             color: #858585;
         }
         
+        /* Swipe indicator */
+        .swipe-indicator {
+            display: none;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #666;
+            font-size: 11px;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            transition: opacity 0.3s ease;
+            z-index: 500;
+        }
+        
+        .swipe-indicator.hidden {
+            opacity: 0;
+        }
+        
         /* Mobile Responsive Design */
         @media screen and (max-width: 768px) {
             
@@ -894,6 +917,10 @@
             
             .mobile-config-btn {
                 display: block;
+            }
+            
+            .swipe-indicator {
+                display: flex;
             }
             
             /* Hide desktop strategy controls on mobile */
@@ -1153,6 +1180,12 @@
                         <button class="mobile-control-btn play" id="mobilePlayBtn" onclick="togglePlayPauseMobile()">▶</button>
                         <button class="mobile-control-btn" onclick="stepForwardMobile()">▶▶</button>
                     </div>
+                </div>
+                
+                <!-- Swipe Indicator -->
+                <div class="swipe-indicator" id="swipeIndicator">
+                    <span>⬆</span>
+                    <span>Swipe up for details</span>
                 </div>
                 
                 <!-- Bar Info Overlay -->
@@ -2318,18 +2351,52 @@
         function toggleInfoDrawer() {
             const drawer = document.getElementById('mobileInfoDrawer');
             const handle = document.getElementById('drawerHandleText');
+            const swipeIndicator = document.getElementById('swipeIndicator');
             
             if (drawer.classList.contains('open')) {
                 drawer.classList.remove('open');
                 handle.textContent = 'View Details';
+                if (swipeIndicator) swipeIndicator.classList.remove('hidden');
             } else {
                 drawer.classList.add('open');
                 handle.textContent = 'Hide Details';
+                if (swipeIndicator) swipeIndicator.classList.add('hidden');
                 
                 // Update all mobile displays
                 updateMobileDisplays();
             }
         }
+        
+        // Add swipe gesture support
+        let startY = 0;
+        let startTime = 0;
+        let isDragging = false;
+        
+        document.addEventListener('touchstart', function(e) {
+            if (window.innerWidth <= 768) {
+                startY = e.touches[0].clientY;
+                startTime = Date.now();
+            }
+        });
+        
+        document.addEventListener('touchend', function(e) {
+            if (window.innerWidth <= 768) {
+                const endY = e.changedTouches[0].clientY;
+                const endTime = Date.now();
+                const distance = startY - endY;
+                const duration = endTime - startTime;
+                const drawer = document.getElementById('mobileInfoDrawer');
+                
+                // Swipe up gesture (distance > 50px, duration < 500ms)
+                if (distance > 50 && duration < 500 && !drawer.classList.contains('open')) {
+                    toggleInfoDrawer();
+                }
+                // Swipe down gesture on drawer
+                else if (distance < -50 && duration < 500 && drawer.classList.contains('open') && e.target.closest('.mobile-info-drawer')) {
+                    toggleInfoDrawer();
+                }
+            }
+        });
         
         function updateMobileDisplays() {
             // Copy event log content
