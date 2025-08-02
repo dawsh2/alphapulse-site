@@ -53,6 +53,10 @@
             }
             
             .mobile-sidebar-btn {
+                display: none; /* Hide the header folder button since we have floating one */
+            }
+            
+            .mobile-sidebar-toggle {
                 display: block;
             }
         }
@@ -452,6 +456,29 @@
             display: none;
         }
         
+        .mobile-sidebar-toggle {
+            display: none;
+            position: fixed;
+            top: 40px;
+            right: 10px;
+            z-index: 997;
+            background: #007acc;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+        }
+        
+        .mobile-sidebar-toggle:hover {
+            background: #1a86d1;
+            transform: scale(1.05);
+        }
+        
         /* Mobile Responsive Design - continued */
         @media screen and (max-width: 768px) {
             
@@ -579,6 +606,7 @@
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
     
     <div class="main-container">
+        <button class="mobile-sidebar-toggle" onclick="toggleMobileSidebar()">📁</button>
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">Recent Notebooks</div>
             <div class="sidebar-section">

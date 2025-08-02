@@ -422,27 +422,42 @@
                 font-size: 16px !important;
             }
             
-            .mobile-done-btn {
-                display: block !important;
+            .mobile-editor-controls {
+                display: flex !important;
                 position: absolute;
                 top: 10px;
                 right: 10px;
-                background: #007acc;
-                color: white;
-                border: none;
-                padding: 8px 16px;
-                border-radius: 4px;
-                font-size: 14px;
+                gap: 8px;
                 z-index: 1000;
-                cursor: pointer;
             }
             
-            .mobile-done-btn:hover {
+            .mobile-control-btn {
+                background: #2d2d30;
+                color: white;
+                border: 1px solid #3e3e42;
+                padding: 8px 12px;
+                border-radius: 4px;
+                font-size: 14px;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+            
+            .mobile-control-btn:hover {
+                background: #3e3e42;
+                border-color: #525252;
+            }
+            
+            .mobile-control-btn.done-btn {
+                background: #007acc;
+                border-color: #007acc;
+            }
+            
+            .mobile-control-btn.done-btn:hover {
                 background: #1a86d1;
             }
         }
         
-        .mobile-done-btn {
+        .mobile-editor-controls {
             display: none;
         }
 
@@ -613,7 +628,10 @@
                 <h2>AlphaPulse Development Environment</h2>
                 <p>Select a file from the explorer to start editing</p>
             </div>
-            <button class="mobile-done-btn" id="mobileDoneBtn" onclick="exitMobileEditing()" style="display: none;">Done</button>
+            <div class="mobile-editor-controls" id="mobileEditorControls" style="display: none;">
+                <button class="mobile-control-btn" onclick="toggleMobileSidebar()">📁</button>
+                <button class="mobile-control-btn done-btn" onclick="exitMobileEditing()">Done</button>
+            </div>
         </div>
 
     </div>
@@ -826,11 +844,11 @@ The included momentum strategy demonstrates:
             
             // Prevent zoom on mobile when editor is focused
             if (isMobile) {
-                const doneBtn = document.getElementById('mobileDoneBtn');
+                const controls = document.getElementById('mobileEditorControls');
                 
                 editor.onDidFocusEditorText(() => {
-                    // Show done button when editing
-                    doneBtn.style.display = 'block';
+                    // Show controls when editing
+                    controls.style.display = 'flex';
                     
                     // Force viewport back to normal scale after focus
                     setTimeout(() => {
@@ -840,8 +858,10 @@ The included momentum strategy demonstrates:
                 });
                 
                 editor.onDidBlurEditorText(() => {
-                    // Hide done button when not editing
-                    doneBtn.style.display = 'none';
+                    // Hide controls when not editing
+                    setTimeout(() => {
+                        controls.style.display = 'none';
+                    }, 200); // Small delay to allow button clicks
                 });
                 
                 // Disable context menu and selection on mobile
