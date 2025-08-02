@@ -356,11 +356,49 @@
         .editor-container {
             background: #1e1e1e;
             position: relative;
+            touch-action: manipulation;
         }
 
         .monaco-editor {
             height: 100%;
             width: 100%;
+        }
+        
+        .monaco-editor * {
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .monaco-editor textarea, .monaco-editor input {
+            -webkit-user-select: text !important;
+        }
+        
+        /* Prevent zoom on mobile */
+        @media screen and (max-width: 768px) {
+            .monaco-editor .view-lines {
+                font-size: 16px !important;
+            }
+            
+            .monaco-editor .monaco-editor-background {
+                touch-action: pan-y;
+            }
+            
+            /* Prevent zoom when tapping in editor */
+            .monaco-editor .inputarea {
+                font-size: 16px !important;
+                transform: scale(1);
+                -webkit-transform: scale(1);
+            }
+            
+            .monaco-editor .cursor {
+                pointer-events: none;
+            }
+            
+            /* Force font size for all text elements in Monaco */
+            .monaco-editor .view-line span {
+                font-size: 16px !important;
+            }
         }
 
         .welcome-message {
@@ -702,7 +740,7 @@ The included momentum strategy demonstrates:
                 value: '',
                 language: 'python',
                 theme: 'vs-dark',
-                fontSize: isMobile ? 12 : 14,
+                fontSize: isMobile ? 16 : 14,  // Larger font to prevent zoom
                 fontFamily: "'SF Mono', Monaco, Consolas, monospace",
                 lineNumbers: isMobile ? 'off' : 'on',
                 minimap: { enabled: !isMobile },
@@ -711,15 +749,43 @@ The included momentum strategy demonstrates:
                 wordWrap: 'bounded',
                 renderLineHighlight: 'line',
                 cursorBlinking: 'smooth',
-                smoothScrolling: true,
+                smoothScrolling: !isMobile,  // Disable smooth scrolling on mobile
                 folding: !isMobile,
                 glyphMargin: !isMobile,
                 lineDecorationsWidth: isMobile ? 5 : 10,
-                lineNumbersMinChars: isMobile ? 0 : 3
+                lineNumbersMinChars: isMobile ? 0 : 3,
+                // Mobile-specific options
+                ...(isMobile && {
+                    quickSuggestions: false,
+                    parameterHints: { enabled: false },
+                    suggestOnTriggerCharacters: false,
+                    acceptSuggestionOnEnter: 'off',
+                    tabCompletion: 'off',
+                    wordBasedSuggestions: false,
+                    contextmenu: false,
+                    links: false
+                })
             });
 
             monacoReady = true;
             console.log('Monaco Editor initialized');
+            
+            // Prevent zoom on mobile when editor is focused
+            if (isMobile) {
+                editor.onDidFocusEditorText(() => {
+                    // Force viewport back to normal scale after focus
+                    setTimeout(() => {
+                        const viewport = document.querySelector('meta[name="viewport"]');
+                        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+                    }, 100);
+                });
+                
+                // Disable context menu and selection on mobile
+                editor.onContextMenu((e) => {
+                    e.event.preventDefault();
+                    e.event.stopPropagation();
+                });
+            }
             
             // Enable file tree items now that Monaco is ready
             document.querySelectorAll('.file-item').forEach(item => {
