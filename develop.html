@@ -411,10 +411,21 @@
                 font-size: 16px !important;
                 transform: scale(1);
                 -webkit-transform: scale(1);
+                opacity: 1 !important;
             }
             
             .monaco-editor .cursor {
                 pointer-events: none;
+            }
+            
+            /* Fix cursor positioning on mobile */
+            .monaco-editor .view-line {
+                -webkit-user-select: text !important;
+                user-select: text !important;
+            }
+            
+            .monaco-editor .monaco-scrollable-element {
+                -webkit-overflow-scrolling: touch;
             }
             
             /* Force font size for all text elements in Monaco */
@@ -561,7 +572,6 @@
 <body>
     <div class="header">
         <button class="mobile-menu-btn" onclick="toggleMobileNav()">☰</button>
-        <button class="mobile-sidebar-btn" onclick="toggleMobileSidebar()">📁</button>
         <a href="index.html" class="logo">AlphaPulse</a>
         <div class="nav" id="nav">
             <a href="develop.html" class="active">Develop</a>
@@ -835,7 +845,13 @@ The included momentum strategy demonstrates:
                     tabCompletion: 'off',
                     wordBasedSuggestions: false,
                     contextmenu: false,
-                    links: false
+                    links: false,
+                    cursorStyle: 'line-thin',
+                    cursorWidth: 2,
+                    renderLineHighlight: 'all',
+                    renderWhitespace: 'none',
+                    renderControlCharacters: false,
+                    fixedOverflowWidgets: true
                 })
             });
 
@@ -869,6 +885,16 @@ The included momentum strategy demonstrates:
                     e.event.preventDefault();
                     e.event.stopPropagation();
                 });
+                
+                // Fix cursor positioning on tap
+                const editorDom = editor.getDomNode();
+                if (editorDom) {
+                    editorDom.addEventListener('touchend', (e) => {
+                        setTimeout(() => {
+                            editor.focus();
+                        }, 50);
+                    });
+                }
             }
             
             // Enable file tree items now that Monaco is ready
