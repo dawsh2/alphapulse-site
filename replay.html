@@ -493,6 +493,40 @@
             color: #569cd6;
         }
         
+        /* Bar Info Overlay */
+        .bar-info-overlay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(45, 45, 48, 0.95);
+            border: 1px solid #3e3e42;
+            border-radius: 4px;
+            padding: 12px;
+            font-size: 11px;
+            color: #cccccc;
+            min-width: 200px;
+            z-index: 1000;
+        }
+        
+        .bar-info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+        
+        .bar-info-label {
+            color: #858585;
+        }
+        
+        .bar-info-value {
+            color: #cccccc;
+            font-family: monospace;
+        }
+        
+        .bar-info-value.price {
+            color: #4ec9b0;
+        }
+        
         .header-nav.mobile-hidden {
             display: none;
         }
@@ -589,6 +623,78 @@
             .selector-input {
                 min-width: auto;
                 flex: 1;
+            }
+            
+            /* Better touch targets for replay controls */
+            .replay-controls {
+                flex-direction: column;
+                gap: 12px;
+                align-items: center;
+            }
+            
+            .control-btn {
+                min-height: 44px;
+                min-width: 120px;
+                font-size: 14px;
+                padding: 12px 16px;
+                margin: 2px;
+            }
+            
+            .replay-position {
+                flex-direction: column;
+                gap: 8px;
+                align-items: center;
+                width: 100%;
+            }
+            
+            .position-slider {
+                width: 80%;
+                height: 8px;
+            }
+            
+            .position-handle {
+                width: 20px;
+                height: 20px;
+                top: -6px;
+            }
+            
+            /* Mobile-friendly bar info overlay */
+            .bar-info-overlay {
+                position: fixed;
+                top: auto;
+                bottom: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                min-width: auto;
+                width: 90%;
+                max-width: 300px;
+                font-size: 10px;
+                padding: 8px;
+                backdrop-filter: blur(10px);
+                background: rgba(30, 30, 30, 0.9);
+                border-radius: 8px;
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 8px;
+                text-align: center;
+            }
+            
+            .bar-info-row {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+                margin-bottom: 0;
+                align-items: center;
+            }
+            
+            .bar-info-label {
+                font-size: 9px;
+                text-transform: uppercase;
+            }
+            
+            .bar-info-value {
+                font-size: 11px;
+                font-weight: 600;
             }
         }
     </style>

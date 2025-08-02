@@ -399,6 +399,29 @@
             .monaco-editor .view-line span {
                 font-size: 16px !important;
             }
+            
+            .mobile-done-btn {
+                display: block !important;
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background: #007acc;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+                font-size: 14px;
+                z-index: 1000;
+                cursor: pointer;
+            }
+            
+            .mobile-done-btn:hover {
+                background: #1a86d1;
+            }
+        }
+        
+        .mobile-done-btn {
+            display: none;
         }
 
         .welcome-message {
@@ -567,6 +590,7 @@
                 <h2>AlphaPulse Development Environment</h2>
                 <p>Select a file from the explorer to start editing</p>
             </div>
+            <button class="mobile-done-btn" id="mobileDoneBtn" onclick="exitMobileEditing()" style="display: none;">Done</button>
         </div>
 
     </div>
@@ -772,12 +796,22 @@ The included momentum strategy demonstrates:
             
             // Prevent zoom on mobile when editor is focused
             if (isMobile) {
+                const doneBtn = document.getElementById('mobileDoneBtn');
+                
                 editor.onDidFocusEditorText(() => {
+                    // Show done button when editing
+                    doneBtn.style.display = 'block';
+                    
                     // Force viewport back to normal scale after focus
                     setTimeout(() => {
                         const viewport = document.querySelector('meta[name="viewport"]');
                         viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
                     }, 100);
+                });
+                
+                editor.onDidBlurEditorText(() => {
+                    // Hide done button when not editing
+                    doneBtn.style.display = 'none';
                 });
                 
                 // Disable context menu and selection on mobile
@@ -1698,16 +1732,44 @@ signal_generation:
         // Handle window resize
         window.addEventListener('resize', function() {
             initMobileSidebar();
+            initMobileNav();
         });
 
         // Initialize on load and DOM ready
         document.addEventListener('DOMContentLoaded', function() {
             initMobileSidebar();
+            initMobileNav();
         });
 
         window.addEventListener('load', function() {
             initMobileSidebar();
+            initMobileNav();
         });
+        
+        // Function to exit mobile editing mode
+        function exitMobileEditing() {
+            if (editor) {
+                editor.getAction('editor.action.escape')?.run();
+                document.activeElement.blur();
+                document.getElementById('mobileDoneBtn').style.display = 'none';
+            }
+        }
+        
+        // Mobile navigation functionality
+        function toggleMobileNav() {
+            const nav = document.getElementById('nav');
+            nav.classList.toggle('mobile-hidden');
+        }
+
+        // Initialize mobile nav state
+        function initMobileNav() {
+            const nav = document.getElementById('nav');
+            if (window.innerWidth <= 768) {
+                nav.classList.add('mobile-hidden');
+            } else {
+                nav.classList.remove('mobile-hidden');
+            }
+        }
     </script>
 </body>
 </html>
