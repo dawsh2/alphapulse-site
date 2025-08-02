@@ -24,6 +24,7 @@
 
         .header {
             background-color: #007acc;
+            background: #007acc;
             height: 32px;
             border-bottom: 1px solid #005a9e;
             display: flex;
@@ -42,12 +43,41 @@
             margin-right: 12px;
         }
         
+        .mobile-sidebar-btn {
+            display: none;
+            position: fixed;
+            top: calc(32px + env(safe-area-inset-top, 0px) + 10px);
+            left: 10px;
+            z-index: 100;
+            background: #007acc;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+        }
+        
+        .mobile-sidebar-btn:hover {
+            background: #1a86d1;
+            transform: scale(1.05);
+        }
+        
         @media screen and (max-width: 768px) {
             .mobile-menu-btn {
+                display: block;
+                font-size: 24px;
+            }
+            
+            .mobile-sidebar-btn {
                 display: block;
             }
             
             .sidebar {
+                display: none;
                 overflow-y: auto;
                 -webkit-overflow-scrolling: touch;
                 height: calc(100vh - 32px);
@@ -114,8 +144,8 @@
             transition: transform 0.3s ease;
         }
         
-        .sidebar.mobile-hidden {
-            transform: translateX(-100%);
+        .sidebar.mobile-visible {
+            display: flex !important;
         }
 
         .sidebar-header {
@@ -612,6 +642,7 @@
     </div>
 
     <div class="main-container">
+        <button class="mobile-sidebar-btn" onclick="toggleMobileSidebar()">📁</button>
         <div class="sidebar">
             <div class="sidebar-header" onclick="toggleExplorer()">
                 <span>Explorer</span>
@@ -957,9 +988,9 @@ The included momentum strategy demonstrates:
                 });
                 
                 // Fix cursor positioning on tap
-                const editorDom = editor.getDomNode();
-                if (editorDom) {
-                    editorDom.addEventListener('touchend', (e) => {
+                const editorDomElement = editor.getDomNode();
+                if (editorDomElement) {
+                    editorDomElement.addEventListener('touchend', (e) => {
                         setTimeout(() => {
                             editor.focus();
                         }, 50);
@@ -995,7 +1026,8 @@ The included momentum strategy demonstrates:
             
             // Auto-collapse sidebar on mobile after file selection
             if (window.innerWidth <= 768) {
-                document.querySelector('.sidebar').classList.add('mobile-hidden');
+                document.querySelector('.sidebar').classList.remove('mobile-visible');
+                document.querySelector('.mobile-sidebar-btn').textContent = '📁';
             }
 
             // Get file extension for language detection
@@ -1865,17 +1897,23 @@ signal_generation:
         // Mobile sidebar toggle functionality
         function toggleMobileSidebar() {
             const sidebar = document.querySelector('.sidebar');
-            sidebar.classList.toggle('mobile-hidden');
+            sidebar.classList.toggle('mobile-visible');
+            const btn = document.querySelector('.mobile-sidebar-btn');
+            if (sidebar.classList.contains('mobile-visible')) {
+                btn.textContent = '✓';
+            } else {
+                btn.textContent = '📁';
+            }
         }
 
         // Initialize mobile sidebar state
         function initMobileSidebar() {
             const sidebar = document.querySelector('.sidebar');
             if (window.innerWidth <= 768) {
-                sidebar.classList.add('mobile-hidden');
+                sidebar.classList.remove('mobile-visible');
                 console.log('Mobile mode: sidebar hidden');
             } else {
-                sidebar.classList.remove('mobile-hidden');
+                sidebar.classList.remove('mobile-visible');
                 console.log('Desktop mode: sidebar visible');
             }
         }
@@ -1888,13 +1926,13 @@ signal_generation:
 
         // Initialize on load and DOM ready
         document.addEventListener('DOMContentLoaded', function() {
-            initMobileSidebar();
             initMobileNav();
+            initMobileSidebar();
         });
 
         window.addEventListener('load', function() {
-            initMobileSidebar();
             initMobileNav();
+            initMobileSidebar();
         });
         
         // Function to exit mobile editing mode

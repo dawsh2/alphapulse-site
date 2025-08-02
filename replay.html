@@ -601,18 +601,18 @@
             display: none;
         }
         
-        /* Mobile controls at bottom */
+        /* Mobile controls overlay on chart */
         .mobile-controls-container {
             display: none;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #252526;
-            border-top: 1px solid #3e3e42;
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(37, 37, 38, 0.9);
+            border: 1px solid #3e3e42;
+            border-radius: 8px;
             z-index: 1100;
-            padding: 12px;
-            padding-bottom: env(safe-area-inset-bottom, 12px);
+            padding: 8px;
         }
         
         .mobile-controls {
@@ -1145,6 +1145,15 @@
                 <div id="lightweight_chart"></div>
                 <div id="chart-loading" class="chart-loading">Loading chart data...</div>
                 
+                <!-- Mobile Controls Container -->
+                <div class="mobile-controls-container" id="mobileControlsContainer">
+                    <div class="mobile-controls">
+                        <button class="mobile-control-btn" onclick="stepBackwardMobile()">◀◀</button>
+                        <button class="mobile-control-btn play" id="mobilePlayBtn" onclick="togglePlayPauseMobile()">▶</button>
+                        <button class="mobile-control-btn" onclick="stepForwardMobile()">▶▶</button>
+                    </div>
+                </div>
+                
                 <!-- Bar Info Overlay -->
                 <div class="bar-info-overlay" id="barInfoOverlay" style="display: none;">
                     <div class="bar-info-row">
@@ -1287,15 +1296,6 @@
                         <div class="strategy-desc">ATR-based volatility breakout strategy</div>
                     </div>
                 </div>
-            </div>
-        </div>
-        
-        <!-- Mobile Controls Container -->
-        <div class="mobile-controls-container" id="mobileControlsContainer">
-            <div class="mobile-controls">
-                <button class="mobile-control-btn" onclick="stepBackwardMobile()">◀◀</button>
-                <button class="mobile-control-btn play" id="mobilePlayBtn" onclick="togglePlayPauseMobile()">▶</button>
-                <button class="mobile-control-btn" onclick="stepForwardMobile()">▶▶</button>
             </div>
         </div>
         
