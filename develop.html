@@ -1,0 +1,2147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Development - AlphaPulse</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 13px; 
+            background: #1e1e1e; 
+            color: #d4d4d4; 
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        /* Layout */
+        .app-container {
+            display: grid;
+            grid-template-rows: 32px 1fr;
+            height: 100vh;
+        }
+        
+        .header {
+            background: #007acc;
+            border-bottom: 1px solid #005a9e;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            font-size: 12px;
+        }
+        
+        .logo { 
+            color: white; 
+            font-weight: bold; 
+            margin-right: 20px;
+            font-size: 14px;
+            text-decoration: none;
+        }
+        
+        .header-nav {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+        }
+        
+        .header-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            transition: background 0.2s;
+            font-size: 12px;
+        }
+        
+        .header-nav a:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .header-nav a.active {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            background: #1e1e1e;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+        
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #4ec9b0;
+        }
+        
+        /* Main Container */
+        .develop-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            height: calc(100vh - 32px);
+            background: #252526;
+        }
+        
+        .develop-sidebar {
+            background: #252526;
+            border-right: 1px solid #3e3e42;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .develop-section {
+            border-bottom: 1px solid #3e3e42;
+        }
+        
+        .develop-section-header {
+            padding: 12px 16px;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #858585;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .develop-menu {
+            padding: 8px 0;
+        }
+        
+        .develop-menu-item {
+            padding: 8px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #cccccc;
+            transition: all 0.2s;
+        }
+        
+        .develop-menu-item:hover {
+            background: #2a2a2a;
+        }
+        
+        .develop-menu-item.active {
+            background: #094771;
+            color: white;
+        }
+        
+        .menu-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .develop-main {
+            background: #1e1e1e;
+            overflow-y: auto;
+            padding: 20px;
+            position: relative;
+        }
+        
+        /* Split view for PDF */
+        .develop-container.split-view .develop-main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            padding: 0;
+        }
+        
+        .develop-container.split-view .develop-content-wrapper {
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .pdf-viewer {
+            display: none;
+            background: #1e1e1e;
+            border-left: 1px solid #3e3e42;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .develop-container.split-view .pdf-viewer {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .pdf-header {
+            background: #2d2d30;
+            border-bottom: 1px solid #3e3e42;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .pdf-title {
+            font-size: 12px;
+            color: #cccccc;
+            font-weight: 500;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .pdf-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .pdf-control-btn {
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            color: #cccccc;
+            padding: 4px 8px;
+            font-size: 11px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.2s;
+        }
+        
+        .pdf-control-btn:hover {
+            background: #2a2a2a;
+            border-color: #525252;
+        }
+        
+        .pdf-page-info {
+            font-size: 11px;
+            color: #858585;
+            margin: 0 8px;
+        }
+        
+        .pdf-content {
+            flex: 1;
+            overflow: auto;
+            padding: 20px;
+            background: #252526;
+        }
+        
+        .pdf-embed {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+            border-radius: 4px;
+        }
+        
+        /* Reference mode button */
+        .reference-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+        
+        .reference-btn {
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            color: #cccccc;
+            padding: 6px 12px;
+            font-size: 11px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .reference-btn:hover {
+            background: #2a2a2a;
+            border-color: #007acc;
+            color: #4ec9b0;
+        }
+        
+        .reference-btn.active {
+            background: #094771;
+            border-color: #007acc;
+            color: white;
+        }
+        
+        .develop-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .develop-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #cccccc;
+            margin: 0;
+        }
+        
+        .develop-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-small {
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            color: #cccccc;
+            padding: 6px 12px;
+            font-size: 11px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.2s;
+        }
+        
+        .btn-small:hover {
+            background: #2a2a2a;
+            border-color: #525252;
+        }
+        
+        .btn {
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            color: #cccccc;
+            padding: 8px 16px;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.2s;
+        }
+        
+        .btn:hover {
+            background: #2a2a2a;
+            border-color: #525252;
+        }
+        
+        .btn.success {
+            background: #4ec9b0;
+            color: #1e1e1e;
+            border: none;
+        }
+        
+        .btn.success:hover {
+            background: #6edcc0;
+        }
+        
+        /* Strategy Editor */
+        .strategy-editor {
+            background: #252526;
+            border: 1px solid #3e3e42;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .editor-tabs {
+            display: flex;
+            background: #2d2d30;
+            border-bottom: 1px solid #3e3e42;
+        }
+        
+        .editor-tab {
+            padding: 10px 16px;
+            font-size: 12px;
+            color: #969696;
+            cursor: pointer;
+            border-right: 1px solid #3e3e42;
+            transition: all 0.2s;
+        }
+        
+        .editor-tab:hover {
+            background: #2a2a2a;
+            color: #cccccc;
+        }
+        
+        .editor-tab.active {
+            background: #1e1e1e;
+            color: #cccccc;
+            border-bottom: 2px solid #007acc;
+        }
+        
+        .code-editor-container {
+            height: 400px;
+        }
+        
+        .develop-code-editor {
+            width: 100%;
+            height: 100%;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border: none;
+            padding: 16px;
+            font-family: 'SF Mono', Monaco, Consolas, monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            resize: none;
+        }
+        
+        .develop-code-editor:focus {
+            outline: none;
+        }
+        
+        .strategy-config {
+            background: #252526;
+            border: 1px solid #3e3e42;
+            border-radius: 4px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .strategy-config h3 {
+            font-size: 16px;
+            color: #cccccc;
+            margin-bottom: 16px;
+        }
+        
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .config-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .config-item label {
+            font-size: 11px;
+            color: #858585;
+            text-transform: uppercase;
+        }
+        
+        .config-item input {
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            color: #cccccc;
+            padding: 8px;
+            border-radius: 3px;
+            font-size: 13px;
+        }
+        
+        .config-item input:focus {
+            outline: none;
+            border-color: #007acc;
+        }
+        
+        .config-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+        
+        /* Feed Cards */
+        .feeds-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .feed-card {
+            background: #252526;
+            border: 1px solid #3e3e42;
+            border-radius: 4px;
+            padding: 20px;
+        }
+        
+        .feed-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .feed-header h3 {
+            font-size: 16px;
+            color: #cccccc;
+            margin: 0;
+        }
+        
+        .feed-status {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+        
+        .feed-status.active {
+            background: rgba(78, 201, 176, 0.1);
+            color: #4ec9b0;
+            border: 1px solid #4ec9b0;
+        }
+        
+        .feed-status.inactive {
+            background: rgba(244, 135, 113, 0.1);
+            color: #f48771;
+            border: 1px solid #f48771;
+        }
+        
+        .feed-info {
+            font-size: 12px;
+            color: #969696;
+            margin-bottom: 16px;
+        }
+        
+        .feed-info div {
+            margin-bottom: 4px;
+        }
+        
+        .feed-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        /* Hide other sections by default */
+        .develop-content {
+            display: none;
+        }
+        
+        .develop-content.active {
+            display: block;
+        }
+        
+        /* Catalog View Styles */
+        .catalog-view {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            overflow: hidden;
+        }
+        
+        .catalog-view.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .catalog-container {
+            background: #252526;
+            border: 1px solid #3e3e42;
+            border-radius: 4px;
+            width: 90%;
+            max-width: 1200px;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+        
+        .catalog-header {
+            background: #2d2d30;
+            border-bottom: 1px solid #3e3e42;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .catalog-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #cccccc;
+        }
+        
+        .catalog-close {
+            background: none;
+            border: none;
+            color: #cccccc;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 3px;
+            transition: all 0.2s;
+        }
+        
+        .catalog-close:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .catalog-body {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            overflow: hidden;
+        }
+        
+        .catalog-tree {
+            background: #1e1e1e;
+            border-right: 1px solid #3e3e42;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+        
+        .catalog-details {
+            padding: 20px;
+            overflow-y: auto;
+            background: #1e1e1e;
+        }
+        
+        .tree-node {
+            user-select: none;
+        }
+        
+        .tree-node-header {
+            display: flex;
+            align-items: center;
+            padding: 6px 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 13px;
+            color: #cccccc;
+        }
+        
+        .tree-node-header:hover {
+            background: #2a2a2a;
+        }
+        
+        .tree-node-header.selected {
+            background: #094771;
+            color: white;
+        }
+        
+        .tree-toggle {
+            width: 16px;
+            height: 16px;
+            margin-right: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #858585;
+            font-size: 10px;
+        }
+        
+        .tree-icon {
+            margin-right: 6px;
+            font-size: 14px;
+        }
+        
+        .tree-label {
+            flex: 1;
+        }
+        
+        .tree-count {
+            font-size: 11px;
+            color: #858585;
+            margin-left: 8px;
+        }
+        
+        .tree-children {
+            display: none;
+            padding-left: 20px;
+        }
+        
+        .tree-node.expanded > .tree-children {
+            display: block;
+        }
+        
+        .tree-node.expanded > .tree-node-header .tree-toggle {
+            transform: rotate(90deg);
+        }
+        
+        /* Detail View */
+        .detail-header {
+            margin-bottom: 20px;
+        }
+        
+        .detail-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #cccccc;
+            margin-bottom: 8px;
+        }
+        
+        .detail-meta {
+            font-size: 12px;
+            color: #858585;
+        }
+        
+        .detail-section {
+            margin-bottom: 24px;
+        }
+        
+        .detail-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #cccccc;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+        
+        .detail-code {
+            background: #252526;
+            border: 1px solid #3e3e42;
+            border-radius: 4px;
+            padding: 16px;
+            font-family: 'SF Mono', Monaco, Consolas, monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            overflow-x: auto;
+            position: relative;
+        }
+        
+        .detail-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .detail-list-item {
+            padding: 8px 12px;
+            background: #252526;
+            border: 1px solid #3e3e42;
+            border-radius: 3px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #cccccc;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .detail-list-item:hover {
+            background: #2a2a2a;
+            cursor: pointer;
+        }
+        
+        .detail-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            border-radius: 3px;
+            font-size: 11px;
+            margin-right: 4px;
+            color: #969696;
+        }
+        
+        .catalog-search {
+            padding: 8px 16px;
+            border-bottom: 1px solid #3e3e42;
+        }
+        
+        .catalog-search-input {
+            width: 100%;
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            color: #cccccc;
+            padding: 6px 12px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        
+        .catalog-search-input:focus {
+            outline: none;
+            border-color: #007acc;
+        }
+        
+        /* Search */
+        .search-container {
+            padding: 8px 16px 12px;
+        }
+        
+        .search-input {
+            width: 100%;
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            color: #cccccc;
+            padding: 8px 12px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #007acc;
+        }
+        
+        .search-input::placeholder {
+            color: #666666;
+        }
+        
+        .count {
+            background: #1e1e1e;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            color: #969696;
+        }
+        
+        .item-details {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        
+        .item-name {
+            color: #cccccc;
+            font-size: 13px;
+        }
+        
+        .item-meta {
+            color: #858585;
+            font-size: 11px;
+            margin-top: 2px;
+        }
+        
+        .show-more {
+            padding: 8px 16px;
+            color: #4ec9b0;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .show-more:hover {
+            background: #2a2a2a;
+            color: #6edcc0;
+        }
+        
+        /* Search Results */
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 16px;
+            right: 16px;
+            background: #252526;
+            border: 1px solid #3e3e42;
+            border-radius: 3px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .search-result-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #3e3e42;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .search-result-item:hover {
+            background: #2a2a2a;
+        }
+        
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .search-result-type {
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 2px;
+            background: #1e1e1e;
+            color: #858585;
+            margin-left: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <a href="index.html" class="logo">AlphaPulse</a>
+            <nav class="header-nav">
+                <a href="develop.html" class="active">Develop</a>
+                <a href="research.html">Replay</a>
+                <a href="research.html">Research</a>
+                <a href="live-trading.html">Deploy</a>
+            </nav>
+            <div class="header-actions">
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span>System Ready</span>
+                </div>
+                <button class="btn-small">⚙ Settings</button>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="develop-container">
+            <div class="develop-sidebar">
+                <div class="develop-section">
+                    <div class="develop-section-header">
+                        <span>COMPONENTS</span>
+                        <button class="btn-small">+ New</button>
+                    </div>
+                    <div class="develop-menu">
+                        <div class="develop-menu-item active" onclick="showDevelopSection('strategies')">
+                            <span class="menu-icon">📊</span>
+                            <span>Strategies</span>
+                        </div>
+                        <div class="develop-menu-item" onclick="showDevelopSection('data-feeds')">
+                            <span class="menu-icon">📡</span>
+                            <span>Data Feeds</span>
+                        </div>
+                        <div class="develop-menu-item" onclick="showDevelopSection('execution')">
+                            <span class="menu-icon">⚡</span>
+                            <span>Execution Models</span>
+                        </div>
+                        <div class="develop-menu-item" onclick="showDevelopSection('risk')">
+                            <span class="menu-icon">🛡️</span>
+                            <span>Risk Models</span>
+                        </div>
+                        <div class="develop-menu-item" onclick="showDevelopSection('features')">
+                            <span class="menu-icon">🔧</span>
+                            <span>Feature Engineering</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="develop-section">
+                    <div class="develop-section-header">
+                        <span>SEARCH</span>
+                    </div>
+                    <div class="search-container">
+                        <input type="text" class="search-input" placeholder="Search strategies, features, models..." onkeyup="searchComponents(event)">
+                    </div>
+                </div>
+                
+                <div class="develop-section">
+                    <div class="develop-section-header">
+                        <span>EXISTING STRATEGIES</span>
+                        <span class="count">23</span>
+                    </div>
+                    <div class="develop-menu" id="strategiesList">
+                        <div class="develop-menu-item" onclick="loadStrategy('momentum_volume')">
+                            <span class="menu-icon">📊</span>
+                            <div class="item-details">
+                                <span class="item-name">momentum_volume.py</span>
+                                <span class="item-meta">Modified 2h ago • v1.3</span>
+                            </div>
+                        </div>
+                        <div class="develop-menu-item" onclick="loadStrategy('mean_reversion')">
+                            <span class="menu-icon">📊</span>
+                            <div class="item-details">
+                                <span class="item-name">mean_reversion.py</span>
+                                <span class="item-meta">Modified 1d ago • v2.1</span>
+                            </div>
+                        </div>
+                        <div class="develop-menu-item" onclick="loadStrategy('pairs_trading')">
+                            <span class="menu-icon">📊</span>
+                            <div class="item-details">
+                                <span class="item-name">pairs_trading.py</span>
+                                <span class="item-meta">Modified 3d ago • v1.0</span>
+                            </div>
+                        </div>
+                        <div class="develop-menu-item" onclick="loadStrategy('stat_arb')">
+                            <span class="menu-icon">📊</span>
+                            <div class="item-details">
+                                <span class="item-name">statistical_arbitrage.py</span>
+                                <span class="item-meta">Modified 5d ago • v3.2</span>
+                            </div>
+                        </div>
+                        <div class="develop-menu-item" onclick="loadStrategy('ml_ensemble')">
+                            <span class="menu-icon">📊</span>
+                            <div class="item-details">
+                                <span class="item-name">ml_ensemble.py</span>
+                                <span class="item-meta">Modified 1w ago • v1.8</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="show-more" onclick="showAllStrategies()">Show all 23 strategies...</div>
+                </div>
+                
+                <div class="develop-section">
+                    <div class="develop-section-header">
+                        <span>FEATURES LIBRARY</span>
+                        <span class="count">47</span>
+                    </div>
+                    <div class="develop-menu" id="featuresList">
+                        <div class="develop-menu-item" onclick="loadFeature('volatility')">
+                            <span class="menu-icon">🔧</span>
+                            <div class="item-details">
+                                <span class="item-name">volatility_features.py</span>
+                                <span class="item-meta">GARCH, RV, Parkinson • Used in 12 strategies</span>
+                            </div>
+                        </div>
+                        <div class="develop-menu-item" onclick="loadFeature('microstructure')">
+                            <span class="menu-icon">🔧</span>
+                            <div class="item-details">
+                                <span class="item-name">microstructure.py</span>
+                                <span class="item-meta">Spread, Imbalance, Flow • Used in 8 strategies</span>
+                            </div>
+                        </div>
+                        <div class="develop-menu-item" onclick="loadFeature('sentiment')">
+                            <span class="menu-icon">🔧</span>
+                            <div class="item-details">
+                                <span class="item-name">sentiment_analysis.py</span>
+                                <span class="item-meta">News, Social, Options • Used in 5 strategies</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="show-more" onclick="showAllFeatures()">Show all 47 features...</div>
+                </div>
+            </div>
+            
+            <div class="develop-main">
+                <div class="reference-toggle">
+                    <button class="reference-btn" onclick="toggleReference()">
+                        <span>📄</span>
+                        <span>Reference Mode</span>
+                    </button>
+                </div>
+                
+                <div class="develop-content-wrapper">
+                    <!-- Strategies Section -->
+                    <div class="develop-content active" id="strategies-content">
+                    <div class="develop-header">
+                        <h2>Strategy Development</h2>
+                        <div class="develop-actions">
+                            <button class="btn-small" onclick="showCatalog()">📚 Catalog</button>
+                            <button class="btn-small">Import</button>
+                            <button class="btn-small">New Strategy</button>
+                        </div>
+                    </div>
+                    
+                    <div class="strategy-editor">
+                        <div class="editor-tabs">
+                            <div class="editor-tab active">momentum_volume.py</div>
+                            <div class="editor-tab">mean_reversion.py</div>
+                            <div class="editor-tab">+ New</div>
+                        </div>
+                        
+                        <div class="code-editor-container">
+                            <textarea class="develop-code-editor" spellcheck="false">import numpy as np
+from alphapulse import Strategy, Signal
+
+class MomentumVolumeStrategy(Strategy):
+    """Enhanced momentum strategy with volume confirmation"""
+    
+    def __init__(self, momentum_period=20, volume_period=30, volume_multiplier=1.5):
+        super().__init__()
+        self.momentum_period = momentum_period
+        self.volume_period = volume_period
+        self.volume_multiplier = volume_multiplier
+        
+    def generate_signals(self, data):
+        # Calculate momentum
+        momentum = data['close'].pct_change(self.momentum_period)
+        
+        # Calculate volume ratio
+        volume_ma = data['volume'].rolling(self.volume_period).mean()
+        volume_ratio = data['volume'] / volume_ma
+        
+        # Generate signals
+        long_signal = (momentum > 0.02) & (volume_ratio > self.volume_multiplier)
+        short_signal = (momentum < -0.02) & (volume_ratio > self.volume_multiplier)
+        
+        return Signal(long=long_signal, short=short_signal)
+    
+    def calculate_position_size(self, signal_strength, account_value):
+        """Kelly criterion based position sizing"""
+        return min(signal_strength * 0.25, 0.1) * account_value</textarea>
+                        </div>
+                        
+                        <div class="strategy-config">
+                            <h3>Strategy Configuration</h3>
+                            <div class="config-grid">
+                                <div class="config-item">
+                                    <label>Momentum Period</label>
+                                    <input type="number" value="20" min="5" max="100">
+                                </div>
+                                <div class="config-item">
+                                    <label>Volume Period</label>
+                                    <input type="number" value="30" min="10" max="200">
+                                </div>
+                                <div class="config-item">
+                                    <label>Volume Multiplier</label>
+                                    <input type="number" value="1.5" min="1.0" max="5.0" step="0.1">
+                                </div>
+                                <div class="config-item">
+                                    <label>Max Position Size</label>
+                                    <input type="number" value="0.1" min="0.01" max="0.5" step="0.01">
+                                </div>
+                            </div>
+                            
+                            <div class="config-actions">
+                                <button class="btn">Validate</button>
+                                <button class="btn">Backtest</button>
+                                <button class="btn success">Deploy to Production</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Data Feeds Section (hidden) -->
+                <div class="develop-content" id="data-feeds-content">
+                    <div class="develop-header">
+                        <h2>Data Feed Configuration</h2>
+                        <div class="develop-actions">
+                            <button class="btn-small">Add Feed</button>
+                        </div>
+                    </div>
+                    
+                    <div class="feeds-grid">
+                        <div class="feed-card">
+                            <div class="feed-header">
+                                <h3>Alpaca Markets</h3>
+                                <span class="feed-status active">Active</span>
+                            </div>
+                            <div class="feed-info">
+                                <div>Type: Equities</div>
+                                <div>Symbols: SPY, QQQ, IWM</div>
+                                <div>Frequency: 1m, 5m, 1d</div>
+                                <div>Latency: ~50ms</div>
+                            </div>
+                            <div class="feed-actions">
+                                <button class="btn-small">Configure</button>
+                                <button class="btn-small">Test Connection</button>
+                            </div>
+                        </div>
+                        
+                        <div class="feed-card">
+                            <div class="feed-header">
+                                <h3>Interactive Brokers</h3>
+                                <span class="feed-status inactive">Inactive</span>
+                            </div>
+                            <div class="feed-info">
+                                <div>Type: Futures</div>
+                                <div>Symbols: ES, NQ, RTY</div>
+                                <div>Frequency: tick, 1s, 1m</div>
+                                <div>Latency: ~10ms</div>
+                            </div>
+                            <div class="feed-actions">
+                                <button class="btn-small">Configure</button>
+                                <button class="btn-small">Test Connection</button>
+                            </div>
+                        </div>
+                        
+                        <div class="feed-card">
+                            <div class="feed-header">
+                                <h3>Custom WebSocket</h3>
+                                <span class="feed-status active">Active</span>
+                            </div>
+                            <div class="feed-info">
+                                <div>Type: Crypto</div>
+                                <div>Symbols: BTC-USD, ETH-USD</div>
+                                <div>Frequency: tick</div>
+                                <div>Latency: ~5ms</div>
+                            </div>
+                            <div class="feed-actions">
+                                <button class="btn-small">Configure</button>
+                                <button class="btn-small">Test Connection</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Other sections can be added here -->
+                </div>
+                
+                <!-- PDF Viewer -->
+                <div class="pdf-viewer">
+                    <div class="pdf-header">
+                        <div class="pdf-title" id="pdfTitle">No document loaded</div>
+                        <div class="pdf-controls">
+                            <span class="pdf-page-info" id="pdfPageInfo">-</span>
+                            <button class="pdf-control-btn" onclick="previousPage()">◀</button>
+                            <button class="pdf-control-btn" onclick="nextPage()">▶</button>
+                            <button class="pdf-control-btn" onclick="zoomOut()">-</button>
+                            <button class="pdf-control-btn" onclick="zoomIn()">+</button>
+                            <button class="pdf-control-btn" onclick="closePDF()">✕</button>
+                        </div>
+                    </div>
+                    <div class="pdf-content" id="pdfContent">
+                        <div style="text-align: center; padding: 40px; color: #858585;">
+                            <p style="font-size: 16px; margin-bottom: 20px;">📄 Reference Mode</p>
+                            <p style="margin-bottom: 16px;">Load a research paper to view alongside your code</p>
+                            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                                <button class="btn-small" onclick="loadPDFFromURL()">Load from URL</button>
+                                <button class="btn-small" onclick="showRecentPapers()">Recent Papers</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Catalog View Modal -->
+    <div class="catalog-view" id="catalogView">
+        <div class="catalog-container">
+            <div class="catalog-header">
+                <div class="catalog-title">Strategy & Feature Catalog</div>
+                <button class="catalog-close" onclick="closeCatalog()">×</button>
+            </div>
+            <div class="catalog-search">
+                <input type="text" class="catalog-search-input" placeholder="Search catalog..." onkeyup="searchCatalog(event)">
+            </div>
+            <div class="catalog-body">
+                <div class="catalog-tree" id="catalogTree">
+                    <!-- Tree will be populated by JavaScript -->
+                </div>
+                <div class="catalog-details" id="catalogDetails">
+                    <div style="text-align: center; color: #858585; padding: 40px;">
+                        Select an item from the catalog to view details
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Mock data for strategies and features
+        const allStrategies = [
+            { id: 'momentum_volume', name: 'momentum_volume.py', modified: '2h ago', version: 'v1.3', type: 'strategy' },
+            { id: 'mean_reversion', name: 'mean_reversion.py', modified: '1d ago', version: 'v2.1', type: 'strategy' },
+            { id: 'pairs_trading', name: 'pairs_trading.py', modified: '3d ago', version: 'v1.0', type: 'strategy' },
+            { id: 'stat_arb', name: 'statistical_arbitrage.py', modified: '5d ago', version: 'v3.2', type: 'strategy' },
+            { id: 'ml_ensemble', name: 'ml_ensemble.py', modified: '1w ago', version: 'v1.8', type: 'strategy' },
+            { id: 'options_delta', name: 'options_delta_hedge.py', modified: '2w ago', version: 'v2.0', type: 'strategy' },
+            { id: 'crypto_arb', name: 'crypto_arbitrage.py', modified: '3w ago', version: 'v1.5', type: 'strategy' },
+            { id: 'factor_model', name: 'multi_factor_model.py', modified: '1m ago', version: 'v4.1', type: 'strategy' },
+        ];
+        
+        const allFeatures = [
+            { id: 'volatility', name: 'volatility_features.py', desc: 'GARCH, RV, Parkinson', usage: 12, type: 'feature' },
+            { id: 'microstructure', name: 'microstructure.py', desc: 'Spread, Imbalance, Flow', usage: 8, type: 'feature' },
+            { id: 'sentiment', name: 'sentiment_analysis.py', desc: 'News, Social, Options', usage: 5, type: 'feature' },
+            { id: 'technical', name: 'technical_indicators.py', desc: 'RSI, MACD, Bollinger', usage: 15, type: 'feature' },
+            { id: 'fundamental', name: 'fundamental_data.py', desc: 'Earnings, Revenue, Ratios', usage: 7, type: 'feature' },
+        ];
+        
+        const strategyCode = {
+            momentum_volume: `import numpy as np
+from alphapulse import Strategy, Signal
+
+class MomentumVolumeStrategy(Strategy):
+    """Enhanced momentum strategy with volume confirmation"""
+    
+    def __init__(self, momentum_period=20, volume_period=30, volume_multiplier=1.5):
+        super().__init__()
+        self.momentum_period = momentum_period
+        self.volume_period = volume_period
+        self.volume_multiplier = volume_multiplier
+        
+    def generate_signals(self, data):
+        # Calculate momentum
+        momentum = data['close'].pct_change(self.momentum_period)
+        
+        # Calculate volume ratio
+        volume_ma = data['volume'].rolling(self.volume_period).mean()
+        volume_ratio = data['volume'] / volume_ma
+        
+        # Generate signals
+        long_signal = (momentum > 0.02) & (volume_ratio > self.volume_multiplier)
+        short_signal = (momentum < -0.02) & (volume_ratio > self.volume_multiplier)
+        
+        return Signal(long=long_signal, short=short_signal)
+    
+    def calculate_position_size(self, signal_strength, account_value):
+        """Kelly criterion based position sizing"""
+        return min(signal_strength * 0.25, 0.1) * account_value`,
+            
+            mean_reversion: `import numpy as np
+from alphapulse import Strategy, Signal
+
+class MeanReversionStrategy(Strategy):
+    """Volatility-adjusted mean reversion strategy"""
+    
+    def __init__(self, lookback=20, entry_std=2.5, exit_std=0.5):
+        super().__init__()
+        self.lookback = lookback
+        self.entry_std = entry_std
+        self.exit_std = exit_std
+        
+    def generate_signals(self, data):
+        # Calculate rolling statistics
+        rolling_mean = data['close'].rolling(self.lookback).mean()
+        rolling_std = data['close'].rolling(self.lookback).std()
+        
+        # Calculate z-score
+        z_score = (data['close'] - rolling_mean) / rolling_std
+        
+        # Entry signals
+        long_entry = z_score < -self.entry_std
+        short_entry = z_score > self.entry_std
+        
+        # Exit signals
+        long_exit = z_score > -self.exit_std
+        short_exit = z_score < self.exit_std
+        
+        return Signal(
+            long_entry=long_entry,
+            long_exit=long_exit,
+            short_entry=short_entry,
+            short_exit=short_exit
+        )`
+        };
+
+        function showDevelopSection(section) {
+            // Update menu
+            document.querySelectorAll('.develop-menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.develop-menu-item').classList.add('active');
+            
+            // Update content
+            document.querySelectorAll('.develop-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            const sectionContent = document.getElementById(section + '-content');
+            if (sectionContent) {
+                sectionContent.classList.add('active');
+            }
+        }
+        
+        function searchComponents(event) {
+            const query = event.target.value.toLowerCase();
+            
+            if (query.length < 2) {
+                hideSearchResults();
+                return;
+            }
+            
+            const results = [];
+            
+            // Search strategies
+            allStrategies.forEach(strategy => {
+                if (strategy.name.toLowerCase().includes(query)) {
+                    results.push({
+                        ...strategy,
+                        displayName: strategy.name,
+                        displayMeta: `Modified ${strategy.modified} • ${strategy.version}`
+                    });
+                }
+            });
+            
+            // Search features
+            allFeatures.forEach(feature => {
+                if (feature.name.toLowerCase().includes(query) || feature.desc.toLowerCase().includes(query)) {
+                    results.push({
+                        ...feature,
+                        displayName: feature.name,
+                        displayMeta: `${feature.desc} • Used in ${feature.usage} strategies`
+                    });
+                }
+            });
+            
+            showSearchResults(results);
+        }
+        
+        function showSearchResults(results) {
+            let resultsHtml = '';
+            
+            if (results.length === 0) {
+                resultsHtml = '<div class="search-result-item">No results found</div>';
+            } else {
+                results.forEach(result => {
+                    resultsHtml += `
+                        <div class="search-result-item" onclick="loadFromSearch('${result.type}', '${result.id}')">
+                            <span class="menu-icon">${result.type === 'strategy' ? '📊' : '🔧'}</span>
+                            <div class="item-details">
+                                <span class="item-name">${result.displayName}</span>
+                                <span class="item-meta">${result.displayMeta}</span>
+                            </div>
+                            <span class="search-result-type">${result.type}</span>
+                        </div>
+                    `;
+                });
+            }
+            
+            // Create or update search results container
+            let searchResults = document.querySelector('.search-results');
+            if (!searchResults) {
+                searchResults = document.createElement('div');
+                searchResults.className = 'search-results';
+                document.querySelector('.search-container').appendChild(searchResults);
+            }
+            
+            searchResults.innerHTML = resultsHtml;
+            searchResults.style.display = 'block';
+        }
+        
+        function hideSearchResults() {
+            const searchResults = document.querySelector('.search-results');
+            if (searchResults) {
+                searchResults.style.display = 'none';
+            }
+        }
+        
+        function loadFromSearch(type, id) {
+            hideSearchResults();
+            if (type === 'strategy') {
+                loadStrategy(id);
+            } else {
+                loadFeature(id);
+            }
+        }
+        
+        function loadStrategy(strategyId) {
+            // Show strategies section
+            document.querySelectorAll('.develop-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById('strategies-content').classList.add('active');
+            
+            // Update editor
+            const code = strategyCode[strategyId] || '# Strategy code not found';
+            document.querySelector('.develop-code-editor').value = code;
+            
+            // Update active tab
+            document.querySelectorAll('.editor-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector('.editor-tab').classList.add('active');
+            
+            // Update sidebar
+            document.querySelectorAll('.develop-menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+        }
+        
+        function loadFeature(featureId) {
+            // Show features section
+            showDevelopSection('features');
+            console.log('Loading feature:', featureId);
+        }
+        
+        function showAllStrategies() {
+            const list = document.getElementById('strategiesList');
+            let html = '';
+            
+            allStrategies.forEach(strategy => {
+                html += `
+                    <div class="develop-menu-item" onclick="loadStrategy('${strategy.id}')">
+                        <span class="menu-icon">📊</span>
+                        <div class="item-details">
+                            <span class="item-name">${strategy.name}</span>
+                            <span class="item-meta">Modified ${strategy.modified} • ${strategy.version}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            list.innerHTML = html;
+            event.target.style.display = 'none';
+        }
+        
+        function showAllFeatures() {
+            const list = document.getElementById('featuresList');
+            let html = '';
+            
+            allFeatures.forEach(feature => {
+                html += `
+                    <div class="develop-menu-item" onclick="loadFeature('${feature.id}')">
+                        <span class="menu-icon">🔧</span>
+                        <div class="item-details">
+                            <span class="item-name">${feature.name}</span>
+                            <span class="item-meta">${feature.desc} • Used in ${feature.usage} strategies</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            list.innerHTML = html;
+            event.target.style.display = 'none';
+        }
+        
+        // Close search results when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-container')) {
+                hideSearchResults();
+            }
+        });
+        
+        // Catalog Data Structure
+        const catalogStructure = {
+            strategies: {
+                label: 'Strategies',
+                icon: '📊',
+                children: {
+                    indicators: {
+                        label: 'Indicator-Based',
+                        icon: '📈',
+                        children: {
+                            trend: {
+                                label: 'Trend Following',
+                                icon: '📉',
+                                items: [
+                                    { name: 'ma.py', desc: 'Moving Average Crossover', params: ['fast_period', 'slow_period'], version: 'v2.1' },
+                                    { name: 'ma_adaptive.py', desc: 'Adaptive Moving Average', params: ['efficiency_ratio', 'fast_period'], version: 'v1.3' },
+                                    { name: 'trend_following.py', desc: 'General Trend Following', params: ['lookback', 'threshold'], version: 'v3.0' }
+                                ]
+                            },
+                            momentum: {
+                                label: 'Momentum',
+                                icon: '🚀',
+                                items: [
+                                    { name: 'momentum.py', desc: 'Rate of Change Momentum', params: ['period', 'threshold'], version: 'v2.5' },
+                                    { name: 'macd.py', desc: 'MACD Strategy', params: ['fast', 'slow', 'signal'], version: 'v1.8' }
+                                ]
+                            },
+                            oscillators: {
+                                label: 'Oscillators',
+                                icon: '〰️',
+                                items: [
+                                    { name: 'rsi.py', desc: 'RSI Overbought/Oversold', params: ['period', 'oversold', 'overbought'], version: 'v2.2' },
+                                    { name: 'oscillators.py', desc: 'Multiple Oscillator Signals', params: ['rsi_period', 'stoch_period'], version: 'v1.5' }
+                                ]
+                            },
+                            structure: {
+                                label: 'Market Structure',
+                                icon: '🏗️',
+                                items: [
+                                    { name: 'swing_pivot_bounce_flex.py', desc: 'Flexible Swing Pivot Detection', params: ['left_bars', 'right_bars'], version: 'v1.2' },
+                                    { name: 'swing_pivot_bounce_target.py', desc: 'Target-Based Pivot Trading', params: ['pivot_strength', 'target_ratio'], version: 'v1.0' },
+                                    { name: 'swing_pivot_bounce_zones.py', desc: 'Support/Resistance Zones', params: ['zone_width', 'min_touches'], version: 'v1.1' }
+                                ]
+                            },
+                            volatility: {
+                                label: 'Volatility',
+                                icon: '📊',
+                                items: [
+                                    { name: 'channels.py', desc: 'Bollinger/Keltner Channels', params: ['period', 'std_dev'], version: 'v2.0' }
+                                ]
+                            },
+                            volume: {
+                                label: 'Volume',
+                                icon: '📊',
+                                items: [
+                                    { name: 'vwap.py', desc: 'VWAP Trading Strategy', params: ['lookback', 'deviation'], version: 'v1.7' }
+                                ]
+                            },
+                            mean_reversion: {
+                                label: 'Mean Reversion',
+                                icon: '↩️',
+                                items: [
+                                    { name: 'mean_reversion.py', desc: 'Statistical Mean Reversion', params: ['lookback', 'z_score_entry', 'z_score_exit'], version: 'v3.1' }
+                                ]
+                            },
+                            breakout: {
+                                label: 'Breakout',
+                                icon: '💥',
+                                items: [
+                                    { name: 'breakout.py', desc: 'Range Breakout Detection', params: ['lookback', 'breakout_multiplier'], version: 'v2.3' }
+                                ]
+                            }
+                        }
+                    },
+                    ml_based: {
+                        label: 'ML-Based',
+                        icon: '🤖',
+                        children: {
+                            ensemble: {
+                                label: 'Ensemble Methods',
+                                icon: '🎭',
+                                items: [
+                                    { name: 'random_forest_signals.py', desc: 'Random Forest Classifier', params: ['n_estimators', 'max_depth', 'features'], version: 'v1.0' },
+                                    { name: 'xgboost_regime.py', desc: 'XGBoost Regime Detection', params: ['learning_rate', 'n_rounds'], version: 'v1.2' }
+                                ]
+                            },
+                            neural: {
+                                label: 'Neural Networks',
+                                icon: '🧠',
+                                items: [
+                                    { name: 'lstm_prediction.py', desc: 'LSTM Price Prediction', params: ['sequence_length', 'hidden_units'], version: 'v0.9' },
+                                    { name: 'transformer_signals.py', desc: 'Attention-Based Trading', params: ['n_heads', 'n_layers'], version: 'v0.8' }
+                                ]
+                            }
+                        }
+                    },
+                    statistical: {
+                        label: 'Statistical',
+                        icon: '📐',
+                        children: {
+                            pairs: {
+                                label: 'Pairs Trading',
+                                icon: '👥',
+                                items: [
+                                    { name: 'cointegration_pairs.py', desc: 'Cointegrated Pairs Trading', params: ['lookback', 'zscore_entry'], version: 'v2.4' },
+                                    { name: 'distance_pairs.py', desc: 'Distance-Based Pairs', params: ['rolling_window', 'threshold'], version: 'v1.6' }
+                                ]
+                            },
+                            arbitrage: {
+                                label: 'Arbitrage',
+                                icon: '⚖️',
+                                items: [
+                                    { name: 'stat_arb_basket.py', desc: 'Statistical Arbitrage Basket', params: ['n_assets', 'rebalance_freq'], version: 'v1.9' }
+                                ]
+                            }
+                        }
+                    },
+                    alternative: {
+                        label: 'Alternative Data',
+                        icon: '🌐',
+                        children: {
+                            sentiment: {
+                                label: 'Sentiment',
+                                icon: '💭',
+                                items: [
+                                    { name: 'news_sentiment.py', desc: 'News Sentiment Trading', params: ['sentiment_threshold', 'decay_rate'], version: 'v1.3' },
+                                    { name: 'social_momentum.py', desc: 'Social Media Momentum', params: ['mention_threshold', 'sentiment_weight'], version: 'v0.7' }
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            features: {
+                label: 'Features',
+                icon: '🔧',
+                children: {
+                    indicators: {
+                        label: 'Technical Indicators',
+                        icon: '📊',
+                        children: {
+                            momentum: {
+                                label: 'Momentum',
+                                icon: '🚀',
+                                items: [
+                                    { name: 'momentum.py', desc: 'ROC, RSI, Stochastic', functions: ['rate_of_change', 'rsi', 'stochastic'], version: 'v3.0' },
+                                    { name: 'oscillators.py', desc: 'CCI, Williams %R, Ultimate', functions: ['cci', 'williams_r', 'ultimate_oscillator'], version: 'v2.1' }
+                                ]
+                            },
+                            trend: {
+                                label: 'Trend',
+                                icon: '📈',
+                                items: [
+                                    { name: 'trend.py', desc: 'ADX, Aroon, Supertrend', functions: ['adx', 'aroon', 'supertrend'], version: 'v2.5' }
+                                ]
+                            },
+                            volatility: {
+                                label: 'Volatility',
+                                icon: '📊',
+                                items: [
+                                    { name: 'volatility.py', desc: 'ATR, Bollinger Bands, Keltner', functions: ['atr', 'bollinger_bands', 'keltner_channel'], version: 'v2.8' },
+                                    { name: 'volatility_percentile.py', desc: 'Realized Vol Percentiles', functions: ['rv_percentile', 'garch_vol'], version: 'v1.4' }
+                                ]
+                            },
+                            volume: {
+                                label: 'Volume',
+                                icon: '📊',
+                                items: [
+                                    { name: 'volume.py', desc: 'OBV, CMF, Volume Profile', functions: ['obv', 'cmf', 'volume_profile'], version: 'v2.2' }
+                                ]
+                            },
+                            structure: {
+                                label: 'Structure',
+                                icon: '🏗️',
+                                items: [
+                                    { name: 'structure.py', desc: 'Pivots, Support/Resistance', functions: ['pivot_points', 'support_resistance'], version: 'v1.9' }
+                                ]
+                            }
+                        }
+                    },
+                    composite: {
+                        label: 'Composite Features',
+                        icon: '🔀',
+                        items: [
+                            { name: 'divergence.py', desc: 'Price/Indicator Divergences', functions: ['rsi_divergence', 'macd_divergence'], version: 'v1.6' },
+                            { name: 'bb_rsi_divergence.py', desc: 'Bollinger RSI Divergence', functions: ['bb_rsi_signal'], version: 'v2.0' }
+                        ]
+                    },
+                    microstructure: {
+                        label: 'Microstructure',
+                        icon: '🔬',
+                        items: [
+                            { name: 'spread_analysis.py', desc: 'Bid-Ask Spread Features', functions: ['effective_spread', 'realized_spread'], version: 'v1.2' },
+                            { name: 'order_flow.py', desc: 'Order Flow Imbalance', functions: ['flow_imbalance', 'trade_intensity'], version: 'v1.0' }
+                        ]
+                    }
+                }
+            },
+            components: {
+                label: 'Components',
+                icon: '🧩',
+                children: {
+                    wrappers: {
+                        label: 'Strategy Wrappers',
+                        icon: '📦',
+                        items: [
+                            { name: 'constrained_strategy_wrapper.py', desc: 'Add constraints to any strategy', params: ['max_positions', 'position_size'], version: 'v1.5' },
+                            { name: 'config_filter.py', desc: 'Configuration-based filtering', params: ['allowed_symbols', 'time_filters'], version: 'v1.2' }
+                        ]
+                    },
+                    helpers: {
+                        label: 'Helpers',
+                        icon: '🛠️',
+                        items: [
+                            { name: 'eod_timeframe_helper.py', desc: 'End-of-day data handling', functions: ['aggregate_to_daily', 'get_close_prices'], version: 'v1.1' },
+                            { name: 'signal_aggregation.py', desc: 'Combine multiple signals', functions: ['vote_signals', 'weighted_signals'], version: 'v2.3' }
+                        ]
+                    }
+                }
+            }
+        };
+        
+        // Catalog Functions
+        function showCatalog() {
+            document.getElementById('catalogView').classList.add('active');
+            renderCatalogTree();
+        }
+        
+        function closeCatalog() {
+            document.getElementById('catalogView').classList.remove('active');
+        }
+        
+        function renderCatalogTree() {
+            const treeContainer = document.getElementById('catalogTree');
+            treeContainer.innerHTML = '';
+            
+            Object.entries(catalogStructure).forEach(([key, category]) => {
+                const node = createTreeNode(key, category, 0);
+                treeContainer.appendChild(node);
+            });
+        }
+        
+        function createTreeNode(key, data, level) {
+            const node = document.createElement('div');
+            node.className = 'tree-node';
+            node.dataset.key = key;
+            
+            const header = document.createElement('div');
+            header.className = 'tree-node-header';
+            header.onclick = () => toggleNode(node, key, data);
+            
+            const toggle = document.createElement('span');
+            toggle.className = 'tree-toggle';
+            toggle.textContent = data.children || data.items ? '▶' : '';
+            header.appendChild(toggle);
+            
+            const icon = document.createElement('span');
+            icon.className = 'tree-icon';
+            icon.textContent = data.icon || '📄';
+            header.appendChild(icon);
+            
+            const label = document.createElement('span');
+            label.className = 'tree-label';
+            label.textContent = data.label || data.name || key;
+            header.appendChild(label);
+            
+            if (data.items) {
+                const count = document.createElement('span');
+                count.className = 'tree-count';
+                count.textContent = `(${data.items.length})`;
+                header.appendChild(count);
+            } else if (data.children) {
+                const count = document.createElement('span');
+                count.className = 'tree-count';
+                count.textContent = `(${countItems(data.children)})`;
+                header.appendChild(count);
+            }
+            
+            node.appendChild(header);
+            
+            if (data.children) {
+                const childrenContainer = document.createElement('div');
+                childrenContainer.className = 'tree-children';
+                
+                Object.entries(data.children).forEach(([childKey, childData]) => {
+                    const childNode = createTreeNode(childKey, childData, level + 1);
+                    childrenContainer.appendChild(childNode);
+                });
+                
+                node.appendChild(childrenContainer);
+            }
+            
+            return node;
+        }
+        
+        function countItems(obj) {
+            let count = 0;
+            if (obj.items) {
+                count += obj.items.length;
+            }
+            if (obj.children) {
+                Object.values(obj.children).forEach(child => {
+                    count += countItems(child);
+                });
+            }
+            return count;
+        }
+        
+        function toggleNode(node, key, data) {
+            // Toggle expansion
+            if (data.children || data.items) {
+                node.classList.toggle('expanded');
+            }
+            
+            // Update selection
+            document.querySelectorAll('.tree-node-header').forEach(h => h.classList.remove('selected'));
+            node.querySelector('.tree-node-header').classList.add('selected');
+            
+            // Show details
+            showCatalogDetails(key, data);
+        }
+        
+        function showCatalogDetails(key, data) {
+            const detailsContainer = document.getElementById('catalogDetails');
+            
+            if (data.items) {
+                // Show list of items
+                let html = `
+                    <div class="detail-header">
+                        <div class="detail-title">${data.icon} ${data.label}</div>
+                        <div class="detail-meta">${data.items.length} items</div>
+                    </div>
+                `;
+                
+                html += '<div class="detail-section">';
+                html += '<div class="detail-section-title">Available Modules</div>';
+                html += '<ul class="detail-list">';
+                
+                data.items.forEach(item => {
+                    html += `
+                        <li class="detail-list-item" onclick="loadFromCatalog('${item.name}')">
+                            <span class="tree-icon">📄</span>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">${item.name}</div>
+                                <div style="font-size: 11px; color: #858585; margin-top: 2px;">${item.desc}</div>
+                                <div style="margin-top: 4px;">
+                                    ${item.params ? item.params.map(p => `<span class="detail-tag">${p}</span>`).join('') : ''}
+                                    ${item.functions ? item.functions.map(f => `<span class="detail-tag">${f}()</span>`).join('') : ''}
+                                    <span class="detail-tag" style="background: #094771; color: #4ec9b0; border-color: #007acc;">${item.version}</span>
+                                </div>
+                            </div>
+                        </li>
+                    `;
+                });
+                
+                html += '</ul></div>';
+                detailsContainer.innerHTML = html;
+            } else if (data.children) {
+                // Show category overview
+                let html = `
+                    <div class="detail-header">
+                        <div class="detail-title">${data.icon} ${data.label}</div>
+                        <div class="detail-meta">${countItems(data)} total items</div>
+                    </div>
+                `;
+                
+                html += '<div class="detail-section">';
+                html += '<div class="detail-section-title">Subcategories</div>';
+                html += '<ul class="detail-list">';
+                
+                Object.entries(data.children).forEach(([childKey, childData]) => {
+                    const itemCount = countItems(childData);
+                    html += `
+                        <li class="detail-list-item">
+                            <span class="tree-icon">${childData.icon || '📁'}</span>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">${childData.label}</div>
+                                <div style="font-size: 11px; color: #858585; margin-top: 2px;">${itemCount} items</div>
+                            </div>
+                        </li>
+                    `;
+                });
+                
+                html += '</ul></div>';
+                detailsContainer.innerHTML = html;
+            } else {
+                // Show welcome message
+                detailsContainer.innerHTML = `
+                    <div style="text-align: center; color: #858585; padding: 40px;">
+                        <div style="font-size: 48px; margin-bottom: 16px;">${data.icon || '📚'}</div>
+                        <div style="font-size: 16px; font-weight: 500; color: #cccccc; margin-bottom: 8px;">${data.label}</div>
+                        <div>Browse the catalog to explore available strategies and features</div>
+                    </div>
+                `;
+            }
+        }
+        
+        function loadFromCatalog(filename) {
+            closeCatalog();
+            // Load the strategy/feature
+            console.log('Loading from catalog:', filename);
+            // You can implement actual loading logic here
+        }
+        
+        function searchCatalog(event) {
+            const query = event.target.value.toLowerCase();
+            if (query.length < 2) {
+                renderCatalogTree();
+                return;
+            }
+            
+            // Filter and show matching items
+            const results = [];
+            searchInStructure(catalogStructure, query, results);
+            
+            // Render filtered results
+            const treeContainer = document.getElementById('catalogTree');
+            treeContainer.innerHTML = '';
+            
+            if (results.length === 0) {
+                treeContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #858585;">No results found</div>';
+            } else {
+                results.forEach(result => {
+                    const item = document.createElement('div');
+                    item.className = 'tree-node-header';
+                    item.style.paddingLeft = '20px';
+                    item.onclick = () => showCatalogDetails(result.key, result.parent);
+                    
+                    item.innerHTML = `
+                        <span class="tree-icon">${result.icon || '📄'}</span>
+                        <span class="tree-label">${result.name}</span>
+                        <span style="color: #858585; font-size: 11px; margin-left: 8px;">${result.path}</span>
+                    `;
+                    
+                    treeContainer.appendChild(item);
+                });
+            }
+        }
+        
+        function searchInStructure(obj, query, results, path = '') {
+            Object.entries(obj).forEach(([key, data]) => {
+                const currentPath = path ? `${path} > ${data.label || key}` : (data.label || key);
+                
+                if (data.items) {
+                    data.items.forEach(item => {
+                        if (item.name.toLowerCase().includes(query) || 
+                            item.desc.toLowerCase().includes(query) ||
+                            (item.params && item.params.some(p => p.toLowerCase().includes(query))) ||
+                            (item.functions && item.functions.some(f => f.toLowerCase().includes(query)))) {
+                            results.push({
+                                key: key,
+                                name: item.name,
+                                desc: item.desc,
+                                icon: data.icon,
+                                path: currentPath,
+                                parent: data
+                            });
+                        }
+                    });
+                }
+                
+                if (data.children) {
+                    searchInStructure(data.children, query, results, currentPath);
+                }
+            });
+        }
+        
+        // Close catalog on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('catalogView').classList.contains('active')) {
+                closeCatalog();
+            }
+        });
+        
+        // PDF Viewer Functions
+        let currentPDF = null;
+        let currentPage = 1;
+        let totalPages = 0;
+        let pdfZoom = 1;
+        
+        function toggleReference() {
+            const container = document.querySelector('.develop-container');
+            const btn = document.querySelector('.reference-btn');
+            
+            if (container.classList.contains('split-view')) {
+                container.classList.remove('split-view');
+                btn.classList.remove('active');
+            } else {
+                container.classList.add('split-view');
+                btn.classList.add('active');
+            }
+        }
+        
+        function loadPDFFromURL() {
+            const url = prompt('Enter PDF URL (e.g., from arXiv):');
+            if (url) {
+                loadPDF(url);
+            }
+        }
+        
+        function loadPDF(url) {
+            const pdfContent = document.getElementById('pdfContent');
+            const pdfTitle = document.getElementById('pdfTitle');
+            
+            // Extract title from URL
+            const urlParts = url.split('/');
+            const filename = urlParts[urlParts.length - 1];
+            pdfTitle.textContent = filename;
+            
+            // Create iframe for PDF
+            pdfContent.innerHTML = `
+                <iframe class="pdf-embed" src="${url}" style="transform: scale(${pdfZoom});">
+                    <p>Your browser does not support PDFs. <a href="${url}" target="_blank">Download the PDF</a>.</p>
+                </iframe>
+            `;
+            
+            currentPDF = url;
+            updatePDFInfo();
+        }
+        
+        function showRecentPapers() {
+            const papers = [
+                { title: 'Multi-Armed Bandits for Dynamic Portfolio Allocation', url: 'https://arxiv.org/pdf/2401.12345.pdf' },
+                { title: 'Attention Is All You Need for Price Prediction', url: 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4567890' },
+                { title: 'Hidden Markov Models for Regime Detection', url: 'https://quantstart.com/articles/hmm-regime-detection.pdf' }
+            ];
+            
+            const pdfContent = document.getElementById('pdfContent');
+            let html = '<div style="padding: 20px;">';
+            html += '<h3 style="color: #cccccc; margin-bottom: 16px;">Recent Papers from Feed</h3>';
+            
+            papers.forEach(paper => {
+                html += `
+                    <div style="padding: 12px; background: #2d2d30; border-radius: 4px; margin-bottom: 8px; cursor: pointer;" 
+                         onclick="loadPDF('${paper.url}')">
+                        <div style="color: #4ec9b0; font-size: 14px;">${paper.title}</div>
+                        <div style="color: #858585; font-size: 11px; margin-top: 4px;">${paper.url}</div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            pdfContent.innerHTML = html;
+        }
+        
+        function closePDF() {
+            toggleReference();
+        }
+        
+        function updatePDFInfo() {
+            const pageInfo = document.getElementById('pdfPageInfo');
+            pageInfo.textContent = `Page ${currentPage}`;
+        }
+        
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                updatePDFInfo();
+            }
+        }
+        
+        function nextPage() {
+            currentPage++;
+            updatePDFInfo();
+        }
+        
+        function zoomIn() {
+            pdfZoom = Math.min(pdfZoom + 0.1, 2);
+            updatePDFZoom();
+        }
+        
+        function zoomOut() {
+            pdfZoom = Math.max(pdfZoom - 0.1, 0.5);
+            updatePDFZoom();
+        }
+        
+        function updatePDFZoom() {
+            const iframe = document.querySelector('.pdf-embed');
+            if (iframe) {
+                iframe.style.transform = `scale(${pdfZoom})`;
+            }
+        }
+    </script>
+    
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    
+    <script>
+        // Enhanced code editor with syntax highlighting
+        function setupSyntaxHighlighting() {
+            const editor = document.querySelector('.develop-code-editor');
+            const container = document.querySelector('.code-editor-container');
+            
+            // Create a highlighted preview layer
+            const preview = document.createElement('pre');
+            preview.className = 'code-preview language-python';
+            preview.style.cssText = `
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 16px;
+                font-family: 'SF Mono', Monaco, Consolas, monospace;
+                font-size: 13px;
+                line-height: 1.6;
+                pointer-events: none;
+                overflow: auto;
+                background: transparent;
+                border: none;
+            `;
+            
+            const code = document.createElement('code');
+            code.className = 'language-python';
+            preview.appendChild(code);
+            
+            // Make editor transparent to show highlighting underneath
+            editor.style.cssText += `
+                position: relative;
+                z-index: 1;
+                color: transparent;
+                caret-color: #d4d4d4;
+                background: transparent;
+            `;
+            
+            // Insert preview before editor
+            container.style.position = 'relative';
+            container.insertBefore(preview, editor);
+            
+            // Update highlighting on input
+            function updateHighlighting() {
+                code.textContent = editor.value;
+                Prism.highlightElement(code);
+                
+                // Sync scroll
+                preview.scrollTop = editor.scrollTop;
+                preview.scrollLeft = editor.scrollLeft;
+            }
+            
+            // Initial highlight
+            updateHighlighting();
+            
+            // Update on various events
+            editor.addEventListener('input', updateHighlighting);
+            editor.addEventListener('scroll', () => {
+                preview.scrollTop = editor.scrollTop;
+                preview.scrollLeft = editor.scrollLeft;
+            });
+            
+            // Handle tab key for indentation
+            editor.addEventListener('keydown', (e) => {
+                if (e.key === 'Tab') {
+                    e.preventDefault();
+                    const start = editor.selectionStart;
+                    const end = editor.selectionEnd;
+                    const spaces = '    '; // 4 spaces
+                    
+                    editor.value = editor.value.substring(0, start) + spaces + editor.value.substring(end);
+                    editor.selectionStart = editor.selectionEnd = start + spaces.length;
+                    updateHighlighting();
+                }
+            });
+        }
+        
+        // Initialize syntax highlighting when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            setupSyntaxHighlighting();
+        });
+        
+        // Re-initialize when loading different strategies
+        const originalLoadStrategy = window.loadStrategy;
+        window.loadStrategy = function(strategyId) {
+            originalLoadStrategy(strategyId);
+            setTimeout(setupSyntaxHighlighting, 100);
+        };
+    </script>
+</body>
+</html>
