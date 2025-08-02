@@ -3,806 +3,1044 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#007acc" id="theme-color">
-    <title>AlphaPulse</title>
-    <link rel="stylesheet" href="mobile-utils.css">
+    <meta name="theme-color" content="#4ec9b0" id="theme-color">
+    <title>AlphaPulse - Quantitative Trading News</title>
+    
+    <!-- Shared styles with Full Stack Open design -->
+    <link rel="stylesheet" href="shared.css">
+    
+    <!-- Newspaper fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Serif+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Page-specific styles -->
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-size: 13px;
+        /* Override for newspaper feel */
+        .news-container {
+            font-family: 'Source Serif Pro', 'Georgia', serif;
+            max-width: 100%;
             margin: 0;
-            padding: 0;
-            background: #1e1e1e;
-            color: #d4d4d4;
-            height: 100vh;
-            height: -webkit-fill-available;
-            min-height: -webkit-fill-available;
+            height: 100%;
             overflow: hidden;
         }
         
-        html {
-            height: -webkit-fill-available;
-        }
-
-        .app-container {
+        /* Main Grid Layout */
+        .content-grid {
             display: grid;
-            grid-template-rows: 32px 1fr;
-            height: 100vh;
-        }
-
-        .header {
-            background-color: #007acc;
-            height: 32px;
-            border-bottom: 1px solid #005a9e;
-            display: flex;
-            align-items: center;
-            padding: 0 12px;
-        }
-        
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            padding: 4px;
-            margin-right: 12px;
-        }
-
-        .header-content {
-            display: flex;
-            align-items: center;
-            width: 100%;
-        }
-
-        .logo {
-            font-weight: bold;
-            color: white;
-            text-decoration: none;
-            font-size: 14px;
-            margin-right: 20px;
-        }
-
-        .nav {
-            display: flex;
-            gap: 20px;
-            flex: 1;
-            transition: all 0.3s ease;
-        }
-        
-        .nav.mobile-hidden {
-            display: none;
-        }
-
-        .nav a {
-            color: white;
-            text-decoration: none;
-            padding: 4px 8px;
-            border-radius: 3px;
-            transition: background 0.2s;
-            font-size: 12px;
-        }
-
-        .nav a:hover {
-            background: rgba(255,255,255,0.1);
-        }
-        
-        .nav a.active {
-            background: rgba(255,255,255,0.2);
-        }
-        
-        .login-link {
-            color: white;
-            text-decoration: none;
-            padding: 4px 8px;
-            border-radius: 3px;
-            transition: background 0.2s;
-            font-size: 12px;
-            margin-left: auto;
-            cursor: pointer;
-        }
-        
-        .login-link:hover {
-            background: rgba(255,255,255,0.1);
-        }
-
-        .content-wrapper {
-            display: grid;
-            grid-template-columns: 1fr;
-            height: calc(100vh - 32px);
-            background: #252526;
-            transition: grid-template-columns 0.3s ease;
-        }
-
-        .content-wrapper.split {
             grid-template-columns: 1fr 1fr;
-        }
-
-        .main {
-            overflow-y: auto;
-            padding: 20px;
-            max-width: 700px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .content-wrapper.split .main {
-            max-width: none;
-            margin: 0;
-            border-right: 1px solid #3e3e42;
-        }
-
-        .item {
-            margin-bottom: 20px;
-            line-height: 1.5;
-            padding: 16px;
-            background: rgba(37, 37, 38, 0.5);
-            border: 1px solid transparent;
-            border-radius: 8px;
-            transition: all 0.3s;
-            cursor: pointer;
+            gap: var(--space-8);
+            height: calc(100vh - var(--header-height));
+            padding: var(--space-6);
+            overflow: hidden;
         }
         
-        .item:hover {
-            background: rgba(37, 37, 38, 0.8);
-            border-color: #3e3e42;
-            transform: translateX(4px);
+        /* Left Column - Link Submissions */
+        .submissions-column {
+            min-width: 0; /* Prevent overflow */
+            overflow-y: auto;
+            padding-right: var(--space-4);
+            height: 100%;
         }
-
-        .item.active {
-            background: rgba(9, 71, 113, 0.3);
-            border-color: #007acc;
+        
+        
+        /* Article Styles */
+        .article {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: var(--space-4);
+            padding: var(--space-4) 0;
+            border-bottom: 1px solid var(--color-border-primary);
+            transition: all var(--transition-fast);
         }
-
-        .item-line {
+        
+        .article:hover {
+            background-color: var(--color-bg-secondary);
+            margin-left: calc(-1 * var(--space-4));
+            margin-right: calc(-1 * var(--space-4));
+            padding-left: var(--space-4);
+            padding-right: var(--space-4);
+        }
+        
+        .article-rank {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-tertiary);
+            min-width: 40px;
+            padding-top: var(--space-1);
+        }
+        
+        .article-content {
             display: flex;
-            align-items: baseline;
-            gap: 4px;
-        }
-
-        .rank {
-            color: #4ec9b0;
-            font-size: 14px;
-            font-weight: 600;
-            width: 25px;
-            text-align: right;
-            margin-right: 12px;
-        }
-
-        .vote {
-            width: 0;
-            height: 0;
-            border-left: 5px solid transparent;
-            border-right: 5px solid transparent;
-            border-bottom: 10px solid #3e3e42;
-            cursor: pointer;
-            margin-right: 10px;
-            transition: all 0.2s;
-            transform: scale(0.9);
+            flex-direction: column;
+            gap: var(--space-2);
         }
         
-        .vote:hover {
-            border-bottom-color: #4ec9b0;
-            transform: scale(1.1) translateY(-2px);
-        }
-
-        .title {
-            color: #4ec9b0;
+        .article-headline {
+            font-family: 'Playfair Display', serif;
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            line-height: var(--line-height-tight);
+            color: var(--color-text-primary);
             text-decoration: none;
-            font-weight: 500;
-            font-size: 15px;
-            transition: color 0.2s;
-        }
-
-        .title:visited {
-            color: #858585;
+            transition: color var(--transition-fast);
         }
         
-        .title:hover {
-            color: #6edcc0;
+        .article-headline:hover {
+            color: var(--color-accent-primary);
             text-decoration: none;
         }
-
-        .domain {
-            color: #666666;
-            font-size: 11px;
-            margin-left: 4px;
+        
+        .article-source {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
         }
-
-        .subtext {
-            color: #969696;
-            font-size: 11px;
-            margin-left: 32px;
-            margin-top: 4px;
+        
+        .article-source .dot {
+            width: 3px;
+            height: 3px;
+            background: var(--color-text-tertiary);
+            border-radius: 50%;
         }
-
-        .subtext a {
-            color: #969696;
+        
+        .article-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-tertiary);
+        }
+        
+        .article-meta a {
+            color: var(--color-text-secondary);
             text-decoration: none;
-            transition: color 0.2s;
         }
         
-        .subtext a:hover {
-            color: #4ec9b0;
-        }
-
-        .comment-preview {
-            color: #969696;
-            font-size: 12px;
-            margin-left: 32px;
-            margin-top: 8px;
-            font-style: normal;
-            padding: 12px;
-            background: rgba(62, 62, 66, 0.3);
-            border-left: 3px solid #3e3e42;
-            border-radius: 4px;
-            line-height: 1.5;
-            transition: all 0.2s;
+        .article-meta a:hover {
+            color: var(--color-text-primary);
+            text-decoration: underline;
         }
         
-        .item:hover .comment-preview {
-            background: rgba(62, 62, 66, 0.5);
-            border-left-color: #4ec9b0;
+        /* Right Column - Modified Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: var(--space-4);
+            height: 100%;
+            overflow: hidden;
         }
-
-        /* Comments Panel */
-        .comments-panel {
+        
+        
+        /* Dashboard Cards */
+        .dashboard-card {
+            background: var(--color-bg-secondary);
+            border: 1px solid var(--color-border-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .dashboard-card-title {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-wide);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-3);
+            padding-bottom: var(--space-3);
+            border-bottom: 1px solid var(--color-border-primary);
             display: none;
-            overflow-y: auto;
-            padding: 20px;
-            background: #1e1e1e;
         }
-
-        .content-wrapper.split .comments-panel {
-            display: block;
+        
+        
+        /* Sector Heatmap */
+        .sector-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-2);
+            height: 100%;
         }
-
-        .comments-header {
+        
+        .sector-tile {
+            padding: var(--space-3);
+            text-align: center;
+            border-radius: var(--radius-md);
+            transition: all var(--transition-fast);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .sector-tile:hover {
+            transform: scale(1.05);
+        }
+        
+        .sector-name {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-wide);
+            margin-bottom: var(--space-1);
+        }
+        
+        .sector-value {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-bold);
+        }
+        
+        .sector-positive {
+            background: rgba(63, 185, 80, 0.15);
+            color: var(--color-accent-secondary);
+        }
+        
+        .sector-negative {
+            background: rgba(248, 81, 73, 0.15);
+            color: var(--color-accent-danger);
+        }
+        
+        .sector-neutral {
+            background: var(--color-bg-tertiary);
+            color: var(--color-text-secondary);
+        }
+        
+        
+        /* Placeholder Content */
+        .placeholder-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-text-tertiary);
+            font-size: var(--font-size-sm);
+            text-align: center;
+            padding: var(--space-4);
+        }
+        
+        /* Earnings Calendar */
+        .earnings-calendar {
+            display: grid;
+            grid-template-rows: repeat(2, 1fr);
+            gap: var(--space-1);
+            height: 100%;
+            padding: var(--space-1);
+        }
+        
+        .calendar-week {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: var(--space-1);
+        }
+        
+        .calendar-day {
+            background: var(--color-bg-tertiary);
+            border-radius: var(--radius-sm);
+            padding: var(--space-1);
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            transition: all var(--transition-fast);
+            cursor: pointer;
+            font-size: var(--font-size-xs);
+        }
+        
+        .calendar-day:hover {
+            background: var(--color-bg-primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .calendar-day.today {
+            background: var(--color-accent-primary);
+            color: white;
+        }
+        
+        .calendar-day.today .day-name,
+        .calendar-day.today .day-number {
+            color: white;
+        }
+        
+        .calendar-day.today .earning-dot {
+            background: white;
+            color: var(--color-accent-primary);
+        }
+        
+        .calendar-day.weekend {
+            opacity: 0.6;
+        }
+        
+        .calendar-day.future {
+            opacity: 0.7;
+            background: var(--color-bg-primary);
+        }
+        
+        .calendar-day.future .day-name,
+        .calendar-day.future .day-number {
+            color: var(--color-text-tertiary);
+        }
+        
+        .calendar-day.future .earning-dot {
+            opacity: 0.8;
+        }
+        
+        .calendar-day.fed-day {
+            background: rgba(88, 166, 255, 0.1);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+        }
+        
+        .calendar-day.fed-day:hover {
+            background: rgba(88, 166, 255, 0.15);
+            border-color: rgba(88, 166, 255, 0.5);
+        }
+        
+        .fed-indicator {
+            display: inline-block;
+            font-size: 9px;
+            font-weight: var(--font-weight-semibold);
+            background: rgba(88, 166, 255, 0.2);
+            color: var(--color-text-link);
+            padding: 1px 4px;
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--space-1);
+            text-transform: uppercase;
+        }
+        
+        .day-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid #3e3e42;
+            align-items: baseline;
+            margin-bottom: var(--space-2);
+            padding-bottom: var(--space-1);
+            border-bottom: 1px solid var(--color-border-primary);
         }
-
-        .comments-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #cccccc;
+        
+        .calendar-day.today .day-header {
+            border-bottom-color: rgba(255, 255, 255, 0.3);
         }
-
-        .close-btn {
-            background: none;
-            border: none;
-            color: #858585;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 3px;
-            transition: all 0.2s;
+        
+        .day-name {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-wide);
+            color: var(--color-text-secondary);
         }
-
-        .close-btn:hover {
-            background: rgba(255,255,255,0.1);
-            color: #cccccc;
+        
+        .day-number {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
         }
-
-        .thread-info {
-            background: rgba(37, 37, 38, 0.5);
-            padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .thread-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #4ec9b0;
-            margin-bottom: 8px;
-        }
-
-        .thread-meta {
-            color: #969696;
-            font-size: 12px;
-        }
-
-        .comment {
-            margin-bottom: 20px;
-            padding: 16px;
-            background: rgba(37, 37, 38, 0.3);
-            border-radius: 8px;
-            border: 1px solid transparent;
-            transition: all 0.2s;
-        }
-
-        .comment:hover {
-            background: rgba(37, 37, 38, 0.5);
-            border-color: #3e3e42;
-        }
-
-        .comment-header {
+        
+        .day-earnings {
             display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-            font-size: 11px;
-            color: #858585;
+            flex-direction: column;
+            gap: var(--space-1);
+            flex: 1;
+            overflow-y: auto;
         }
-
-        .comment-author {
-            color: #569cd6;
-            font-weight: 500;
-        }
-
-        .comment-score {
-            color: #4ec9b0;
-        }
-
-        .comment-text {
-            color: #cccccc;
-            line-height: 1.6;
-            white-space: pre-wrap;
-        }
-
-        .comment-actions {
-            margin-top: 8px;
-            display: flex;
-            gap: 12px;
-            font-size: 11px;
-        }
-
-        .comment-actions a {
-            color: #858585;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .comment-actions a:hover {
-            color: #4ec9b0;
-        }
-
-        .footer {
-            margin-top: 40px;
-            padding: 20px;
-            border-top: 1px solid #3e3e42;
+        
+        .earning-dot {
+            font-family: var(--font-family-mono);
+            font-size: 10px;
+            font-weight: var(--font-weight-semibold);
+            background: var(--color-accent-primary);
+            color: white;
+            padding: 2px 6px;
+            border-radius: var(--radius-sm);
             text-align: center;
-            font-size: 11px;
-            color: #858585;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-
-        .footer a {
-            color: #858585;
+        
+        .news-items-container {
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        /* Watchlist */
+        .watchlist-container {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+            height: 100%;
+            overflow-y: auto;
+        }
+        
+        .watchlist-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-3);
+            background: var(--color-bg-tertiary);
+            border-radius: var(--radius-md);
+            transition: all var(--transition-fast);
+            cursor: pointer;
+        }
+        
+        .watchlist-item:hover {
+            background: var(--color-bg-primary);
+            transform: translateX(-2px);
+        }
+        
+        .ticker-info {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-1);
+        }
+        
+        .ticker {
+            font-family: var(--font-family-mono);
+            font-weight: var(--font-weight-semibold);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-primary);
+        }
+        
+        .ticker-name {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+        
+        .ticker-price {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: var(--space-1);
+        }
+        
+        .price {
+            font-family: var(--font-family-mono);
+            font-weight: var(--font-weight-semibold);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-primary);
+        }
+        
+        .change {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+        }
+        
+        .change.positive {
+            color: var(--color-accent-secondary);
+        }
+        
+        .change.negative {
+            color: var(--color-accent-danger);
+        }
+        
+        .news-item {
+            padding: var(--space-3) 0;
+            border-bottom: 1px solid var(--color-border-primary);
+        }
+        
+        .news-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .news-headline {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            line-height: var(--line-height-snug);
+            color: var(--color-text-primary);
             text-decoration: none;
-            margin: 0 10px;
+            display: block;
+            margin-bottom: var(--space-1);
         }
-
-        .footer a:hover {
-            text-decoration: underline;
-            color: #4ec9b0;
+        
+        .news-headline:hover {
+            color: var(--color-accent-primary);
         }
-        /* Mobile Responsive Design */
-        @media (max-width: 768px) {
-            .mobile-menu-btn {
-                display: block;
-            }
-            
-            .header {
-                height: auto;
-                min-height: 32px;
-                padding: 8px 12px;
-                padding-top: env(safe-area-inset-top, 8px);
-                flex-wrap: wrap;
-                position: relative;
-            }
-            
-            .nav {
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: #007acc;
-                flex-direction: column;
-                gap: 0;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-                z-index: 1000;
-            }
-            
-            .nav a {
-                padding: 12px 16px;
-                border-bottom: 1px solid rgba(255,255,255,0.1);
-                font-size: 14px;
-            }
-            
-            .nav a:last-child {
-                border-bottom: none;
-            }
-            
-            .logo {
-                font-size: 13px;
-                margin-right: 15px;
-            }
-            
-            .content-wrapper.split {
+        
+        .news-time {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+        
+        /* Scrollbar styling */
+        .submissions-column::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .submissions-column::-webkit-scrollbar-track {
+            background: var(--color-bg-secondary);
+            border-radius: 4px;
+        }
+        
+        .submissions-column::-webkit-scrollbar-thumb {
+            background: var(--color-border-secondary);
+            border-radius: 4px;
+        }
+        
+        .submissions-column::-webkit-scrollbar-thumb:hover {
+            background: var(--color-border-primary);
+        }
+        
+        /* Mobile Styles */
+        @media (max-width: 1024px) {
+            .content-grid {
                 grid-template-columns: 1fr;
-                grid-template-rows: 1fr auto;
+                gap: var(--space-6);
+                height: auto;
             }
             
-            .main {
-                padding: 15px;
-                max-width: none;
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-4);
+                height: auto;
             }
             
-            .content-wrapper.split .main {
-                border-right: none;
-                border-bottom: 1px solid #3e3e42;
-            }
-            
-            .comments-panel {
-                max-height: 40vh;
-                padding: 15px;
-            }
-            
-            .item {
-                padding: 12px;
-                margin-bottom: 15px;
-            }
-            
-            .item:hover {
-                transform: none;
-            }
-            
-            .rank {
-                font-size: 12px;
-                width: 20px;
-                margin-right: 8px;
-            }
-            
-            .comment-preview {
-                padding: 8px;
-                font-size: 12px;
+            .submissions-column {
+                height: auto;
+                max-height: 600px;
             }
         }
-
-        @media (max-width: 480px) {
-            .header {
-                padding: 6px 8px;
-                padding-top: env(safe-area-inset-top, 6px);
+        
+        @media (max-width: 768px) {
+            .news-container {
+                padding: var(--space-4);
+                padding-top: var(--space-4);
             }
             
-            .logo {
-                font-size: 12px;
-                margin-right: 10px;
+            .section-title {
+                font-size: var(--font-size-xl);
             }
             
-            .main {
-                padding: 12px;
+            .article {
+                gap: var(--space-3);
             }
             
-            .item {
-                padding: 10px;
-                margin-bottom: 12px;
+            .article-rank {
+                min-width: 30px;
+                font-size: var(--font-size-base);
             }
             
-            .rank {
-                font-size: 11px;
-                width: 18px;
-                margin-right: 6px;
+            .article-headline {
+                font-size: var(--font-size-lg);
             }
             
-            .comment-preview {
-                padding: 6px;
-                font-size: 11px;
+            .sector-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
             
-            .comments-panel {
-                padding: 12px;
-                max-height: 50vh;
-            }
-            
-            .close-btn {
-                font-size: 18px;
-                padding: 2px 6px;
+            .dashboard-card {
+                min-height: 200px;
             }
         }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <div class="header">
-            <div class="header-content">
-                <button class="mobile-menu-btn" onclick="toggleMobileNav()">☰</button>
-                <a href="index.html" class="logo">AlphaPulse</a>
-                <div class="nav" id="nav">
-                    <a href="develop.html">Develop</a>
-                    <a href="replay.html">Replay</a>
-                    <a href="research.html">Research</a>
-                    <a href="deploy.html">Deploy</a>
-                </div>
-                <a href="#" class="login-link" onclick="return false;">login</a>
-            </div>
-        </div>
-
-        <div class="content-wrapper" id="contentWrapper">
-            <div class="main">
-                <div class="item" onclick="openThread(1, 'Multi-Armed Bandits for Dynamic Portfolio Allocation', 'arxiv.org', '147 points', 'alphapulse', '3 hours ago', 23)">
-                    <div class="item-line">
-                        <span class="rank">1.</span>
-                        <span class="vote"></span>
-                        <a href="#" class="title" onclick="event.stopPropagation()">Multi-Armed Bandits for Dynamic Portfolio Allocation</a>
-                        <span class="domain" style="color: #ce9178;">(arxiv.org)</span>
-                    </div>
-                    <div class="subtext">
-                        <span style="color: #4ec9b0; font-weight: 500;">147 points</span> by <a href="#" style="color: #569cd6;">alphapulse</a> 3 hours ago | <a href="#">23 comments</a>
-                    </div>
-                </div>
-
-                <div class="item" onclick="openThread(2, 'Why Your Backtests Are Lying to You (And How to Fix It)', 'alphapulse.org', '89 points', 'quantdev', '5 hours ago', 31)">
-                    <div class="item-line">
-                        <span class="rank">2.</span>
-                        <span class="vote"></span>
-                        <a href="#" class="title" onclick="event.stopPropagation()">Why Your Backtests Are Lying to You (And How to Fix It)</a>
-                        <span class="domain" style="color: #f9c74f;">(alphapulse.org)</span>
-                    </div>
-                    <div class="subtext">
-                        <span style="color: #4ec9b0; font-weight: 500;">89 points</span> by <a href="#" style="color: #569cd6;">quantdev</a> 5 hours ago | <a href="#">31 comments</a>
-                    </div>
-                </div>
-
-                <div class="item" onclick="openThread(3, 'Attention Is All You Need for Price Prediction? A Critical Analysis', 'papers.ssrn.com', '156 points', 'mltrader', '6 hours ago', 45)">
-                    <div class="item-line">
-                        <span class="rank">3.</span>
-                        <span class="vote"></span>
-                        <a href="#" class="title" onclick="event.stopPropagation()">Attention Is All You Need for Price Prediction? A Critical Analysis</a>
-                        <span class="domain" style="color: #dcdcaa;">(papers.ssrn.com)</span>
-                    </div>
-                    <div class="subtext">
-                        <span style="color: #4ec9b0; font-weight: 500;">156 points</span> by <a href="#" style="color: #569cd6;">mltrader</a> 6 hours ago | <a href="#">45 comments</a>
-                    </div>
-                </div>
-
-                <div class="item" onclick="openThread(4, 'Show AP: Open source market data pipeline with 1ms latency', 'github.com', '67 points', 'fastdata', '7 hours ago', 18)">
-                    <div class="item-line">
-                        <span class="rank">4.</span>
-                        <span class="vote"></span>
-                        <a href="#" class="title" onclick="event.stopPropagation()">Show AP: Open source market data pipeline with 1ms latency</a>
-                        <span class="domain" style="color: #569cd6;">(github.com)</span>
-                    </div>
-                    <div class="subtext">
-                        <span style="color: #4ec9b0; font-weight: 500;">67 points</span> by <a href="#" style="color: #569cd6;">fastdata</a> 7 hours ago | <a href="#">18 comments</a>
-                    </div>
-                </div>
-
-                <div class="item" onclick="openThread(5, 'Alternative Data Is Dead. Long Live Alternative Data.', 'institutionalinvestor.com', '234 points', 'altdataguy', '8 hours ago', 89)">
-                    <div class="item-line">
-                        <span class="rank">5.</span>
-                        <span class="vote"></span>
-                        <a href="#" class="title" onclick="event.stopPropagation()">Alternative Data Is Dead. Long Live Alternative Data.</a>
-                        <span class="domain" style="color: #c586c0;">(institutionalinvestor.com)</span>
-                    </div>
-                    <div class="subtext">
-                        <span style="color: #4ec9b0; font-weight: 500;">234 points</span> by <a href="#" style="color: #569cd6;">altdataguy</a> 8 hours ago | <a href="#">89 comments</a>
-                    </div>
-                </div>
-
-                <div class="item" onclick="openThread(6, 'Ask AP: Best practices for factor model implementation?', 'alphapulse.org', '42 points', 'newquant', '9 hours ago', 27)">
-                    <div class="item-line">
-                        <span class="rank">6.</span>
-                        <span class="vote"></span>
-                        <a href="#" class="title" onclick="event.stopPropagation()">Ask AP: Best practices for factor model implementation?</a>
-                        <span class="domain" style="color: #f9c74f;">(alphapulse.org)</span>
-                    </div>
-                    <div class="subtext">
-                        <span style="color: #4ec9b0; font-weight: 500;">42 points</span> by <a href="#" style="color: #569cd6;">newquant</a> 9 hours ago | <a href="#">27 comments</a>
-                    </div>
-                </div>
-
-                <div class="item" onclick="openThread(7, 'Hidden Markov Models for Regime Detection: A Practical Guide', 'quantstart.com', '78 points', 'regimetrader', '10 hours ago', 15)">
-                    <div class="item-line">
-                        <span class="rank">7.</span>
-                        <span class="vote"></span>
-                        <a href="#" class="title" onclick="event.stopPropagation()">Hidden Markov Models for Regime Detection: A Practical Guide</a>
-                        <span class="domain" style="color: #b5cea8;">(quantstart.com)</span>
-                    </div>
-                    <div class="subtext">
-                        <span style="color: #4ec9b0; font-weight: 500;">78 points</span> by <a href="#" style="color: #569cd6;">regimetrader</a> 10 hours ago | <a href="#">15 comments</a>
-                    </div>
-                </div>
-
-                <div class="item" onclick="openThread(8, 'Crypto Market Making: What TradFi Gets Wrong', 'medium.com', '123 points', 'defibuilder', '12 hours ago', 52)">
-                    <div class="item-line">
-                        <span class="rank">8.</span>
-                        <span class="vote"></span>
-                        <a href="#" class="title" onclick="event.stopPropagation()">Crypto Market Making: What TradFi Gets Wrong</a>
-                        <span class="domain" style="color: #9cdcfe;">(medium.com)</span>
-                    </div>
-                    <div class="subtext">
-                        <span style="color: #4ec9b0; font-weight: 500;">123 points</span> by <a href="#" style="color: #569cd6;">defibuilder</a> 12 hours ago | <a href="#">52 comments</a>
-                    </div>
-                </div>
-
-                <div class="item" onclick="openThread(9, 'Why I Stopped Using Sharpe Ratio (And What I Use Instead)', 'riskfolio-lib.readthedocs.io', '91 points', 'riskmanager', '14 hours ago', 38)">
-                    <div class="item-line">
-                        <span class="rank">9.</span>
-                        <span class="vote"></span>
-                        <a href="#" class="title" onclick="event.stopPropagation()">Why I Stopped Using Sharpe Ratio (And What I Use Instead)</a>
-                        <span class="domain" style="color: #ce9178;">(riskfolio-lib.readthedocs.io)</span>
-                    </div>
-                    <div class="subtext">
-                        <span style="color: #4ec9b0; font-weight: 500;">91 points</span> by <a href="#" style="color: #569cd6;">riskmanager</a> 14 hours ago | <a href="#">38 comments</a>
-                    </div>
-                </div>
-
-                <div class="item" onclick="openThread(10, 'Show AP: Backtesting framework that doesn\'t suck', 'alphapulse.org', '156 points', 'backtestbuilder', '16 hours ago', 47)">
-                    <div class="item-line">
-                        <span class="rank">10.</span>
-                        <span class="vote"></span>
-                        <a href="#" class="title" onclick="event.stopPropagation()">Show AP: Backtesting framework that doesn't suck</a>
-                        <span class="domain" style="color: #f9c74f;">(alphapulse.org)</span>
-                    </div>
-                    <div class="subtext">
-                        <span style="color: #4ec9b0; font-weight: 500;">156 points</span> by <a href="#" style="color: #569cd6;">backtestbuilder</a> 16 hours ago | <a href="#">47 comments</a>
-                    </div>
-                </div>
-
-                <div style="text-align: center; margin-top: 30px; margin-bottom: 30px; padding-bottom: calc(20px + env(safe-area-inset-bottom, 20px));">
-                    <a href="#more" style="color: #4ec9b0; text-decoration: none; font-size: 16px; font-weight: 500; transition: color 0.2s; padding: 12px 24px; display: inline-block; border: 1px solid #4ec9b0; border-radius: 4px;" 
-                       onmouseover="this.style.color='#6edcc0'; this.style.borderColor='#6edcc0'" 
-                       onmouseout="this.style.color='#4ec9b0'; this.style.borderColor='#4ec9b0'">More</a>
-                </div>
-            </div>
-
-            <div class="comments-panel" id="commentsPanel">
-                <!-- Comments will be dynamically loaded here -->
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let currentThread = null;
-
-        function openThread(id, title, domain, points, author, time, commentCount) {
-            // On mobile, open link directly instead of splitscreen
-            if (window.innerWidth <= 768) {
-                // For now, just show an alert or navigate to a page
-                window.location.href = '#thread-' + id;
-                return;
-            }
-            
-            // Update active state
-            document.querySelectorAll('.item').forEach(item => item.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            
-            // Show split view
-            document.getElementById('contentWrapper').classList.add('split');
-            
-            // Generate mock comments
-            const comments = generateMockComments(id);
-            
-            // Update comments panel
-            const commentsPanel = document.getElementById('commentsPanel');
-            commentsPanel.innerHTML = `
-                <div class="comments-header">
-                    <div class="comments-title">Comments</div>
-                    <button class="close-btn" onclick="closeComments()">×</button>
-                </div>
-                
-                <div class="thread-info">
-                    <div class="thread-title">${title}</div>
-                    <div class="thread-meta">
-                        ${points} by ${author} ${time} | ${commentCount} comments | ${domain}
-                    </div>
-                </div>
-                
-                ${comments.map(comment => `
-                    <div class="comment">
-                        <div class="comment-header">
-                            <span class="comment-author">${comment.author}</span>
-                            <span class="comment-score">${comment.score} points</span>
-                            <span>${comment.time}</span>
-                        </div>
-                        <div class="comment-text">${comment.text}</div>
-                        <div class="comment-actions">
-                            <a href="#">reply</a>
-                            <a href="#">upvote</a>
-                            <a href="#">flag</a>
-                        </div>
-                    </div>
-                `).join('')}
-            `;
-            
-            currentThread = id;
-        }
-
-        function closeComments() {
-            document.getElementById('contentWrapper').classList.remove('split');
-            document.querySelectorAll('.item').forEach(item => item.classList.remove('active'));
-            currentThread = null;
-        }
-
-        function generateMockComments(threadId) {
-            const comments = [
-                {
-                    author: "quant_researcher",
-                    score: 42,
-                    time: "2 hours ago",
-                    text: "This is a really interesting approach. I've been working on something similar but using reinforcement learning instead of traditional optimization. The key insight here is that portfolio allocation is inherently a sequential decision problem."
-                },
-                {
-                    author: "ml_practitioner",
-                    score: 28,
-                    time: "1 hour ago",
-                    text: "Have you considered the computational complexity? Running this in real-time for a universe of 500+ stocks seems challenging. We tried something similar and had to resort to approximations that hurt performance."
-                },
-                {
-                    author: "riskmanager2024",
-                    score: 15,
-                    time: "45 minutes ago",
-                    text: "The risk metrics look good on paper but I'm concerned about tail events. How does this perform during market crashes? The 2020 COVID crash would be a good test case."
-                },
-                {
-                    author: "academic_trader",
-                    score: 8,
-                    time: "30 minutes ago",
-                    text: "This reminds me of Gârleanu and Pedersen's work on dynamic trading with predictable returns. Have you looked at incorporating transaction costs into the optimization?"
-                },
-                {
-                    author: "crypto_algo",
-                    score: 12,
-                    time: "20 minutes ago",
-                    text: "Would love to see this applied to crypto markets. The 24/7 nature and higher volatility might actually make the exploration-exploitation tradeoff more pronounced."
-                }
-            ];
-            
-            // Vary comments slightly based on thread
-            return comments.map((comment, i) => ({
-                ...comment,
-                score: comment.score + threadId * 3 + i,
-                text: comment.text + ` [Thread ${threadId} specific insight]`
-            }));
-        }
-
-
-        // Handle keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && currentThread) {
-                closeComments();
-            }
-        });
+        <!-- Header will be injected by layout.js -->
         
-        // Mobile navigation functionality
-        function toggleMobileNav() {
-            const nav = document.getElementById('nav');
-            nav.classList.toggle('mobile-hidden');
+        <main class="main" style="padding: 0; height: calc(100vh - var(--header-height)); overflow: hidden;">
+            <div class="news-container">
+                <div class="content-grid">
+                    <!-- Left Column - Link Submissions -->
+                    <div class="submissions-column">
+                        <div class="article-list">
+                            <article class="article">
+                                <span class="article-rank">1.</span>
+                                <div class="article-content">
+                                    <a href="https://arxiv.org/abs/2312.04951" class="article-headline">
+                                        Deep Reinforcement Learning for Optimal Order Execution
+                                    </a>
+                                    <div class="article-source">
+                                        <span>arXiv:2312.04951</span>
+                                        <span class="dot"></span>
+                                        <span>Zhang et al.</span>
+                                    </div>
+                                    <div class="article-meta">
+                                        <span>287 points</span>
+                                        <span>•</span>
+                                        <a href="#">56 comments</a>
+                                        <span>•</span>
+                                        <span>2 hours ago</span>
+                                    </div>
+                                </div>
+                            </article>
+                            
+                            <article class="article">
+                                <span class="article-rank">2.</span>
+                                <div class="article-content">
+                                    <a href="#" class="article-headline">
+                                        Why Your Sharpe Ratio is Lying: A Statistical Deep Dive
+                                    </a>
+                                    <div class="article-source">
+                                        <span>QuantBlog</span>
+                                        <span class="dot"></span>
+                                        <span>statistician42</span>
+                                    </div>
+                                    <div class="article-meta">
+                                        <span>234 points</span>
+                                        <span>•</span>
+                                        <a href="#">89 comments</a>
+                                        <span>•</span>
+                                        <span>4 hours ago</span>
+                                    </div>
+                                </div>
+                            </article>
+                            
+                            <article class="article">
+                                <span class="article-rank">3.</span>
+                                <div class="article-content">
+                                    <a href="https://arxiv.org/abs/2401.00123" class="article-headline">
+                                        Transformer-Based Feature Engineering for HFT
+                                    </a>
+                                    <div class="article-source">
+                                        <span>arXiv:2401.00123</span>
+                                        <span class="dot"></span>
+                                        <span>Chen, Liu, Wang</span>
+                                    </div>
+                                    <div class="article-meta">
+                                        <span>189 points</span>
+                                        <span>•</span>
+                                        <a href="#">42 comments</a>
+                                        <span>•</span>
+                                        <span>5 hours ago</span>
+                                    </div>
+                                </div>
+                            </article>
+                            
+                            <article class="article">
+                                <span class="article-rank">4.</span>
+                                <div class="article-content">
+                                    <a href="#" class="article-headline">
+                                        Show AP: Real-Time Options Flow Scanner
+                                    </a>
+                                    <div class="article-source">
+                                        <span>Show AlphaPulse</span>
+                                        <span class="dot"></span>
+                                        <span>optionswhale</span>
+                                    </div>
+                                    <div class="article-meta">
+                                        <span>156 points</span>
+                                        <span>•</span>
+                                        <a href="#">67 comments</a>
+                                        <span>•</span>
+                                        <span>6 hours ago</span>
+                                    </div>
+                                </div>
+                            </article>
+                            
+                            <article class="article">
+                                <span class="article-rank">5.</span>
+                                <div class="article-content">
+                                    <a href="#" class="article-headline">
+                                        Market Microstructure in the Age of Retail
+                                    </a>
+                                    <div class="article-source">
+                                        <span>MarketStructure.io</span>
+                                        <span class="dot"></span>
+                                        <span>microstructguru</span>
+                                    </div>
+                                    <div class="article-meta">
+                                        <span>134 points</span>
+                                        <span>•</span>
+                                        <a href="#">91 comments</a>
+                                        <span>•</span>
+                                        <span>8 hours ago</span>
+                                    </div>
+                                </div>
+                            </article>
+                            
+                            <article class="article">
+                                <span class="article-rank">6.</span>
+                                <div class="article-content">
+                                    <a href="https://arxiv.org/abs/2401.00456" class="article-headline">
+                                        Causal Inference in Financial Time Series
+                                    </a>
+                                    <div class="article-source">
+                                        <span>arXiv:2401.00456</span>
+                                        <span class="dot"></span>
+                                        <span>Patel, Robinson</span>
+                                    </div>
+                                    <div class="article-meta">
+                                        <span>121 points</span>
+                                        <span>•</span>
+                                        <a href="#">34 comments</a>
+                                        <span>•</span>
+                                        <span>10 hours ago</span>
+                                    </div>
+                                </div>
+                            </article>
+                            
+                            <article class="article">
+                                <span class="article-rank">7.</span>
+                                <div class="article-content">
+                                    <a href="#" class="article-headline">
+                                        The Hidden Cost of Overfitting: A Post-Mortem
+                                    </a>
+                                    <div class="article-source">
+                                        <span>Personal Blog</span>
+                                        <span class="dot"></span>
+                                        <span>humbledtrader</span>
+                                    </div>
+                                    <div class="article-meta">
+                                        <span>98 points</span>
+                                        <span>•</span>
+                                        <a href="#">123 comments</a>
+                                        <span>•</span>
+                                        <span>12 hours ago</span>
+                                    </div>
+                                </div>
+                            </article>
+                            
+                            <article class="article">
+                                <span class="article-rank">8.</span>
+                                <div class="article-content">
+                                    <a href="#" class="article-headline">
+                                        Ask AP: Favorite Lesser-Known Technical Indicators?
+                                    </a>
+                                    <div class="article-source">
+                                        <span>Ask AlphaPulse</span>
+                                        <span class="dot"></span>
+                                        <span>community</span>
+                                    </div>
+                                    <div class="article-meta">
+                                        <span>87 points</span>
+                                        <span>•</span>
+                                        <a href="#">156 comments</a>
+                                        <span>•</span>
+                                        <span>14 hours ago</span>
+                                    </div>
+                                </div>
+                            </article>
+                            
+                            <article class="article">
+                                <span class="article-rank">9.</span>
+                                <div class="article-content">
+                                    <a href="https://arxiv.org/abs/2401.00789" class="article-headline">
+                                        Graph Neural Networks for Cross-Sectional Momentum
+                                    </a>
+                                    <div class="article-source">
+                                        <span>arXiv:2401.00789</span>
+                                        <span class="dot"></span>
+                                        <span>Kim, Park, Lee</span>
+                                    </div>
+                                    <div class="article-meta">
+                                        <span>76 points</span>
+                                        <span>•</span>
+                                        <a href="#">28 comments</a>
+                                        <span>•</span>
+                                        <span>16 hours ago</span>
+                                    </div>
+                                </div>
+                            </article>
+                            
+                            <article class="article">
+                                <span class="article-rank">10.</span>
+                                <div class="article-content">
+                                    <a href="#" class="article-headline">
+                                        Python vs Rust for Backtesting: Performance Comparison
+                                    </a>
+                                    <div class="article-source">
+                                        <span>TechBlog</span>
+                                        <span class="dot"></span>
+                                        <span>rustquant</span>
+                                    </div>
+                                    <div class="article-meta">
+                                        <span>65 points</span>
+                                        <span>•</span>
+                                        <a href="#">94 comments</a>
+                                        <span>•</span>
+                                        <span>18 hours ago</span>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Column - Modified Grid -->
+                    <div class="dashboard-grid">
+                        <!-- Top Left: Sector Heatmap -->
+                        <div class="dashboard-card">
+                            <!-- Sector Heatmap -->
+                            <div class="sector-grid">
+                                <div class="sector-tile sector-positive">
+                                    <div class="sector-name">Tech</div>
+                                    <div class="sector-value">+2.34%</div>
+                                </div>
+                                <div class="sector-tile sector-positive">
+                                    <div class="sector-name">Finance</div>
+                                    <div class="sector-value">+1.82%</div>
+                                </div>
+                                <div class="sector-tile sector-negative">
+                                    <div class="sector-name">Energy</div>
+                                    <div class="sector-value">-0.91%</div>
+                                </div>
+                                <div class="sector-tile sector-neutral">
+                                    <div class="sector-name">Health</div>
+                                    <div class="sector-value">+0.12%</div>
+                                </div>
+                                <div class="sector-tile sector-negative">
+                                    <div class="sector-name">Real Est</div>
+                                    <div class="sector-value">-1.45%</div>
+                                </div>
+                                <div class="sector-tile sector-positive">
+                                    <div class="sector-name">Cons Disc</div>
+                                    <div class="sector-value">+0.87%</div>
+                                </div>
+                                <div class="sector-tile sector-negative">
+                                    <div class="sector-name">Utilities</div>
+                                    <div class="sector-value">-0.33%</div>
+                                </div>
+                                <div class="sector-tile sector-positive">
+                                    <div class="sector-name">Comm</div>
+                                    <div class="sector-value">+1.23%</div>
+                                </div>
+                                <div class="sector-tile sector-neutral">
+                                    <div class="sector-name">Materials</div>
+                                    <div class="sector-value">+0.08%</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Top Right: Watchlist -->
+                        <div class="dashboard-card">
+                            <div class="watchlist-container">
+                                <div class="watchlist-item">
+                                    <div class="ticker-info">
+                                        <span class="ticker">SPY</span>
+                                        <span class="ticker-name">S&P 500 ETF</span>
+                                    </div>
+                                    <div class="ticker-price">
+                                        <span class="price">$423.45</span>
+                                        <span class="change positive">+1.2%</span>
+                                    </div>
+                                </div>
+                                <div class="watchlist-item">
+                                    <div class="ticker-info">
+                                        <span class="ticker">VIX</span>
+                                        <span class="ticker-name">Volatility Index</span>
+                                    </div>
+                                    <div class="ticker-price">
+                                        <span class="price">15.23</span>
+                                        <span class="change negative">-5.4%</span>
+                                    </div>
+                                </div>
+                                <div class="watchlist-item">
+                                    <div class="ticker-info">
+                                        <span class="ticker">GLD</span>
+                                        <span class="ticker-name">Gold ETF</span>
+                                    </div>
+                                    <div class="ticker-price">
+                                        <span class="price">$189.76</span>
+                                        <span class="change positive">+0.8%</span>
+                                    </div>
+                                </div>
+                                <div class="watchlist-item">
+                                    <div class="ticker-info">
+                                        <span class="ticker">DXY</span>
+                                        <span class="ticker-name">US Dollar Index</span>
+                                    </div>
+                                    <div class="ticker-price">
+                                        <span class="price">103.45</span>
+                                        <span class="change negative">-0.3%</span>
+                                    </div>
+                                </div>
+                                <div class="watchlist-item">
+                                    <div class="ticker-info">
+                                        <span class="ticker">NVDA</span>
+                                        <span class="ticker-name">NVIDIA</span>
+                                    </div>
+                                    <div class="ticker-price">
+                                        <span class="price">$486.20</span>
+                                        <span class="change positive">+4.2%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Bottom Left: Earnings Calendar -->
+                        <div class="dashboard-card">
+                            <div class="earnings-calendar">
+                                <div class="calendar-week">
+                                    <div class="calendar-day today">
+                                        <div class="day-header">
+                                            <span class="day-name">Mon</span>
+                                            <span class="day-number">15</span>
+                                        </div>
+                                        <div class="day-earnings">
+                                            <div class="earning-dot">AAPL</div>
+                                            <div class="earning-dot">MSFT</div>
+                                        </div>
+                                    </div>
+                                    <div class="calendar-day">
+                                        <div class="day-header">
+                                            <span class="day-name">Tue</span>
+                                            <span class="day-number">16</span>
+                                        </div>
+                                        <div class="day-earnings">
+                                            <div class="earning-dot">NFLX</div>
+                                        </div>
+                                    </div>
+                                    <div class="calendar-day fed-day">
+                                        <div class="day-header">
+                                            <span class="day-name">Wed</span>
+                                            <span class="day-number">17</span>
+                                        </div>
+                                        <div class="day-earnings">
+                                            <div class="fed-indicator">FOMC</div>
+                                            <div class="earning-dot">TSLA</div>
+                                            <div class="earning-dot">IBM</div>
+                                            <div class="earning-dot">ASML</div>
+                                        </div>
+                                    </div>
+                                    <div class="calendar-day">
+                                        <div class="day-header">
+                                            <span class="day-name">Thu</span>
+                                            <span class="day-number">18</span>
+                                        </div>
+                                        <div class="day-earnings">
+                                            <div class="earning-dot">GOOGL</div>
+                                            <div class="earning-dot">AMZN</div>
+                                        </div>
+                                    </div>
+                                    <div class="calendar-day">
+                                        <div class="day-header">
+                                            <span class="day-name">Fri</span>
+                                            <span class="day-number">19</span>
+                                        </div>
+                                        <div class="day-earnings">
+                                            <div class="earning-dot">VZ</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="calendar-week">
+                                    <div class="calendar-day">
+                                        <div class="day-header">
+                                            <span class="day-name">Mon</span>
+                                            <span class="day-number">22</span>
+                                        </div>
+                                        <div class="day-earnings">
+                                            <div class="earning-dot">META</div>
+                                            <div class="earning-dot">V</div>
+                                        </div>
+                                    </div>
+                                    <div class="calendar-day">
+                                        <div class="day-header">
+                                            <span class="day-name">Tue</span>
+                                            <span class="day-number">23</span>
+                                        </div>
+                                        <div class="day-earnings">
+                                        </div>
+                                    </div>
+                                    <div class="calendar-day">
+                                        <div class="day-header">
+                                            <span class="day-name">Wed</span>
+                                            <span class="day-number">24</span>
+                                        </div>
+                                        <div class="day-earnings">
+                                            <div class="earning-dot">BA</div>
+                                        </div>
+                                    </div>
+                                    <div class="calendar-day">
+                                        <div class="day-header">
+                                            <span class="day-name">Thu</span>
+                                            <span class="day-number">25</span>
+                                        </div>
+                                        <div class="day-earnings">
+                                            <div class="earning-dot">INTC</div>
+                                            <div class="earning-dot">F</div>
+                                        </div>
+                                    </div>
+                                    <div class="calendar-day">
+                                        <div class="day-header">
+                                            <span class="day-name">Fri</span>
+                                            <span class="day-number">26</span>
+                                        </div>
+                                        <div class="day-earnings">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Bottom Right: Market News -->
+                        <div class="dashboard-card">
+                            <div class="news-items-container">
+                                <div class="news-item">
+                                    <a href="#" class="news-headline">Fed Minutes Suggest Cautious Approach to Rate Cuts</a>
+                                    <div class="news-time">15 minutes ago</div>
+                                </div>
+                                
+                                <div class="news-item">
+                                    <a href="#" class="news-headline">Tech Earnings Beat Expectations, Nasdaq Futures Rise</a>
+                                    <div class="news-time">47 minutes ago</div>
+                                </div>
+                                
+                                <div class="news-item">
+                                    <a href="#" class="news-headline">Oil Prices Slide on Surprise Inventory Build</a>
+                                    <div class="news-time">1 hour ago</div>
+                                </div>
+                                
+                                <div class="news-item">
+                                    <a href="#" class="news-headline">Dollar Strengthens Against Major Currencies</a>
+                                    <div class="news-time">2 hours ago</div>
+                                </div>
+                                
+                                <div class="news-item">
+                                    <a href="#" class="news-headline">European Markets Close Mixed Amid Earnings Season</a>
+                                    <div class="news-time">3 hours ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Layout Manager -->
+    <script src="layout.js"></script>
+    
+    <!-- Page-specific scripts -->
+    <script>
+        // Simulate real-time updates
+        function updateMarketData() {
+            // Update sector values
+            document.querySelectorAll('.sector-tile').forEach(tile => {
+                const currentValue = parseFloat(tile.querySelector('.sector-value').textContent);
+                const change = (Math.random() - 0.5) * 0.1;
+                const newValue = currentValue + change;
+                tile.querySelector('.sector-value').textContent = newValue >= 0 ? `+${newValue.toFixed(2)}%` : `${newValue.toFixed(2)}%`;
+                
+                // Update color class
+                tile.classList.remove('sector-positive', 'sector-negative', 'sector-neutral');
+                if (newValue > 0.5) {
+                    tile.classList.add('sector-positive');
+                } else if (newValue < -0.5) {
+                    tile.classList.add('sector-negative');
+                } else {
+                    tile.classList.add('sector-neutral');
+                }
+            });
+            
         }
-
-        // Initialize mobile nav state
-        function initMobileNav() {
-            const nav = document.getElementById('nav');
-            if (window.innerWidth <= 768) {
-                nav.classList.add('mobile-hidden');
-            } else {
-                nav.classList.remove('mobile-hidden');
-            }
+        
+        // Update market data every 30 seconds
+        setInterval(updateMarketData, 30000);
+        
+        // Update timestamps
+        function updateTimestamps() {
+            // In a real app, this would update relative timestamps
+            console.log('Updating timestamps...');
         }
-
-        // Handle window resize
-        window.addEventListener('resize', function() {
-            initMobileNav();
-        });
-
-        // Initialize on load
-        document.addEventListener('DOMContentLoaded', function() {
-            initMobileNav();
-        });
-
-        window.addEventListener('load', function() {
-            initMobileNav();
-        });
+        
+        // Update timestamps every minute
+        setInterval(updateTimestamps, 60000);
     </script>
-    <script src="mobile-components.js"></script>
 </body>
 </html>
