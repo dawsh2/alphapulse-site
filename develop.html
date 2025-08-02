@@ -3,49 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Development - AlphaPulse</title>
+    <title>Develop - AlphaPulse</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
+        
+        body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-size: 13px; 
-            background: #1e1e1e; 
-            color: #d4d4d4; 
+            font-size: 13px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            height: 100vh;
             overflow: hidden;
-            height: 100vh;
         }
-        
-        /* Layout */
-        .app-container {
-            display: grid;
-            grid-template-rows: 32px 1fr;
-            height: 100vh;
-        }
-        
+
         .header {
             background: #007acc;
+            height: 32px;
             border-bottom: 1px solid #005a9e;
             display: flex;
             align-items: center;
             padding: 0 12px;
-            font-size: 12px;
         }
-        
-        .logo { 
-            color: white; 
-            font-weight: bold; 
-            margin-right: 20px;
-            font-size: 14px;
+
+        .logo {
+            font-weight: bold;
+            color: white;
             text-decoration: none;
+            font-size: 14px;
+            margin-right: 20px;
         }
-        
-        .header-nav {
+
+        .nav {
             display: flex;
             gap: 20px;
             flex: 1;
         }
-        
-        .header-nav a {
+
+        .nav a {
             color: white;
             text-decoration: none;
             padding: 4px 8px;
@@ -53,2095 +47,1312 @@
             transition: background 0.2s;
             font-size: 12px;
         }
-        
-        .header-nav a:hover {
+
+        .nav a:hover {
             background: rgba(255,255,255,0.1);
         }
-        
-        .header-nav a.active {
+
+        .nav a.active {
             background: rgba(255,255,255,0.2);
         }
-        
-        .header-actions {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-        
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 8px;
-            background: #1e1e1e;
-            border-radius: 3px;
-            font-size: 11px;
-        }
-        
-        .status-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #4ec9b0;
-        }
-        
-        /* Main Container */
-        .develop-container {
+
+        .main-container {
             display: grid;
-            grid-template-columns: 250px 1fr;
+            grid-template-columns: 250px 1fr 300px;
             height: calc(100vh - 32px);
-            background: #252526;
         }
-        
-        .develop-sidebar {
+
+        .sidebar {
             background: #252526;
             border-right: 1px solid #3e3e42;
             display: flex;
             flex-direction: column;
         }
-        
-        .develop-section {
-            border-bottom: 1px solid #3e3e42;
-        }
-        
-        .develop-section-header {
+
+        .sidebar-header {
             padding: 12px 16px;
+            background: #2d2d30;
+            border-bottom: 1px solid #3e3e42;
+            font-weight: 600;
             font-size: 11px;
             text-transform: uppercase;
-            color: #858585;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .develop-menu {
-            padding: 8px 0;
-        }
-        
-        .develop-menu-item {
-            padding: 8px 16px;
+            color: #cccccc;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            color: #cccccc;
-            transition: all 0.2s;
-        }
-        
-        .develop-menu-item:hover {
-            background: #2a2a2a;
-        }
-        
-        .develop-menu-item.active {
-            background: #094771;
-            color: white;
-        }
-        
-        .menu-icon {
-            font-size: 16px;
-            width: 20px;
-            text-align: center;
-        }
-        
-        .develop-main {
-            background: #1e1e1e;
-            overflow-y: auto;
-            padding: 20px;
-            position: relative;
-        }
-        
-        /* Split view for PDF */
-        .develop-container.split-view .develop-main {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1px;
-            padding: 0;
-        }
-        
-        .develop-container.split-view .develop-content-wrapper {
-            padding: 20px;
-            overflow-y: auto;
-        }
-        
-        .pdf-viewer {
-            display: none;
-            background: #1e1e1e;
-            border-left: 1px solid #3e3e42;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .develop-container.split-view .pdf-viewer {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .pdf-header {
-            background: #2d2d30;
-            border-bottom: 1px solid #3e3e42;
-            padding: 8px 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0;
-        }
-        
-        .pdf-title {
-            font-size: 12px;
-            color: #cccccc;
-            font-weight: 500;
-            flex: 1;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        
-        .pdf-controls {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        
-        .pdf-control-btn {
-            background: #1e1e1e;
-            border: 1px solid #3e3e42;
-            color: #cccccc;
-            padding: 4px 8px;
-            font-size: 11px;
-            cursor: pointer;
-            border-radius: 3px;
-            transition: all 0.2s;
-        }
-        
-        .pdf-control-btn:hover {
-            background: #2a2a2a;
-            border-color: #525252;
-        }
-        
-        .pdf-page-info {
-            font-size: 11px;
-            color: #858585;
-            margin: 0 8px;
-        }
-        
-        .pdf-content {
-            flex: 1;
-            overflow: auto;
-            padding: 20px;
-            background: #252526;
-        }
-        
-        .pdf-embed {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: white;
-            border-radius: 4px;
-        }
-        
-        /* Reference mode button */
-        .reference-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 100;
-        }
-        
-        .reference-btn {
-            background: #1e1e1e;
-            border: 1px solid #3e3e42;
-            color: #cccccc;
-            padding: 6px 12px;
-            font-size: 11px;
-            cursor: pointer;
-            border-radius: 3px;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .reference-btn:hover {
-            background: #2a2a2a;
-            border-color: #007acc;
-            color: #4ec9b0;
-        }
-        
-        .reference-btn.active {
-            background: #094771;
-            border-color: #007acc;
-            color: white;
-        }
-        
-        .develop-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .develop-header h2 {
-            font-size: 20px;
-            font-weight: 600;
-            color: #cccccc;
-            margin: 0;
-        }
-        
-        .develop-actions {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .btn-small {
-            background: #1e1e1e;
-            border: 1px solid #3e3e42;
-            color: #cccccc;
-            padding: 6px 12px;
-            font-size: 11px;
-            cursor: pointer;
-            border-radius: 3px;
-            transition: all 0.2s;
-        }
-        
-        .btn-small:hover {
-            background: #2a2a2a;
-            border-color: #525252;
-        }
-        
-        .btn {
-            background: #1e1e1e;
-            border: 1px solid #3e3e42;
-            color: #cccccc;
-            padding: 8px 16px;
-            font-size: 12px;
-            cursor: pointer;
-            border-radius: 3px;
-            transition: all 0.2s;
-        }
-        
-        .btn:hover {
-            background: #2a2a2a;
-            border-color: #525252;
-        }
-        
-        .btn.success {
-            background: #4ec9b0;
-            color: #1e1e1e;
-            border: none;
-        }
-        
-        .btn.success:hover {
-            background: #6edcc0;
-        }
-        
-        /* Strategy Editor */
-        .strategy-editor {
-            background: #252526;
-            border: 1px solid #3e3e42;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        
-        .editor-tabs {
-            display: flex;
-            background: #2d2d30;
-            border-bottom: 1px solid #3e3e42;
-        }
-        
-        .editor-tab {
-            padding: 10px 16px;
-            font-size: 12px;
-            color: #969696;
-            cursor: pointer;
-            border-right: 1px solid #3e3e42;
-            transition: all 0.2s;
-        }
-        
-        .editor-tab:hover {
-            background: #2a2a2a;
-            color: #cccccc;
-        }
-        
-        .editor-tab.active {
-            background: #1e1e1e;
-            color: #cccccc;
-            border-bottom: 2px solid #007acc;
-        }
-        
-        .code-editor-container {
-            height: 400px;
-        }
-        
-        .develop-code-editor {
-            width: 100%;
-            height: 100%;
-            background: #1e1e1e;
-            color: #d4d4d4;
-            border: none;
-            padding: 16px;
-            font-family: 'SF Mono', Monaco, Consolas, monospace;
-            font-size: 13px;
-            line-height: 1.6;
-            resize: none;
-        }
-        
-        .develop-code-editor:focus {
-            outline: none;
-        }
-        
-        .strategy-config {
-            background: #252526;
-            border: 1px solid #3e3e42;
-            border-radius: 4px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-        
-        .strategy-config h3 {
-            font-size: 16px;
-            color: #cccccc;
-            margin-bottom: 16px;
-        }
-        
-        .config-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-        
-        .config-item {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        
-        .config-item label {
-            font-size: 11px;
-            color: #858585;
-            text-transform: uppercase;
-        }
-        
-        .config-item input {
-            background: #1e1e1e;
-            border: 1px solid #3e3e42;
-            color: #cccccc;
-            padding: 8px;
-            border-radius: 3px;
-            font-size: 13px;
-        }
-        
-        .config-item input:focus {
-            outline: none;
-            border-color: #007acc;
-        }
-        
-        .config-actions {
-            display: flex;
-            gap: 8px;
-            justify-content: flex-end;
-        }
-        
-        /* Feed Cards */
-        .feeds-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-        
-        .feed-card {
-            background: #252526;
-            border: 1px solid #3e3e42;
-            border-radius: 4px;
-            padding: 20px;
-        }
-        
-        .feed-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        
-        .feed-header h3 {
-            font-size: 16px;
-            color: #cccccc;
-            margin: 0;
-        }
-        
-        .feed-status {
-            font-size: 11px;
-            padding: 4px 8px;
-            border-radius: 3px;
-            font-weight: 500;
-        }
-        
-        .feed-status.active {
-            background: rgba(78, 201, 176, 0.1);
-            color: #4ec9b0;
-            border: 1px solid #4ec9b0;
-        }
-        
-        .feed-status.inactive {
-            background: rgba(244, 135, 113, 0.1);
-            color: #f48771;
-            border: 1px solid #f48771;
-        }
-        
-        .feed-info {
-            font-size: 12px;
-            color: #969696;
-            margin-bottom: 16px;
-        }
-        
-        .feed-info div {
-            margin-bottom: 4px;
-        }
-        
-        .feed-actions {
-            display: flex;
-            gap: 8px;
-        }
-        
-        /* Hide other sections by default */
-        .develop-content {
-            display: none;
-        }
-        
-        .develop-content.active {
-            display: block;
-        }
-        
-        /* Catalog View Styles */
-        .catalog-view {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 2000;
-            overflow: hidden;
-        }
-        
-        .catalog-view.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .catalog-container {
-            background: #252526;
-            border: 1px solid #3e3e42;
-            border-radius: 4px;
-            width: 90%;
-            max-width: 1200px;
-            height: 80vh;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-        }
-        
-        .catalog-header {
-            background: #2d2d30;
-            border-bottom: 1px solid #3e3e42;
-            padding: 12px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .catalog-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #cccccc;
-        }
-        
-        .catalog-close {
-            background: none;
-            border: none;
-            color: #cccccc;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 3px;
-            transition: all 0.2s;
-        }
-        
-        .catalog-close:hover {
-            background: rgba(255,255,255,0.1);
-        }
-        
-        .catalog-body {
-            flex: 1;
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            overflow: hidden;
-        }
-        
-        .catalog-tree {
-            background: #1e1e1e;
-            border-right: 1px solid #3e3e42;
-            overflow-y: auto;
-            padding: 8px 0;
-        }
-        
-        .catalog-details {
-            padding: 20px;
-            overflow-y: auto;
-            background: #1e1e1e;
-        }
-        
-        .tree-node {
             user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
-        .tree-node-header {
+        .sidebar-header:hover {
+            background: #353538;
+        }
+        
+        .collapse-icon {
+            font-size: 12px;
+            transition: transform 0.2s ease;
+        }
+        
+        .collapse-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .file-tree {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .file-tree.collapsed {
+            max-height: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .file-item {
             display: flex;
             align-items: center;
-            padding: 6px 12px;
+            padding: 4px 16px;
             cursor: pointer;
-            transition: background 0.2s;
             font-size: 13px;
             color: #cccccc;
+            transition: background 0.2s;
+            opacity: 0.5;
+            pointer-events: none;
         }
-        
-        .tree-node-header:hover {
+
+        .file-item:hover {
             background: #2a2a2a;
         }
-        
-        .tree-node-header.selected {
+
+        .file-item.active {
             background: #094771;
             color: white;
         }
-        
-        .tree-toggle {
-            width: 16px;
-            height: 16px;
-            margin-right: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #858585;
-            font-size: 10px;
+
+        .file-icon {
+            margin-right: 8px;
+            font-size: 16px;
         }
-        
-        .tree-icon {
-            margin-right: 6px;
-            font-size: 14px;
+
+        .editor-container {
+            background: #1e1e1e;
+            position: relative;
         }
-        
-        .tree-label {
-            flex: 1;
+
+        .monaco-editor {
+            height: 100%;
+            width: 100%;
         }
-        
-        .tree-count {
-            font-size: 11px;
-            color: #858585;
-            margin-left: 8px;
-        }
-        
-        .tree-children {
-            display: none;
-            padding-left: 20px;
-        }
-        
-        .tree-node.expanded > .tree-children {
-            display: block;
-        }
-        
-        .tree-node.expanded > .tree-node-header .tree-toggle {
-            transform: rotate(90deg);
-        }
-        
-        /* Detail View */
-        .detail-header {
-            margin-bottom: 20px;
-        }
-        
-        .detail-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: #cccccc;
-            margin-bottom: 8px;
-        }
-        
-        .detail-meta {
-            font-size: 12px;
+
+        .welcome-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
             color: #858585;
         }
-        
-        .detail-section {
-            margin-bottom: 24px;
-        }
-        
-        .detail-section-title {
-            font-size: 14px;
-            font-weight: 600;
+
+        .welcome-message h2 {
             color: #cccccc;
             margin-bottom: 12px;
-            text-transform: uppercase;
         }
-        
-        .detail-code {
+
+        .test-panel {
             background: #252526;
-            border: 1px solid #3e3e42;
-            border-radius: 4px;
-            padding: 16px;
-            font-family: 'SF Mono', Monaco, Consolas, monospace;
-            font-size: 12px;
-            line-height: 1.5;
-            overflow-x: auto;
-            position: relative;
-        }
-        
-        .detail-list {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .detail-list-item {
-            padding: 8px 12px;
-            background: #252526;
-            border: 1px solid #3e3e42;
-            border-radius: 3px;
-            margin-bottom: 8px;
-            font-size: 13px;
-            color: #cccccc;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .detail-list-item:hover {
-            background: #2a2a2a;
-            cursor: pointer;
-        }
-        
-        .detail-tag {
-            display: inline-block;
-            padding: 2px 8px;
-            background: #1e1e1e;
-            border: 1px solid #3e3e42;
-            border-radius: 3px;
-            font-size: 11px;
-            margin-right: 4px;
-            color: #969696;
-        }
-        
-        .catalog-search {
-            padding: 8px 16px;
-            border-bottom: 1px solid #3e3e42;
-        }
-        
-        .catalog-search-input {
-            width: 100%;
-            background: #1e1e1e;
-            border: 1px solid #3e3e42;
-            color: #cccccc;
-            padding: 6px 12px;
-            border-radius: 3px;
-            font-size: 12px;
-        }
-        
-        .catalog-search-input:focus {
-            outline: none;
-            border-color: #007acc;
-        }
-        
-        /* Search */
-        .search-container {
-            padding: 8px 16px 12px;
-        }
-        
-        .search-input {
-            width: 100%;
-            background: #1e1e1e;
-            border: 1px solid #3e3e42;
-            color: #cccccc;
-            padding: 8px 12px;
-            border-radius: 3px;
-            font-size: 12px;
-        }
-        
-        .search-input:focus {
-            outline: none;
-            border-color: #007acc;
-        }
-        
-        .search-input::placeholder {
-            color: #666666;
-        }
-        
-        .count {
-            background: #1e1e1e;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 10px;
-            color: #969696;
-        }
-        
-        .item-details {
+            border-left: 1px solid #3e3e42;
             display: flex;
             flex-direction: column;
-            flex: 1;
         }
-        
-        .item-name {
-            color: #cccccc;
-            font-size: 13px;
-        }
-        
-        .item-meta {
-            color: #858585;
-            font-size: 11px;
-            margin-top: 2px;
-        }
-        
-        .show-more {
-            padding: 8px 16px;
-            color: #4ec9b0;
-            font-size: 11px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .show-more:hover {
-            background: #2a2a2a;
-            color: #6edcc0;
-        }
-        
-        /* Search Results */
-        .search-results {
-            position: absolute;
-            top: 100%;
-            left: 16px;
-            right: 16px;
-            background: #252526;
-            border: 1px solid #3e3e42;
-            border-radius: 3px;
-            max-height: 300px;
-            overflow-y: auto;
-            z-index: 1000;
-            display: none;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-        
-        .search-result-item {
-            padding: 10px 12px;
-            cursor: pointer;
+
+        .test-panel-header {
+            padding: 12px 16px;
+            background: #2d2d30;
             border-bottom: 1px solid #3e3e42;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #cccccc;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 8px;
         }
-        
-        .search-result-item:hover {
+
+        .test-controls {
+            padding: 16px;
+            border-bottom: 1px solid #3e3e42;
+        }
+
+        .test-btn {
+            background: #007acc;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 8px;
+            transition: background 0.2s;
+        }
+
+        .test-btn:hover {
+            background: #1a86d1;
+        }
+
+        .test-btn.secondary {
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            color: #cccccc;
+        }
+
+        .test-btn.secondary:hover {
             background: #2a2a2a;
         }
-        
-        .search-result-item:last-child {
-            border-bottom: none;
-        }
-        
-        .search-result-type {
-            font-size: 9px;
-            padding: 2px 6px;
-            border-radius: 2px;
+
+        .test-output {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            font-family: 'SF Mono', Monaco, Consolas, monospace;
+            font-size: 11px;
+            line-height: 1.5;
             background: #1e1e1e;
-            color: #858585;
-            margin-left: auto;
+        }
+
+        .output-line {
+            margin-bottom: 4px;
+            white-space: pre-wrap;
+        }
+
+        .output-success {
+            color: #4ec9b0;
+        }
+
+        .output-error {
+            color: #f48771;
+        }
+
+        .output-warning {
+            color: #dcdcaa;
+        }
+
+        .output-info {
+            color: #569cd6;
         }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Header -->
-        <div class="header">
-            <a href="index.html" class="logo">AlphaPulse</a>
-            <nav class="header-nav">
-                <a href="develop.html" class="active">Develop</a>
-                <a href="research.html">Replay</a>
-                <a href="research.html">Research</a>
-                <a href="live.html">Deploy</a>
-            </nav>
-            <div class="header-actions">
-                <div class="status-indicator">
-                    <div class="status-dot"></div>
-                    <span>System Ready</span>
+    <div class="header">
+        <a href="index.html" class="logo">AlphaPulse</a>
+        <div class="nav">
+            <a href="develop.html" class="active">Develop</a>
+            <a href="replay.html">Replay</a>
+            <a href="research.html">Research</a>
+            <a href="deploy.html">Deploy</a>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="sidebar-header" onclick="toggleExplorer()">
+                <span>Explorer</span>
+                <span class="collapse-icon" id="collapseIcon">▼</span>
+            </div>
+            <div class="file-tree" id="fileTree">
+                <div class="file-item" onclick="openFile('strategy.py', this)">
+                    <span class="file-icon">🐍</span>
+                    <span>strategy.py</span>
                 </div>
-                <button class="btn-small">⚙ Settings</button>
+                <div class="file-item" onclick="openFile('features.py', this)">
+                    <span class="file-icon">🐍</span>
+                    <span>features.py</span>
+                </div>
+                <div class="file-item" onclick="openFile('config.yaml', this)">
+                    <span class="file-icon">⚙️</span>
+                    <span>config.yaml</span>
+                </div>
+                <div class="file-item" onclick="openFile('README.md', this)">
+                    <span class="file-icon">📖</span>
+                    <span>README.md</span>
+                </div>
             </div>
         </div>
-        
-        <!-- Main Content -->
-        <div class="develop-container">
-            <div class="develop-sidebar">
-                <div class="develop-section">
-                    <div class="develop-section-header">
-                        <span>COMPONENTS</span>
-                        <button class="btn-small">+ New</button>
-                    </div>
-                    <div class="develop-menu">
-                        <div class="develop-menu-item active" onclick="showDevelopSection('strategies')">
-                            <span class="menu-icon">📊</span>
-                            <span>Strategies</span>
-                        </div>
-                        <div class="develop-menu-item" onclick="showDevelopSection('data-feeds')">
-                            <span class="menu-icon">📡</span>
-                            <span>Data Feeds</span>
-                        </div>
-                        <div class="develop-menu-item" onclick="showDevelopSection('execution')">
-                            <span class="menu-icon">⚡</span>
-                            <span>Execution Models</span>
-                        </div>
-                        <div class="develop-menu-item" onclick="showDevelopSection('risk')">
-                            <span class="menu-icon">🛡️</span>
-                            <span>Risk Models</span>
-                        </div>
-                        <div class="develop-menu-item" onclick="showDevelopSection('features')">
-                            <span class="menu-icon">🔧</span>
-                            <span>Feature Engineering</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="develop-section">
-                    <div class="develop-section-header">
-                        <span>SEARCH</span>
-                    </div>
-                    <div class="search-container">
-                        <input type="text" class="search-input" placeholder="Search strategies, features, models..." onkeyup="searchComponents(event)">
-                    </div>
-                </div>
-                
-                <div class="develop-section">
-                    <div class="develop-section-header">
-                        <span>EXISTING STRATEGIES</span>
-                        <span class="count">23</span>
-                    </div>
-                    <div class="develop-menu" id="strategiesList">
-                        <div class="develop-menu-item" onclick="loadStrategy('momentum_volume')">
-                            <span class="menu-icon">📊</span>
-                            <div class="item-details">
-                                <span class="item-name">momentum_volume.py</span>
-                                <span class="item-meta">Modified 2h ago • v1.3</span>
-                            </div>
-                        </div>
-                        <div class="develop-menu-item" onclick="loadStrategy('mean_reversion')">
-                            <span class="menu-icon">📊</span>
-                            <div class="item-details">
-                                <span class="item-name">mean_reversion.py</span>
-                                <span class="item-meta">Modified 1d ago • v2.1</span>
-                            </div>
-                        </div>
-                        <div class="develop-menu-item" onclick="loadStrategy('pairs_trading')">
-                            <span class="menu-icon">📊</span>
-                            <div class="item-details">
-                                <span class="item-name">pairs_trading.py</span>
-                                <span class="item-meta">Modified 3d ago • v1.0</span>
-                            </div>
-                        </div>
-                        <div class="develop-menu-item" onclick="loadStrategy('stat_arb')">
-                            <span class="menu-icon">📊</span>
-                            <div class="item-details">
-                                <span class="item-name">statistical_arbitrage.py</span>
-                                <span class="item-meta">Modified 5d ago • v3.2</span>
-                            </div>
-                        </div>
-                        <div class="develop-menu-item" onclick="loadStrategy('ml_ensemble')">
-                            <span class="menu-icon">📊</span>
-                            <div class="item-details">
-                                <span class="item-name">ml_ensemble.py</span>
-                                <span class="item-meta">Modified 1w ago • v1.8</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="show-more" onclick="showAllStrategies()">Show all 23 strategies...</div>
-                </div>
-                
-                <div class="develop-section">
-                    <div class="develop-section-header">
-                        <span>FEATURES LIBRARY</span>
-                        <span class="count">47</span>
-                    </div>
-                    <div class="develop-menu" id="featuresList">
-                        <div class="develop-menu-item" onclick="loadFeature('volatility')">
-                            <span class="menu-icon">🔧</span>
-                            <div class="item-details">
-                                <span class="item-name">volatility_features.py</span>
-                                <span class="item-meta">GARCH, RV, Parkinson • Used in 12 strategies</span>
-                            </div>
-                        </div>
-                        <div class="develop-menu-item" onclick="loadFeature('microstructure')">
-                            <span class="menu-icon">🔧</span>
-                            <div class="item-details">
-                                <span class="item-name">microstructure.py</span>
-                                <span class="item-meta">Spread, Imbalance, Flow • Used in 8 strategies</span>
-                            </div>
-                        </div>
-                        <div class="develop-menu-item" onclick="loadFeature('sentiment')">
-                            <span class="menu-icon">🔧</span>
-                            <div class="item-details">
-                                <span class="item-name">sentiment_analysis.py</span>
-                                <span class="item-meta">News, Social, Options • Used in 5 strategies</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="show-more" onclick="showAllFeatures()">Show all 47 features...</div>
-                </div>
+
+        <div class="editor-container">
+            <div id="monaco-editor" class="monaco-editor"></div>
+            <div id="welcomeMessage" class="welcome-message">
+                <h2>AlphaPulse Development Environment</h2>
+                <p>Select a file from the explorer to start editing</p>
+            </div>
+        </div>
+
+        <div class="test-panel">
+            <div class="test-panel-header">
+                Testing
+                <button class="test-btn secondary" onclick="clearOutput()">Clear</button>
             </div>
             
-            <div class="develop-main">
-                <div class="reference-toggle">
-                    <button class="reference-btn" onclick="toggleReference()">
-                        <span>📄</span>
-                        <span>Reference Mode</span>
-                    </button>
-                </div>
-                
-                <div class="develop-content-wrapper">
-                    <!-- Strategies Section -->
-                    <div class="develop-content active" id="strategies-content">
-                    <div class="develop-header">
-                        <h2>Strategy Development</h2>
-                        <div class="develop-actions">
-                            <button class="btn-small" onclick="showCatalog()">📚 Catalog</button>
-                            <button class="btn-small">Import</button>
-                            <button class="btn-small">New Strategy</button>
-                        </div>
-                    </div>
-                    
-                    <div class="strategy-editor">
-                        <div class="editor-tabs">
-                            <div class="editor-tab active">momentum_volume.py</div>
-                            <div class="editor-tab">mean_reversion.py</div>
-                            <div class="editor-tab">+ New</div>
-                        </div>
-                        
-                        <div class="code-editor-container">
-                            <textarea class="develop-code-editor" spellcheck="false">import numpy as np
-from alphapulse import Strategy, Signal
-
-class MomentumVolumeStrategy(Strategy):
-    """Enhanced momentum strategy with volume confirmation"""
-    
-    def __init__(self, momentum_period=20, volume_period=30, volume_multiplier=1.5):
-        super().__init__()
-        self.momentum_period = momentum_period
-        self.volume_period = volume_period
-        self.volume_multiplier = volume_multiplier
-        
-    def generate_signals(self, data):
-        # Calculate momentum
-        momentum = data['close'].pct_change(self.momentum_period)
-        
-        # Calculate volume ratio
-        volume_ma = data['volume'].rolling(self.volume_period).mean()
-        volume_ratio = data['volume'] / volume_ma
-        
-        # Generate signals
-        long_signal = (momentum > 0.02) & (volume_ratio > self.volume_multiplier)
-        short_signal = (momentum < -0.02) & (volume_ratio > self.volume_multiplier)
-        
-        return Signal(long=long_signal, short=short_signal)
-    
-    def calculate_position_size(self, signal_strength, account_value):
-        """Kelly criterion based position sizing"""
-        return min(signal_strength * 0.25, 0.1) * account_value</textarea>
-                        </div>
-                        
-                        <div class="strategy-config">
-                            <h3>Strategy Configuration</h3>
-                            <div class="config-grid">
-                                <div class="config-item">
-                                    <label>Momentum Period</label>
-                                    <input type="number" value="20" min="5" max="100">
-                                </div>
-                                <div class="config-item">
-                                    <label>Volume Period</label>
-                                    <input type="number" value="30" min="10" max="200">
-                                </div>
-                                <div class="config-item">
-                                    <label>Volume Multiplier</label>
-                                    <input type="number" value="1.5" min="1.0" max="5.0" step="0.1">
-                                </div>
-                                <div class="config-item">
-                                    <label>Max Position Size</label>
-                                    <input type="number" value="0.1" min="0.01" max="0.5" step="0.01">
-                                </div>
-                            </div>
-                            
-                            <div class="config-actions">
-                                <button class="btn">Validate</button>
-                                <button class="btn">Backtest</button>
-                                <button class="btn success">Deploy to Production</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Data Feeds Section (hidden) -->
-                <div class="develop-content" id="data-feeds-content">
-                    <div class="develop-header">
-                        <h2>Data Feed Configuration</h2>
-                        <div class="develop-actions">
-                            <button class="btn-small">Add Feed</button>
-                        </div>
-                    </div>
-                    
-                    <div class="feeds-grid">
-                        <div class="feed-card">
-                            <div class="feed-header">
-                                <h3>Alpaca Markets</h3>
-                                <span class="feed-status active">Active</span>
-                            </div>
-                            <div class="feed-info">
-                                <div>Type: Equities</div>
-                                <div>Symbols: SPY, QQQ, IWM</div>
-                                <div>Frequency: 1m, 5m, 1d</div>
-                                <div>Latency: ~50ms</div>
-                            </div>
-                            <div class="feed-actions">
-                                <button class="btn-small">Configure</button>
-                                <button class="btn-small">Test Connection</button>
-                            </div>
-                        </div>
-                        
-                        <div class="feed-card">
-                            <div class="feed-header">
-                                <h3>Interactive Brokers</h3>
-                                <span class="feed-status inactive">Inactive</span>
-                            </div>
-                            <div class="feed-info">
-                                <div>Type: Futures</div>
-                                <div>Symbols: ES, NQ, RTY</div>
-                                <div>Frequency: tick, 1s, 1m</div>
-                                <div>Latency: ~10ms</div>
-                            </div>
-                            <div class="feed-actions">
-                                <button class="btn-small">Configure</button>
-                                <button class="btn-small">Test Connection</button>
-                            </div>
-                        </div>
-                        
-                        <div class="feed-card">
-                            <div class="feed-header">
-                                <h3>Custom WebSocket</h3>
-                                <span class="feed-status active">Active</span>
-                            </div>
-                            <div class="feed-info">
-                                <div>Type: Crypto</div>
-                                <div>Symbols: BTC-USD, ETH-USD</div>
-                                <div>Frequency: tick</div>
-                                <div>Latency: ~5ms</div>
-                            </div>
-                            <div class="feed-actions">
-                                <button class="btn-small">Configure</button>
-                                <button class="btn-small">Test Connection</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Other sections can be added here -->
-                </div>
-                
-                <!-- PDF Viewer -->
-                <div class="pdf-viewer">
-                    <div class="pdf-header">
-                        <div class="pdf-title" id="pdfTitle">No document loaded</div>
-                        <div class="pdf-controls">
-                            <span class="pdf-page-info" id="pdfPageInfo">-</span>
-                            <button class="pdf-control-btn" onclick="previousPage()">◀</button>
-                            <button class="pdf-control-btn" onclick="nextPage()">▶</button>
-                            <button class="pdf-control-btn" onclick="zoomOut()">-</button>
-                            <button class="pdf-control-btn" onclick="zoomIn()">+</button>
-                            <button class="pdf-control-btn" onclick="closePDF()">✕</button>
-                        </div>
-                    </div>
-                    <div class="pdf-content" id="pdfContent">
-                        <div style="text-align: center; padding: 40px; color: #858585;">
-                            <p style="font-size: 16px; margin-bottom: 20px;">📄 Reference Mode</p>
-                            <p style="margin-bottom: 16px;">Load a research paper to view alongside your code</p>
-                            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-                                <button class="btn-small" onclick="loadPDFFromURL()">Load from URL</button>
-                                <button class="btn-small" onclick="showRecentPapers()">Recent Papers</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="test-controls">
+                <button class="test-btn" onclick="runSyntaxCheck()">Check Syntax</button>
+                <button class="test-btn" onclick="exportToYAML()">Export to YAML</button>
+                <button class="test-btn" onclick="generateSignals()">Generate Signals</button>
+                <button class="test-btn secondary" onclick="runReplay()">Run Replay</button>
+                <button class="test-btn secondary" onclick="generateNotebook()">Generate Notebook</button>
+            </div>
+            
+            <div class="test-output" id="testOutput">
+                <div class="output-line output-info">Ready to develop and test...</div>
+                <div class="output-line output-info">• Use "Check Syntax" to validate Python code</div>
+                <div class="output-line output-info">• Use "Export to YAML" to generate strategy config</div>
+                <div class="output-line output-info">• Use "Run Replay" to test strategy execution</div>
             </div>
         </div>
     </div>
-    
-    <!-- Catalog View Modal -->
-    <div class="catalog-view" id="catalogView">
-        <div class="catalog-container">
-            <div class="catalog-header">
-                <div class="catalog-title">Strategy & Feature Catalog</div>
-                <button class="catalog-close" onclick="closeCatalog()">×</button>
-            </div>
-            <div class="catalog-search">
-                <input type="text" class="catalog-search-input" placeholder="Search catalog..." onkeyup="searchCatalog(event)">
-            </div>
-            <div class="catalog-body">
-                <div class="catalog-tree" id="catalogTree">
-                    <!-- Tree will be populated by JavaScript -->
-                </div>
-                <div class="catalog-details" id="catalogDetails">
-                    <div style="text-align: center; color: #858585; padding: 40px;">
-                        Select an item from the catalog to view details
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <script>
-        // Mock data for strategies and features
-        const allStrategies = [
-            { id: 'momentum_volume', name: 'momentum_volume.py', modified: '2h ago', version: 'v1.3', type: 'strategy' },
-            { id: 'mean_reversion', name: 'mean_reversion.py', modified: '1d ago', version: 'v2.1', type: 'strategy' },
-            { id: 'pairs_trading', name: 'pairs_trading.py', modified: '3d ago', version: 'v1.0', type: 'strategy' },
-            { id: 'stat_arb', name: 'statistical_arbitrage.py', modified: '5d ago', version: 'v3.2', type: 'strategy' },
-            { id: 'ml_ensemble', name: 'ml_ensemble.py', modified: '1w ago', version: 'v1.8', type: 'strategy' },
-            { id: 'options_delta', name: 'options_delta_hedge.py', modified: '2w ago', version: 'v2.0', type: 'strategy' },
-            { id: 'crypto_arb', name: 'crypto_arbitrage.py', modified: '3w ago', version: 'v1.5', type: 'strategy' },
-            { id: 'factor_model', name: 'multi_factor_model.py', modified: '1m ago', version: 'v4.1', type: 'strategy' },
-        ];
-        
-        const allFeatures = [
-            { id: 'volatility', name: 'volatility_features.py', desc: 'GARCH, RV, Parkinson', usage: 12, type: 'feature' },
-            { id: 'microstructure', name: 'microstructure.py', desc: 'Spread, Imbalance, Flow', usage: 8, type: 'feature' },
-            { id: 'sentiment', name: 'sentiment_analysis.py', desc: 'News, Social, Options', usage: 5, type: 'feature' },
-            { id: 'technical', name: 'technical_indicators.py', desc: 'RSI, MACD, Bollinger', usage: 15, type: 'feature' },
-            { id: 'fundamental', name: 'fundamental_data.py', desc: 'Earnings, Revenue, Ratios', usage: 7, type: 'feature' },
-        ];
-        
-        const strategyCode = {
-            momentum_volume: `import numpy as np
-from alphapulse import Strategy, Signal
 
-class MomentumVolumeStrategy(Strategy):
-    """Enhanced momentum strategy with volume confirmation"""
+    <script src="https://unpkg.com/monaco-editor@0.44.0/min/vs/loader.js"></script>
+    <script>
+        let editor = null;
+        let currentFile = null;
+
+        // Sample file contents
+        const fileContents = {
+            'strategy.py': `from alphapulse import Strategy, Signal
+from typing import Dict, Any
+import pandas as pd
+
+class MomentumStrategy(Strategy):
+    """
+    Simple momentum-based strategy
+    """
     
-    def __init__(self, momentum_period=20, volume_period=30, volume_multiplier=1.5):
-        super().__init__()
-        self.momentum_period = momentum_period
-        self.volume_period = volume_period
-        self.volume_multiplier = volume_multiplier
-        
-    def generate_signals(self, data):
+    def __init__(self, config: Dict[str, Any]):
+        super().__init__(config)
+        self.lookback = config.get('lookback', 20)
+        self.threshold = config.get('threshold', 0.02)
+    
+    def generate_signals(self, data: pd.DataFrame) -> Signal:
+        """
+        Generate trading signals based on momentum
+        """
         # Calculate momentum
-        momentum = data['close'].pct_change(self.momentum_period)
-        
-        # Calculate volume ratio
-        volume_ma = data['volume'].rolling(self.volume_period).mean()
-        volume_ratio = data['volume'] / volume_ma
+        momentum = data['close'].pct_change(self.lookback)
         
         # Generate signals
-        long_signal = (momentum > 0.02) & (volume_ratio > self.volume_multiplier)
-        short_signal = (momentum < -0.02) & (volume_ratio > self.volume_multiplier)
-        
-        return Signal(long=long_signal, short=short_signal)
+        if momentum.iloc[-1] > self.threshold:
+            return Signal.BUY
+        elif momentum.iloc[-1] < -self.threshold:
+            return Signal.SELL
+        else:
+            return Signal.HOLD
     
-    def calculate_position_size(self, signal_strength, account_value):
-        """Kelly criterion based position sizing"""
-        return min(signal_strength * 0.25, 0.1) * account_value`,
-            
-            mean_reversion: `import numpy as np
-from alphapulse import Strategy, Signal
+    def calculate_position_size(self, signal: Signal, account_value: float) -> float:
+        """
+        Calculate position size based on signal strength
+        """
+        if signal == Signal.HOLD:
+            return 0.0
+        
+        # Risk 2% of account per trade
+        risk_per_trade = 0.02
+        return account_value * risk_per_trade
+`,
+            'features.py': `import pandas as pd
+import numpy as np
+from typing import Dict, List
 
-class MeanReversionStrategy(Strategy):
-    """Volatility-adjusted mean reversion strategy"""
+class FeatureEngine:
+    """
+    Feature engineering for trading strategies
+    """
     
-    def __init__(self, lookback=20, entry_std=2.5, exit_std=0.5):
-        super().__init__()
-        self.lookback = lookback
-        self.entry_std = entry_std
-        self.exit_std = exit_std
+    @staticmethod
+    def add_technical_indicators(data: pd.DataFrame) -> pd.DataFrame:
+        """
+        Add common technical indicators to price data
+        """
+        df = data.copy()
         
-    def generate_signals(self, data):
-        # Calculate rolling statistics
-        rolling_mean = data['close'].rolling(self.lookback).mean()
-        rolling_std = data['close'].rolling(self.lookback).std()
+        # Moving averages
+        df['sma_20'] = df['close'].rolling(20).mean()
+        df['sma_50'] = df['close'].rolling(50).mean()
         
-        # Calculate z-score
-        z_score = (data['close'] - rolling_mean) / rolling_std
+        # RSI
+        delta = df['close'].diff()
+        gain = (delta.where(delta > 0, 0)).rolling(14).mean()
+        loss = (-delta.where(delta < 0, 0)).rolling(14).mean()
+        rs = gain / loss
+        df['rsi'] = 100 - (100 / (1 + rs))
         
-        # Entry signals
-        long_entry = z_score < -self.entry_std
-        short_entry = z_score > self.entry_std
+        # Bollinger Bands
+        rolling_mean = df['close'].rolling(20).mean()
+        rolling_std = df['close'].rolling(20).std()
+        df['bb_upper'] = rolling_mean + (rolling_std * 2)
+        df['bb_lower'] = rolling_mean - (rolling_std * 2)
         
-        # Exit signals
-        long_exit = z_score > -self.exit_std
-        short_exit = z_score < self.exit_std
+        return df
+    
+    @staticmethod
+    def add_volume_features(data: pd.DataFrame) -> pd.DataFrame:
+        """
+        Add volume-based features
+        """
+        df = data.copy()
         
-        return Signal(
-            long_entry=long_entry,
-            long_exit=long_exit,
-            short_entry=short_entry,
-            short_exit=short_exit
-        )`
+        # Volume moving average
+        df['volume_ma'] = df['volume'].rolling(20).mean()
+        
+        # Volume ratio
+        df['volume_ratio'] = df['volume'] / df['volume_ma']
+        
+        return df
+`,
+            'config.yaml': `# AlphaPulse Strategy Configuration
+
+strategy:
+  name: "momentum_strategy"
+  class: "MomentumStrategy"
+  
+  parameters:
+    lookback: 20
+    threshold: 0.02
+    
+data:
+  symbols: ["SPY", "QQQ", "IWM"]
+  timeframe: "5min"
+  
+risk_management:
+  max_position_size: 0.1
+  stop_loss: 0.05
+  take_profit: 0.15
+  
+execution:
+  mode: "paper"  # paper or live
+  broker: "alpaca"
+  
+logging:
+  level: "INFO"
+  file: "strategy.log"
+`,
+            'README.md': `# AlphaPulse Strategy Development
+
+This is your strategy development environment. Here you can:
+
+## Features
+
+- **Strategy Development**: Create and test trading strategies
+- **Feature Engineering**: Build custom technical indicators
+- **Backtesting**: Test strategies on historical data
+- **Paper Trading**: Test with real market data, virtual money
+- **Live Trading**: Deploy strategies to live markets
+
+## Getting Started
+
+1. Define your strategy in \`strategy.py\`
+2. Add custom features in \`features.py\`
+3. Configure parameters in \`config.yaml\`
+4. Test using the Research tab
+5. Deploy using the Deploy tab
+
+## Example Strategy
+
+The included momentum strategy demonstrates:
+- Signal generation based on price momentum
+- Position sizing with risk management
+- Clean, maintainable code structure
+
+## Next Steps
+
+- Modify the strategy parameters
+- Add new features or indicators
+- Test different timeframes and symbols
+- Implement more sophisticated risk management
+`
         };
 
-        function showDevelopSection(section) {
-            // Update menu
-            document.querySelectorAll('.develop-menu-item').forEach(item => {
+        // Initialize Monaco Editor
+        let monacoReady = false;
+        require.config({ paths: { vs: 'https://unpkg.com/monaco-editor@0.44.0/min/vs' } });
+        require(['vs/editor/editor.main'], function () {
+            editor = monaco.editor.create(document.getElementById('monaco-editor'), {
+                value: '',
+                language: 'python',
+                theme: 'vs-dark',
+                fontSize: 14,
+                fontFamily: "'SF Mono', Monaco, Consolas, monospace",
+                lineNumbers: 'on',
+                minimap: { enabled: true },
+                scrollBeyondLastLine: false,
+                automaticLayout: true,
+                wordWrap: 'bounded',
+                renderLineHighlight: 'line',
+                cursorBlinking: 'smooth',
+                smoothScrolling: true
+            });
+
+            monacoReady = true;
+            console.log('Monaco Editor initialized');
+            
+            // Enable file tree items now that Monaco is ready
+            document.querySelectorAll('.file-item').forEach(item => {
+                item.style.opacity = '1';
+                item.style.pointerEvents = 'auto';
+            });
+        });
+
+        function openFile(filename, element) {
+            // Check if Monaco is ready
+            if (!monacoReady || !editor) {
+                console.log('Monaco not ready yet, waiting...');
+                setTimeout(() => openFile(filename, element), 200);
+                return;
+            }
+
+            console.log('Opening file:', filename);
+
+            // Update active file indicator
+            document.querySelectorAll('.file-item').forEach(item => {
                 item.classList.remove('active');
             });
-            event.target.closest('.develop-menu-item').classList.add('active');
+            element.classList.add('active');
+
+            // Hide welcome message
+            document.getElementById('welcomeMessage').style.display = 'none';
+
+            // Get file extension for language detection
+            const ext = filename.split('.').pop();
+            let language = 'plaintext';
             
-            // Update content
-            document.querySelectorAll('.develop-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            const sectionContent = document.getElementById(section + '-content');
-            if (sectionContent) {
-                sectionContent.classList.add('active');
+            switch(ext) {
+                case 'py': language = 'python'; break;
+                case 'js': language = 'javascript'; break;
+                case 'yaml': case 'yml': language = 'yaml'; break;
+                case 'md': language = 'markdown'; break;
+                case 'json': language = 'json'; break;
+            }
+
+            try {
+                // Set editor content
+                const content = fileContents[filename] || `# ${filename}\n\n# File content goes here...`;
+                editor.setValue(content);
+                monaco.editor.setModelLanguage(editor.getModel(), language);
+                editor.focus();
+                
+                console.log('File loaded successfully:', filename);
+            } catch (error) {
+                console.error('Error loading file:', error);
+                setTimeout(() => openFile(filename, element), 200);
+                return;
+            }
+
+            currentFile = filename;
+        }
+
+        // Testing functions
+        function addOutput(message, type = 'info') {
+            const output = document.getElementById('testOutput');
+            const line = document.createElement('div');
+            line.className = `output-line output-${type}`;
+            line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            output.appendChild(line);
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function clearOutput() {
+            document.getElementById('testOutput').innerHTML = '';
+            addOutput('Output cleared', 'info');
+        }
+
+        function runSyntaxCheck() {
+            if (!currentFile || !currentFile.endsWith('.py')) {
+                addOutput('Please select a Python file first', 'warning');
+                return;
+            }
+
+            addOutput(`Checking syntax for ${currentFile}...`, 'info');
+            
+            // Get current code from editor
+            const code = editor.getValue();
+            
+            // Basic syntax validation (in real implementation, send to backend)
+            try {
+                // Simple checks
+                const lines = code.split('\n');
+                let hasImports = false;
+                let hasClass = false;
+                let indentationErrors = [];
+                
+                lines.forEach((line, i) => {
+                    if (line.trim().startsWith('import ') || line.trim().startsWith('from ')) {
+                        hasImports = true;
+                    }
+                    if (line.trim().startsWith('class ')) {
+                        hasClass = true;
+                    }
+                    // Check basic indentation
+                    if (line.length > 0 && !line.startsWith(' ') && !line.startsWith('\t') && 
+                        (line.includes('def ') || line.includes('if ') || line.includes('for ') || line.includes('while ')) &&
+                        !line.trim().startsWith('def ') && !line.trim().startsWith('class ')) {
+                        // This is a very basic check - real syntax checking needs Python AST
+                    }
+                });
+
+                addOutput('✓ Basic syntax checks passed', 'success');
+                if (hasImports) addOutput('✓ Import statements found', 'success');
+                if (hasClass) addOutput('✓ Class definition found', 'success');
+                
+                // Check for common AlphaPulse patterns
+                if (code.includes('Strategy') && code.includes('generate_signals')) {
+                    addOutput('✓ Strategy structure looks good', 'success');
+                } else {
+                    addOutput('⚠ Missing Strategy class or generate_signals method', 'warning');
+                }
+
+            } catch (error) {
+                addOutput(`✗ Syntax error: ${error.message}`, 'error');
             }
         }
-        
-        function searchComponents(event) {
-            const query = event.target.value.toLowerCase();
+
+        function exportToYAML() {
+            if (!currentFile || !currentFile.endsWith('.py')) {
+                addOutput('Please select a Python strategy file first', 'warning');
+                return;
+            }
+
+            addOutput(`Generating YAML config for ${currentFile}...`, 'info');
             
-            if (query.length < 2) {
-                hideSearchResults();
+            // Analyze the strategy code
+            const code = editor.getValue();
+            let strategyName = 'my_strategy';
+            let parameters = {};
+            
+            // Extract strategy class name
+            const classMatch = code.match(/class\s+(\w+)/);
+            if (classMatch) {
+                strategyName = classMatch[1].toLowerCase();
+            }
+            
+            // Extract parameters from __init__ method
+            const paramMatches = code.match(/self\.(\w+)\s*=.*?config\.get\(['"](\w+)['"],\s*(.*?)\)/g);
+            if (paramMatches) {
+                paramMatches.forEach(match => {
+                    const paramMatch = match.match(/self\.(\w+)\s*=.*?config\.get\(['"](\w+)['"],\s*(.*?)\)/);
+                    if (paramMatch) {
+                        const paramName = paramMatch[2];
+                        const defaultValue = paramMatch[3];
+                        try {
+                            parameters[paramName] = eval(defaultValue);
+                        } catch (e) {
+                            parameters[paramName] = defaultValue;
+                        }
+                    }
+                });
+            }
+            
+            // Generate YAML config
+            const yamlConfig = `# Generated strategy configuration
+name: ${strategyName}
+symbols: ["SPY"]
+timeframe: "5m"
+
+strategy:
+  ${strategyName}:${Object.keys(parameters).length > 0 ? '\n' + Object.entries(parameters).map(([k, v]) => `    ${k}: ${JSON.stringify(v)}`).join('\n') : ' {}'}
+
+risk_management:
+  max_position_size: 0.1
+  stop_loss: 0.02
+  take_profit: 0.04
+
+execution:
+  mode: "paper"
+  broker: "alpaca"
+  slippage_model: "fixed"
+  commission: 0.001
+`;
+
+            addOutput('✓ YAML configuration generated', 'success');
+            addOutput('=== GENERATED CONFIG ===', 'info');
+            addOutput(yamlConfig, 'info');
+            addOutput('✓ Ready to save to configs/ directory', 'success');
+        }
+
+        function runReplay() {
+            if (!currentFile) {
+                addOutput('Please select a file first', 'warning');
+                return;
+            }
+
+            addOutput(`Preparing replay for ${currentFile}...`, 'info');
+            
+            if (currentFile.endsWith('.py')) {
+                addOutput('✓ Strategy file detected', 'success');
+                addOutput('Generating temporary config...', 'info');
+                setTimeout(() => {
+                    addOutput('✓ Config generated', 'success');
+                    addOutput('🎬 Opening Replay tab...', 'info');
+                    setTimeout(() => {
+                        // Open replay tab
+                        window.open('replay.html', '_blank');
+                        addOutput('✓ Replay tab opened - test your strategy execution', 'success');
+                    }, 500);
+                }, 1000);
+            } else if (currentFile.endsWith('.yaml')) {
+                addOutput('✓ Config file detected', 'success');
+                addOutput('Loading configuration...', 'info');
+                setTimeout(() => {
+                    addOutput('✓ Configuration loaded', 'success');
+                    addOutput('🎬 Opening Replay tab...', 'info');
+                    setTimeout(() => {
+                        window.open('replay.html', '_blank');
+                        addOutput('✓ Replay tab opened with your config', 'success');
+                    }, 500);
+                }, 800);
+            } else {
+                addOutput('Please select a .py strategy file or .yaml config file', 'warning');
+            }
+        }
+
+        function generateNotebook() {
+            if (!currentFile) {
+                addOutput('Please select a file first', 'warning');
+                return;
+            }
+
+            addOutput(`Generating analysis notebook for ${currentFile}...`, 'info');
+            
+            const code = editor.getValue();
+            let notebookContent = '';
+            
+            if (currentFile.endsWith('.py')) {
+                // Extract strategy information
+                const classMatch = code.match(/class\s+(\w+)/);
+                const strategyName = classMatch ? classMatch[1] : 'UnknownStrategy';
+                
+                // Generate Python strategy analysis notebook
+                notebookContent = generateStrategyNotebook(strategyName, code);
+                addOutput('✓ Strategy analysis notebook generated', 'success');
+                
+            } else if (currentFile.endsWith('.yaml')) {
+                // Parse YAML config
+                const configName = currentFile.replace('.yaml', '');
+                
+                // Generate config analysis notebook
+                notebookContent = generateConfigNotebook(configName, code);
+                addOutput('✓ Config analysis notebook generated', 'success');
+                
+            } else {
+                addOutput('Please select a .py strategy file or .yaml config file', 'warning');
                 return;
             }
             
-            const results = [];
+            // Store notebook content for Research tab
+            sessionStorage.setItem('generatedNotebook', notebookContent);
+            sessionStorage.setItem('notebookSource', currentFile);
             
-            // Search strategies
-            allStrategies.forEach(strategy => {
-                if (strategy.name.toLowerCase().includes(query)) {
-                    results.push({
-                        ...strategy,
-                        displayName: strategy.name,
-                        displayMeta: `Modified ${strategy.modified} • ${strategy.version}`
-                    });
-                }
-            });
-            
-            // Search features
-            allFeatures.forEach(feature => {
-                if (feature.name.toLowerCase().includes(query) || feature.desc.toLowerCase().includes(query)) {
-                    results.push({
-                        ...feature,
-                        displayName: feature.name,
-                        displayMeta: `${feature.desc} • Used in ${feature.usage} strategies`
-                    });
-                }
-            });
-            
-            showSearchResults(results);
+            addOutput('📔 Opening Research tab with generated notebook...', 'info');
+            setTimeout(() => {
+                // Open research tab
+                window.open('research.html?generated=true', '_blank');
+                addOutput('✓ Research tab opened with analysis notebook', 'success');
+            }, 800);
         }
-        
-        function showSearchResults(results) {
-            let resultsHtml = '';
-            
-            if (results.length === 0) {
-                resultsHtml = '<div class="search-result-item">No results found</div>';
-            } else {
-                results.forEach(result => {
-                    resultsHtml += `
-                        <div class="search-result-item" onclick="loadFromSearch('${result.type}', '${result.id}')">
-                            <span class="menu-icon">${result.type === 'strategy' ? '📊' : '🔧'}</span>
-                            <div class="item-details">
-                                <span class="item-name">${result.displayName}</span>
-                                <span class="item-meta">${result.displayMeta}</span>
-                            </div>
-                            <span class="search-result-type">${result.type}</span>
-                        </div>
-                    `;
-                });
-            }
-            
-            // Create or update search results container
-            let searchResults = document.querySelector('.search-results');
-            if (!searchResults) {
-                searchResults = document.createElement('div');
-                searchResults.className = 'search-results';
-                document.querySelector('.search-container').appendChild(searchResults);
-            }
-            
-            searchResults.innerHTML = resultsHtml;
-            searchResults.style.display = 'block';
+
+        function generateStrategyNotebook(strategyName, strategyCode) {
+            return `{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# ${strategyName} Analysis\\n",
+    "\\n",
+    "Analysis notebook for **${strategyName}** following ADMF-PC principles:\\n",
+    "\\n",
+    "- **Configs are ephemeral queries** to generate data\\n",
+    "- **Traces are permanent truth** stored by content hash\\n",
+    "- **Registry connects everything** in a queryable knowledge graph\\n",
+    "\\n",
+    "## Strategy Overview\\n",
+    "\\n",
+    "This notebook analyzes the ${strategyName} implementation and provides tools for parameter exploration, backtesting, and performance analysis."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "source": [
+    "# Load the analysis library\\n",
+    "from analysis_library import *\\n",
+    "import pandas as pd\\n",
+    "import numpy as np\\n",
+    "from alphapulse import Registry\\n",
+    "\\n",
+    "# Initialize registry connection\\n",
+    "registry = Registry('registry.db')\\n",
+    "\\n",
+    "print('Analysis environment initialized')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Strategy Code Review\\n",
+    "\\n",
+    "Current implementation:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "source": [
+    "# Strategy implementation\\n",
+    "${strategyCode.split('\n').map(line => JSON.stringify(line)).join(',\\n    ')}"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Query Existing Results\\n",
+    "\\n",
+    "Check if this strategy has been tested before:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "source": [
+    "# Query existing strategy results\\n",
+    "existing_results = registry.query_strategies()\\\\\\n",
+    "    .where(strategy_type='${strategyName.toLowerCase()}')\\\\\\n",
+    "    .load()\\n",
+    "\\n",
+    "if len(existing_results) > 0:\\n",
+    "    print(f'Found {len(existing_results)} existing tests')\\n",
+    "    print(existing_results[['strategy_hash', 'parameters', 'created_at']].head())\\n",
+    "else:\\n",
+    "    print('No existing results found - this is a new strategy')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Parameter Analysis\\n",
+    "\\n",
+    "Analyze parameter sensitivity and generate configs for untested parameter combinations:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "source": [
+    "# Parameter exploration\\n",
+    "parameter_space = {\\n",
+    "    # Add parameter ranges based on strategy\\n",
+    "    # 'period': [10, 15, 20, 25, 30],\\n",
+    "    # 'threshold': [0.01, 0.02, 0.03, 0.05]\\n",
+    "}\\n",
+    "\\n",
+    "# Generate untested parameter combinations\\n",
+    "untested_configs = generate_parameter_sweep(\\n",
+    "    strategy_type='${strategyName.toLowerCase()}',\\n",
+    "    parameter_space=parameter_space,\\n",
+    "    existing_results=existing_results\\n",
+    ")\\n",
+    "\\n",
+    "print(f'Generated {len(untested_configs)} untested parameter combinations')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Performance Analysis\\n",
+    "\\n",
+    "Analyze performance of existing strategy instances:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "source": [
+    "if len(existing_results) > 0:\\n",
+    "    # Performance analysis\\n",
+    "    analysis = analyze_strategies(existing_results)\\\\\\n",
+    "        .performance_metrics()\\\\\\n",
+    "        .drawdown_analysis()\\\\\\n",
+    "        .parameter_sensitivity()\\\\\\n",
+    "        .compare_to_benchmark('SPY')\\\\\\n",
+    "        .generate_report()\\n",
+    "    \\n",
+    "    analysis.summary()\\n",
+    "else:\\n",
+    "    print('Run strategy tests first to see performance analysis')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Generate Test Config\\n",
+    "\\n",
+    "Create YAML config for testing this strategy:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "source": [
+    "# Generate test configuration\\n",
+    "test_config = {\\n",
+    "    'name': '${strategyName.toLowerCase()}_test',\\n",
+    "    'symbols': ['SPY'],\\n",
+    "    'timeframe': '5m',\\n",
+    "    'strategy': {\\n",
+    "        '${strategyName.toLowerCase()}': {\\n",
+    "            # Add default parameters\\n",
+    "        }\\n",
+    "    },\\n",
+    "    'risk_management': {\\n",
+    "        'max_position_size': 0.1,\\n",
+    "        'stop_loss': 0.02,\\n",
+    "        'take_profit': 0.04\\n",
+    "    }\\n",
+    "}\\n",
+    "\\n",
+    "# Save config\\n",
+    "import yaml\\n",
+    "with open('configs/${strategyName.toLowerCase()}_test.yaml', 'w') as f:\\n",
+    "    yaml.dump(test_config, f)\\n",
+    "    \\n",
+    "print('✓ Test config saved to configs/${strategyName.toLowerCase()}_test.yaml')"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.8.5"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}`;
         }
-        
-        function hideSearchResults() {
-            const searchResults = document.querySelector('.search-results');
-            if (searchResults) {
-                searchResults.style.display = 'none';
-            }
+
+        function generateConfigNotebook(configName, configContent) {
+            return `{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# ${configName} Config Analysis\\n",
+    "\\n",
+    "Analysis notebook for **${configName}** configuration following ADMF-PC principles:\\n",
+    "\\n",
+    "- **Configs are ephemeral queries** to generate data\\n",
+    "- **Traces are permanent truth** stored by content hash\\n",
+    "- **Registry connects everything** in a queryable knowledge graph\\n",
+    "\\n",
+    "## Configuration Overview\\n",
+    "\\n",
+    "This notebook analyzes the ${configName} configuration and provides tools for execution, monitoring, and performance analysis."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "source": [
+    "# Load the analysis library\\n",
+    "from analysis_library import *\\n",
+    "import pandas as pd\\n",
+    "import numpy as np\\n",
+    "import yaml\\n",
+    "from alphapulse import Registry\\n",
+    "\\n",
+    "# Initialize registry connection\\n",
+    "registry = Registry('registry.db')\\n",
+    "\\n",
+    "print('Analysis environment initialized')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Configuration Review\\n",
+    "\\n",
+    "Current configuration:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "source": [
+    "# Load and display configuration\\n",
+    "config_yaml = '''\\n${configContent}\\n'''\\n",
+    "\\n",
+    "config = yaml.safe_load(config_yaml)\\n",
+    "print('Configuration loaded:')\\n",
+    "print(yaml.dump(config, default_flow_style=False))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Query Existing Executions\\n",
+    "\\n",
+    "Check if this configuration has been executed before:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "source": [
+    "# Calculate config hash\\n",
+    "import hashlib\\n",
+    "config_hash = hashlib.sha256(config_yaml.encode()).hexdigest()[:8]\\n",
+    "\\n",
+    "# Query existing executions\\n",
+    "existing_executions = registry.query_executions()\\\\\\n",
+    "    .where(config_hash=config_hash)\\\\\\n",
+    "    .load()\\n",
+    "\\n",
+    "if len(existing_executions) > 0:\\n",
+    "    print(f'Found {len(existing_executions)} existing executions')\\n",
+    "    print(existing_executions[['execution_hash', 'sharpe_ratio', 'total_pnl', 'created_at']].head())\\n",
+    "else:\\n",
+    "    print('No existing executions found - this is a new configuration')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Execute Configuration\\n",
+    "\\n",
+    "Run the configuration and generate traces:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "source": [
+    "# Execute configuration\\n",
+    "if len(existing_executions) == 0:\\n",
+    "    print('Executing configuration...')\\n",
+    "    \\n",
+    "    # This would trigger the actual execution\\n",
+    "    # execution_result = execute_config(config)\\n",
+    "    \\n",
+    "    print('Execution complete. Check registry for results.')\\n",
+    "else:\\n",
+    "    print('Configuration already executed. Use existing results for analysis.')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Performance Analysis\\n",
+    "\\n",
+    "Analyze execution performance:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "source": [
+    "if len(existing_executions) > 0:\\n",
+    "    # Performance analysis\\n",
+    "    analysis = analyze_executions(existing_executions)\\\\\\n",
+    "        .performance_metrics()\\\\\\n",
+    "        .drawdown_analysis()\\\\\\n",
+    "        .trade_analysis()\\\\\\n",
+    "        .risk_metrics()\\\\\\n",
+    "        .compare_to_benchmark('SPY')\\\\\\n",
+    "        .plot_equity_curves()\\\\\\n",
+    "        .generate_report()\\n",
+    "    \\n",
+    "    analysis.summary()\\n",
+    "else:\\n",
+    "    print('Execute configuration first to see performance analysis')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Signal Analysis\\n",
+    "\\n",
+    "Analyze the underlying signals:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "source": [
+    "if len(existing_executions) > 0:\\n",
+    "    # Load signal traces\\n",
+    "    signal_hashes = existing_executions['signal_hashes'].iloc[0]\\n",
+    "    \\n",
+    "    signals = load_signal_traces(signal_hashes)\\n",
+    "    \\n",
+    "    # Signal analysis\\n",
+    "    signal_analysis = analyze_signals(signals)\\\\\\n",
+    "        .signal_distribution()\\\\\\n",
+    "        .signal_persistence()\\\\\\n",
+    "        .signal_correlation()\\\\\\n",
+    "        .plot_signal_timeline()\\n",
+    "    \\n",
+    "    signal_analysis.summary()\\n",
+    "else:\\n",
+    "    print('Execute configuration first to analyze signals')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Production Readiness\\n",
+    "\\n",
+    "Assess if this configuration is ready for production:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "source": [
+    "if len(existing_executions) > 0:\\n",
+    "    # Production readiness checklist\\n",
+    "    readiness = assess_production_readiness(existing_executions)\\\\\\n",
+    "        .check_minimum_trades(min_trades=50)\\\\\\n",
+    "        .check_sharpe_ratio(min_sharpe=1.0)\\\\\\n",
+    "        .check_max_drawdown(max_dd=0.15)\\\\\\n",
+    "        .check_stability()\\\\\\n",
+    "        .generate_checklist()\\n",
+    "    \\n",
+    "    readiness.report()\\n",
+    "    \\n",
+    "    if readiness.is_ready():\\n",
+    "        print('✓ Configuration is ready for production')\\n",
+    "        # Copy to production configs\\n",
+    "        # shutil.copy(f'configs/${configName}.yaml', 'configs/production/')\\n",
+    "    else:\\n",
+    "        print('⚠ Configuration needs more testing before production')\\n",
+    "else:\\n",
+    "    print('Execute and analyze configuration first')"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.8.5"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}`;
         }
-        
-        function loadFromSearch(type, id) {
-            hideSearchResults();
-            if (type === 'strategy') {
-                loadStrategy(id);
-            } else {
-                loadFeature(id);
-            }
-        }
-        
-        function loadStrategy(strategyId) {
-            // Show strategies section
-            document.querySelectorAll('.develop-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            document.getElementById('strategies-content').classList.add('active');
-            
-            // Update editor
-            const code = strategyCode[strategyId] || '# Strategy code not found';
-            document.querySelector('.develop-code-editor').value = code;
-            
-            // Update active tab
-            document.querySelectorAll('.editor-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelector('.editor-tab').classList.add('active');
-            
-            // Update sidebar
-            document.querySelectorAll('.develop-menu-item').forEach(item => {
-                item.classList.remove('active');
-            });
-        }
-        
-        function loadFeature(featureId) {
-            // Show features section
-            showDevelopSection('features');
-            console.log('Loading feature:', featureId);
-        }
-        
-        function showAllStrategies() {
-            const list = document.getElementById('strategiesList');
-            let html = '';
-            
-            allStrategies.forEach(strategy => {
-                html += `
-                    <div class="develop-menu-item" onclick="loadStrategy('${strategy.id}')">
-                        <span class="menu-icon">📊</span>
-                        <div class="item-details">
-                            <span class="item-name">${strategy.name}</span>
-                            <span class="item-meta">Modified ${strategy.modified} • ${strategy.version}</span>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            list.innerHTML = html;
-            event.target.style.display = 'none';
-        }
-        
-        function showAllFeatures() {
-            const list = document.getElementById('featuresList');
-            let html = '';
-            
-            allFeatures.forEach(feature => {
-                html += `
-                    <div class="develop-menu-item" onclick="loadFeature('${feature.id}')">
-                        <span class="menu-icon">🔧</span>
-                        <div class="item-details">
-                            <span class="item-name">${feature.name}</span>
-                            <span class="item-meta">${feature.desc} • Used in ${feature.usage} strategies</span>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            list.innerHTML = html;
-            event.target.style.display = 'none';
-        }
-        
-        // Close search results when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.search-container')) {
-                hideSearchResults();
-            }
-        });
-        
-        // Catalog Data Structure
-        const catalogStructure = {
-            strategies: {
-                label: 'Strategies',
-                icon: '📊',
-                children: {
-                    indicators: {
-                        label: 'Indicator-Based',
-                        icon: '📈',
-                        children: {
-                            trend: {
-                                label: 'Trend Following',
-                                icon: '📉',
-                                items: [
-                                    { name: 'ma.py', desc: 'Moving Average Crossover', params: ['fast_period', 'slow_period'], version: 'v2.1' },
-                                    { name: 'ma_adaptive.py', desc: 'Adaptive Moving Average', params: ['efficiency_ratio', 'fast_period'], version: 'v1.3' },
-                                    { name: 'trend_following.py', desc: 'General Trend Following', params: ['lookback', 'threshold'], version: 'v3.0' }
-                                ]
-                            },
-                            momentum: {
-                                label: 'Momentum',
-                                icon: '🚀',
-                                items: [
-                                    { name: 'momentum.py', desc: 'Rate of Change Momentum', params: ['period', 'threshold'], version: 'v2.5' },
-                                    { name: 'macd.py', desc: 'MACD Strategy', params: ['fast', 'slow', 'signal'], version: 'v1.8' }
-                                ]
-                            },
-                            oscillators: {
-                                label: 'Oscillators',
-                                icon: '〰️',
-                                items: [
-                                    { name: 'rsi.py', desc: 'RSI Overbought/Oversold', params: ['period', 'oversold', 'overbought'], version: 'v2.2' },
-                                    { name: 'oscillators.py', desc: 'Multiple Oscillator Signals', params: ['rsi_period', 'stoch_period'], version: 'v1.5' }
-                                ]
-                            },
-                            structure: {
-                                label: 'Market Structure',
-                                icon: '🏗️',
-                                items: [
-                                    { name: 'swing_pivot_bounce_flex.py', desc: 'Flexible Swing Pivot Detection', params: ['left_bars', 'right_bars'], version: 'v1.2' },
-                                    { name: 'swing_pivot_bounce_target.py', desc: 'Target-Based Pivot Trading', params: ['pivot_strength', 'target_ratio'], version: 'v1.0' },
-                                    { name: 'swing_pivot_bounce_zones.py', desc: 'Support/Resistance Zones', params: ['zone_width', 'min_touches'], version: 'v1.1' }
-                                ]
-                            },
-                            volatility: {
-                                label: 'Volatility',
-                                icon: '📊',
-                                items: [
-                                    { name: 'channels.py', desc: 'Bollinger/Keltner Channels', params: ['period', 'std_dev'], version: 'v2.0' }
-                                ]
-                            },
-                            volume: {
-                                label: 'Volume',
-                                icon: '📊',
-                                items: [
-                                    { name: 'vwap.py', desc: 'VWAP Trading Strategy', params: ['lookback', 'deviation'], version: 'v1.7' }
-                                ]
-                            },
-                            mean_reversion: {
-                                label: 'Mean Reversion',
-                                icon: '↩️',
-                                items: [
-                                    { name: 'mean_reversion.py', desc: 'Statistical Mean Reversion', params: ['lookback', 'z_score_entry', 'z_score_exit'], version: 'v3.1' }
-                                ]
-                            },
-                            breakout: {
-                                label: 'Breakout',
-                                icon: '💥',
-                                items: [
-                                    { name: 'breakout.py', desc: 'Range Breakout Detection', params: ['lookback', 'breakout_multiplier'], version: 'v2.3' }
-                                ]
-                            }
-                        }
-                    },
-                    ml_based: {
-                        label: 'ML-Based',
-                        icon: '🤖',
-                        children: {
-                            ensemble: {
-                                label: 'Ensemble Methods',
-                                icon: '🎭',
-                                items: [
-                                    { name: 'random_forest_signals.py', desc: 'Random Forest Classifier', params: ['n_estimators', 'max_depth', 'features'], version: 'v1.0' },
-                                    { name: 'xgboost_regime.py', desc: 'XGBoost Regime Detection', params: ['learning_rate', 'n_rounds'], version: 'v1.2' }
-                                ]
-                            },
-                            neural: {
-                                label: 'Neural Networks',
-                                icon: '🧠',
-                                items: [
-                                    { name: 'lstm_prediction.py', desc: 'LSTM Price Prediction', params: ['sequence_length', 'hidden_units'], version: 'v0.9' },
-                                    { name: 'transformer_signals.py', desc: 'Attention-Based Trading', params: ['n_heads', 'n_layers'], version: 'v0.8' }
-                                ]
-                            }
-                        }
-                    },
-                    statistical: {
-                        label: 'Statistical',
-                        icon: '📐',
-                        children: {
-                            pairs: {
-                                label: 'Pairs Trading',
-                                icon: '👥',
-                                items: [
-                                    { name: 'cointegration_pairs.py', desc: 'Cointegrated Pairs Trading', params: ['lookback', 'zscore_entry'], version: 'v2.4' },
-                                    { name: 'distance_pairs.py', desc: 'Distance-Based Pairs', params: ['rolling_window', 'threshold'], version: 'v1.6' }
-                                ]
-                            },
-                            arbitrage: {
-                                label: 'Arbitrage',
-                                icon: '⚖️',
-                                items: [
-                                    { name: 'stat_arb_basket.py', desc: 'Statistical Arbitrage Basket', params: ['n_assets', 'rebalance_freq'], version: 'v1.9' }
-                                ]
-                            }
-                        }
-                    },
-                    alternative: {
-                        label: 'Alternative Data',
-                        icon: '🌐',
-                        children: {
-                            sentiment: {
-                                label: 'Sentiment',
-                                icon: '💭',
-                                items: [
-                                    { name: 'news_sentiment.py', desc: 'News Sentiment Trading', params: ['sentiment_threshold', 'decay_rate'], version: 'v1.3' },
-                                    { name: 'social_momentum.py', desc: 'Social Media Momentum', params: ['mention_threshold', 'sentiment_weight'], version: 'v0.7' }
-                                ]
-                            }
-                        }
-                    }
-                }
-            },
-            features: {
-                label: 'Features',
-                icon: '🔧',
-                children: {
-                    indicators: {
-                        label: 'Technical Indicators',
-                        icon: '📊',
-                        children: {
-                            momentum: {
-                                label: 'Momentum',
-                                icon: '🚀',
-                                items: [
-                                    { name: 'momentum.py', desc: 'ROC, RSI, Stochastic', functions: ['rate_of_change', 'rsi', 'stochastic'], version: 'v3.0' },
-                                    { name: 'oscillators.py', desc: 'CCI, Williams %R, Ultimate', functions: ['cci', 'williams_r', 'ultimate_oscillator'], version: 'v2.1' }
-                                ]
-                            },
-                            trend: {
-                                label: 'Trend',
-                                icon: '📈',
-                                items: [
-                                    { name: 'trend.py', desc: 'ADX, Aroon, Supertrend', functions: ['adx', 'aroon', 'supertrend'], version: 'v2.5' }
-                                ]
-                            },
-                            volatility: {
-                                label: 'Volatility',
-                                icon: '📊',
-                                items: [
-                                    { name: 'volatility.py', desc: 'ATR, Bollinger Bands, Keltner', functions: ['atr', 'bollinger_bands', 'keltner_channel'], version: 'v2.8' },
-                                    { name: 'volatility_percentile.py', desc: 'Realized Vol Percentiles', functions: ['rv_percentile', 'garch_vol'], version: 'v1.4' }
-                                ]
-                            },
-                            volume: {
-                                label: 'Volume',
-                                icon: '📊',
-                                items: [
-                                    { name: 'volume.py', desc: 'OBV, CMF, Volume Profile', functions: ['obv', 'cmf', 'volume_profile'], version: 'v2.2' }
-                                ]
-                            },
-                            structure: {
-                                label: 'Structure',
-                                icon: '🏗️',
-                                items: [
-                                    { name: 'structure.py', desc: 'Pivots, Support/Resistance', functions: ['pivot_points', 'support_resistance'], version: 'v1.9' }
-                                ]
-                            }
-                        }
-                    },
-                    composite: {
-                        label: 'Composite Features',
-                        icon: '🔀',
-                        items: [
-                            { name: 'divergence.py', desc: 'Price/Indicator Divergences', functions: ['rsi_divergence', 'macd_divergence'], version: 'v1.6' },
-                            { name: 'bb_rsi_divergence.py', desc: 'Bollinger RSI Divergence', functions: ['bb_rsi_signal'], version: 'v2.0' }
-                        ]
-                    },
-                    microstructure: {
-                        label: 'Microstructure',
-                        icon: '🔬',
-                        items: [
-                            { name: 'spread_analysis.py', desc: 'Bid-Ask Spread Features', functions: ['effective_spread', 'realized_spread'], version: 'v1.2' },
-                            { name: 'order_flow.py', desc: 'Order Flow Imbalance', functions: ['flow_imbalance', 'trade_intensity'], version: 'v1.0' }
-                        ]
-                    }
-                }
-            },
-            components: {
-                label: 'Components',
-                icon: '🧩',
-                children: {
-                    wrappers: {
-                        label: 'Strategy Wrappers',
-                        icon: '📦',
-                        items: [
-                            { name: 'constrained_strategy_wrapper.py', desc: 'Add constraints to any strategy', params: ['max_positions', 'position_size'], version: 'v1.5' },
-                            { name: 'config_filter.py', desc: 'Configuration-based filtering', params: ['allowed_symbols', 'time_filters'], version: 'v1.2' }
-                        ]
-                    },
-                    helpers: {
-                        label: 'Helpers',
-                        icon: '🛠️',
-                        items: [
-                            { name: 'eod_timeframe_helper.py', desc: 'End-of-day data handling', functions: ['aggregate_to_daily', 'get_close_prices'], version: 'v1.1' },
-                            { name: 'signal_aggregation.py', desc: 'Combine multiple signals', functions: ['vote_signals', 'weighted_signals'], version: 'v2.3' }
-                        ]
-                    }
-                }
-            }
-        };
-        
-        // Catalog Functions
-        function showCatalog() {
-            document.getElementById('catalogView').classList.add('active');
-            renderCatalogTree();
-        }
-        
-        function closeCatalog() {
-            document.getElementById('catalogView').classList.remove('active');
-        }
-        
-        function renderCatalogTree() {
-            const treeContainer = document.getElementById('catalogTree');
-            treeContainer.innerHTML = '';
-            
-            Object.entries(catalogStructure).forEach(([key, category]) => {
-                const node = createTreeNode(key, category, 0);
-                treeContainer.appendChild(node);
-            });
-        }
-        
-        function createTreeNode(key, data, level) {
-            const node = document.createElement('div');
-            node.className = 'tree-node';
-            node.dataset.key = key;
-            
-            const header = document.createElement('div');
-            header.className = 'tree-node-header';
-            header.onclick = () => toggleNode(node, key, data);
-            
-            const toggle = document.createElement('span');
-            toggle.className = 'tree-toggle';
-            toggle.textContent = data.children || data.items ? '▶' : '';
-            header.appendChild(toggle);
-            
-            const icon = document.createElement('span');
-            icon.className = 'tree-icon';
-            icon.textContent = data.icon || '📄';
-            header.appendChild(icon);
-            
-            const label = document.createElement('span');
-            label.className = 'tree-label';
-            label.textContent = data.label || data.name || key;
-            header.appendChild(label);
-            
-            if (data.items) {
-                const count = document.createElement('span');
-                count.className = 'tree-count';
-                count.textContent = `(${data.items.length})`;
-                header.appendChild(count);
-            } else if (data.children) {
-                const count = document.createElement('span');
-                count.className = 'tree-count';
-                count.textContent = `(${countItems(data.children)})`;
-                header.appendChild(count);
-            }
-            
-            node.appendChild(header);
-            
-            if (data.children) {
-                const childrenContainer = document.createElement('div');
-                childrenContainer.className = 'tree-children';
-                
-                Object.entries(data.children).forEach(([childKey, childData]) => {
-                    const childNode = createTreeNode(childKey, childData, level + 1);
-                    childrenContainer.appendChild(childNode);
-                });
-                
-                node.appendChild(childrenContainer);
-            }
-            
-            return node;
-        }
-        
-        function countItems(obj) {
-            let count = 0;
-            if (obj.items) {
-                count += obj.items.length;
-            }
-            if (obj.children) {
-                Object.values(obj.children).forEach(child => {
-                    count += countItems(child);
-                });
-            }
-            return count;
-        }
-        
-        function toggleNode(node, key, data) {
-            // Toggle expansion
-            if (data.children || data.items) {
-                node.classList.toggle('expanded');
-            }
-            
-            // Update selection
-            document.querySelectorAll('.tree-node-header').forEach(h => h.classList.remove('selected'));
-            node.querySelector('.tree-node-header').classList.add('selected');
-            
-            // Show details
-            showCatalogDetails(key, data);
-        }
-        
-        function showCatalogDetails(key, data) {
-            const detailsContainer = document.getElementById('catalogDetails');
-            
-            if (data.items) {
-                // Show list of items
-                let html = `
-                    <div class="detail-header">
-                        <div class="detail-title">${data.icon} ${data.label}</div>
-                        <div class="detail-meta">${data.items.length} items</div>
-                    </div>
-                `;
-                
-                html += '<div class="detail-section">';
-                html += '<div class="detail-section-title">Available Modules</div>';
-                html += '<ul class="detail-list">';
-                
-                data.items.forEach(item => {
-                    html += `
-                        <li class="detail-list-item" onclick="loadFromCatalog('${item.name}')">
-                            <span class="tree-icon">📄</span>
-                            <div style="flex: 1;">
-                                <div style="font-weight: 500;">${item.name}</div>
-                                <div style="font-size: 11px; color: #858585; margin-top: 2px;">${item.desc}</div>
-                                <div style="margin-top: 4px;">
-                                    ${item.params ? item.params.map(p => `<span class="detail-tag">${p}</span>`).join('') : ''}
-                                    ${item.functions ? item.functions.map(f => `<span class="detail-tag">${f}()</span>`).join('') : ''}
-                                    <span class="detail-tag" style="background: #094771; color: #4ec9b0; border-color: #007acc;">${item.version}</span>
-                                </div>
-                            </div>
-                        </li>
-                    `;
-                });
-                
-                html += '</ul></div>';
-                detailsContainer.innerHTML = html;
-            } else if (data.children) {
-                // Show category overview
-                let html = `
-                    <div class="detail-header">
-                        <div class="detail-title">${data.icon} ${data.label}</div>
-                        <div class="detail-meta">${countItems(data)} total items</div>
-                    </div>
-                `;
-                
-                html += '<div class="detail-section">';
-                html += '<div class="detail-section-title">Subcategories</div>';
-                html += '<ul class="detail-list">';
-                
-                Object.entries(data.children).forEach(([childKey, childData]) => {
-                    const itemCount = countItems(childData);
-                    html += `
-                        <li class="detail-list-item">
-                            <span class="tree-icon">${childData.icon || '📁'}</span>
-                            <div style="flex: 1;">
-                                <div style="font-weight: 500;">${childData.label}</div>
-                                <div style="font-size: 11px; color: #858585; margin-top: 2px;">${itemCount} items</div>
-                            </div>
-                        </li>
-                    `;
-                });
-                
-                html += '</ul></div>';
-                detailsContainer.innerHTML = html;
-            } else {
-                // Show welcome message
-                detailsContainer.innerHTML = `
-                    <div style="text-align: center; color: #858585; padding: 40px;">
-                        <div style="font-size: 48px; margin-bottom: 16px;">${data.icon || '📚'}</div>
-                        <div style="font-size: 16px; font-weight: 500; color: #cccccc; margin-bottom: 8px;">${data.label}</div>
-                        <div>Browse the catalog to explore available strategies and features</div>
-                    </div>
-                `;
-            }
-        }
-        
-        function loadFromCatalog(filename) {
-            closeCatalog();
-            // Load the strategy/feature
-            console.log('Loading from catalog:', filename);
-            // You can implement actual loading logic here
-        }
-        
-        function searchCatalog(event) {
-            const query = event.target.value.toLowerCase();
-            if (query.length < 2) {
-                renderCatalogTree();
+
+        function generateSignals() {
+            if (!currentFile || !currentFile.endsWith('.py')) {
+                addOutput('Please select a Python strategy file first', 'warning');
                 return;
             }
+
+            addOutput(`Generating signals for ${currentFile}...`, 'info');
             
-            // Filter and show matching items
-            const results = [];
-            searchInStructure(catalogStructure, query, results);
+            // Extract strategy information
+            const code = editor.getValue();
+            const classMatch = code.match(/class\s+(\w+)/);
+            const strategyName = classMatch ? classMatch[1] : 'UnknownStrategy';
             
-            // Render filtered results
-            const treeContainer = document.getElementById('catalogTree');
-            treeContainer.innerHTML = '';
+            // Extract parameters with default ranges
+            const paramMatches = code.match(/self\.(\\w+)\\s*=.*?config\\.get\\(['\"](\\w+)['\"],\\s*(.*?)\\)/g);
+            let parameters = {};
+            let parameterRanges = {};
             
-            if (results.length === 0) {
-                treeContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #858585;">No results found</div>';
-            } else {
-                results.forEach(result => {
-                    const item = document.createElement('div');
-                    item.className = 'tree-node-header';
-                    item.style.paddingLeft = '20px';
-                    item.onclick = () => showCatalogDetails(result.key, result.parent);
-                    
-                    item.innerHTML = `
-                        <span class="tree-icon">${result.icon || '📄'}</span>
-                        <span class="tree-label">${result.name}</span>
-                        <span style="color: #858585; font-size: 11px; margin-left: 8px;">${result.path}</span>
-                    `;
-                    
-                    treeContainer.appendChild(item);
+            if (paramMatches) {
+                paramMatches.forEach(match => {
+                    const paramMatch = match.match(/self\\.(\\w+)\\s*=.*?config\\.get\\(['\"](\\w+)['\"],\\s*(.*?)\\)/);
+                    if (paramMatch) {
+                        const paramName = paramMatch[2];
+                        const defaultValue = paramMatch[3];
+                        
+                        try {
+                            const numValue = parseFloat(defaultValue);
+                            if (!isNaN(numValue)) {
+                                // Generate parameter ranges for numeric values
+                                if (paramName.includes('period') || paramName.includes('window') || paramName.includes('lookback')) {
+                                    // Period-like parameters: use steps around default
+                                    const min = Math.max(5, Math.floor(numValue * 0.5));
+                                    const max = Math.ceil(numValue * 2);
+                                    const step = Math.max(1, Math.floor((max - min) / 8));
+                                    parameterRanges[paramName] = Array.from({length: 5}, (_, i) => min + i * step * 2).filter(v => v <= max);
+                                } else if (paramName.includes('threshold') || paramName.includes('std') || paramName.includes('factor')) {
+                                    // Ratio-like parameters: use smaller steps
+                                    const baseValue = numValue;
+                                    parameterRanges[paramName] = [
+                                        baseValue * 0.5, 
+                                        baseValue * 0.75, 
+                                        baseValue, 
+                                        baseValue * 1.25, 
+                                        baseValue * 1.5
+                                    ].map(v => parseFloat(v.toFixed(3)));
+                                } else {
+                                    // Generic numeric: use 20% variations
+                                    parameterRanges[paramName] = [
+                                        numValue * 0.8,
+                                        numValue * 0.9,
+                                        numValue,
+                                        numValue * 1.1,
+                                        numValue * 1.2
+                                    ].map(v => parseFloat(v.toFixed(3)));
+                                }
+                                parameters[paramName] = numValue;
+                            } else {
+                                parameters[paramName] = defaultValue;
+                            }
+                        } catch (e) {
+                            parameters[paramName] = defaultValue;
+                        }
+                    }
                 });
             }
-        }
-        
-        function searchInStructure(obj, query, results, path = '') {
-            Object.entries(obj).forEach(([key, data]) => {
-                const currentPath = path ? `${path} > ${data.label || key}` : (data.label || key);
+            
+            // Generate comprehensive config with parameter ranges
+            const configName = `${strategyName.toLowerCase()}_signals`;
+            const yamlConfig = `# Auto-generated signal configuration for ${strategyName}
+name: ${configName}
+symbols: ["SPY", "QQQ", "IWM"]
+timeframe: "5m"
+
+strategy:
+  ${strategyName.toLowerCase()}:${Object.keys(parameterRanges).length > 0 ? 
+    '\\n' + Object.entries(parameterRanges).map(([k, v]) => 
+      `    ${k}: ${JSON.stringify(v)}  # Sweep: ${v.length} values`
+    ).join('\\n') : 
+    '\\n' + Object.entries(parameters).map(([k, v]) => 
+      `    ${k}: ${JSON.stringify(v)}`
+    ).join('\\n')}
+
+risk_management:
+  max_position_size: 0.1
+  stop_loss: 0.02
+  take_profit: 0.04
+
+execution:
+  mode: "paper"
+  broker: "alpaca"
+  slippage_model: "fixed"
+  commission: 0.001
+
+# Signal generation settings
+signal_generation:
+  start_date: "2023-01-01"
+  end_date: "2024-12-31"
+  min_data_points: 1000
+  deduplication: true
+`;
+
+            addOutput('✓ Configuration generated with parameter ranges', 'success');
+            addOutput(`Found ${Object.keys(parameters).length} parameters`, 'info');
+            addOutput(`Generated ${Object.keys(parameterRanges).length} parameter sweeps`, 'info');
+            
+            // Calculate total combinations
+            const totalCombinations = Object.values(parameterRanges).reduce((acc, ranges) => 
+                acc * (Array.isArray(ranges) ? ranges.length : 1), 1) || 1;
+            addOutput(`Total parameter combinations: ${totalCombinations}`, 'info');
+            
+            addOutput('=== GENERATED CONFIG ===', 'info');
+            addOutput(yamlConfig, 'info');
+            
+            // Simulate execution process
+            addOutput('🚀 Starting signal generation process...', 'info');
+            setTimeout(() => {
+                addOutput('✓ Config validated', 'success');
+                addOutput('🔍 Checking for existing signals in registry...', 'info');
                 
-                if (data.items) {
-                    data.items.forEach(item => {
-                        if (item.name.toLowerCase().includes(query) || 
-                            item.desc.toLowerCase().includes(query) ||
-                            (item.params && item.params.some(p => p.toLowerCase().includes(query))) ||
-                            (item.functions && item.functions.some(f => f.toLowerCase().includes(query)))) {
-                            results.push({
-                                key: key,
-                                name: item.name,
-                                desc: item.desc,
-                                icon: data.icon,
-                                path: currentPath,
-                                parent: data
-                            });
-                        }
-                    });
-                }
-                
-                if (data.children) {
-                    searchInStructure(data.children, query, results, currentPath);
-                }
-            });
-        }
-        
-        // Close catalog on Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && document.getElementById('catalogView').classList.contains('active')) {
-                closeCatalog();
-            }
-        });
-        
-        // PDF Viewer Functions
-        let currentPDF = null;
-        let currentPage = 1;
-        let totalPages = 0;
-        let pdfZoom = 1;
-        
-        function toggleReference() {
-            const container = document.querySelector('.develop-container');
-            const btn = document.querySelector('.reference-btn');
-            
-            if (container.classList.contains('split-view')) {
-                container.classList.remove('split-view');
-                btn.classList.remove('active');
-            } else {
-                container.classList.add('split-view');
-                btn.classList.add('active');
-            }
-        }
-        
-        function loadPDFFromURL() {
-            const url = prompt('Enter PDF URL (e.g., from arXiv):');
-            if (url) {
-                loadPDF(url);
-            }
-        }
-        
-        function loadPDF(url) {
-            const pdfContent = document.getElementById('pdfContent');
-            const pdfTitle = document.getElementById('pdfTitle');
-            
-            // Extract title from URL
-            const urlParts = url.split('/');
-            const filename = urlParts[urlParts.length - 1];
-            pdfTitle.textContent = filename;
-            
-            // Create iframe for PDF
-            pdfContent.innerHTML = `
-                <iframe class="pdf-embed" src="${url}" style="transform: scale(${pdfZoom});">
-                    <p>Your browser does not support PDFs. <a href="${url}" target="_blank">Download the PDF</a>.</p>
-                </iframe>
-            `;
-            
-            currentPDF = url;
-            updatePDFInfo();
-        }
-        
-        function showRecentPapers() {
-            const papers = [
-                { title: 'Multi-Armed Bandits for Dynamic Portfolio Allocation', url: 'https://arxiv.org/pdf/2401.12345.pdf' },
-                { title: 'Attention Is All You Need for Price Prediction', url: 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4567890' },
-                { title: 'Hidden Markov Models for Regime Detection', url: 'https://quantstart.com/articles/hmm-regime-detection.pdf' }
-            ];
-            
-            const pdfContent = document.getElementById('pdfContent');
-            let html = '<div style="padding: 20px;">';
-            html += '<h3 style="color: #cccccc; margin-bottom: 16px;">Recent Papers from Feed</h3>';
-            
-            papers.forEach(paper => {
-                html += `
-                    <div style="padding: 12px; background: #2d2d30; border-radius: 4px; margin-bottom: 8px; cursor: pointer;" 
-                         onclick="loadPDF('${paper.url}')">
-                        <div style="color: #4ec9b0; font-size: 14px;">${paper.title}</div>
-                        <div style="color: #858585; font-size: 11px; margin-top: 4px;">${paper.url}</div>
-                    </div>
-                `;
-            });
-            
-            html += '</div>';
-            pdfContent.innerHTML = html;
-        }
-        
-        function closePDF() {
-            toggleReference();
-        }
-        
-        function updatePDFInfo() {
-            const pageInfo = document.getElementById('pdfPageInfo');
-            pageInfo.textContent = `Page ${currentPage}`;
-        }
-        
-        function previousPage() {
-            if (currentPage > 1) {
-                currentPage--;
-                updatePDFInfo();
-            }
-        }
-        
-        function nextPage() {
-            currentPage++;
-            updatePDFInfo();
-        }
-        
-        function zoomIn() {
-            pdfZoom = Math.min(pdfZoom + 0.1, 2);
-            updatePDFZoom();
-        }
-        
-        function zoomOut() {
-            pdfZoom = Math.max(pdfZoom - 0.1, 0.5);
-            updatePDFZoom();
-        }
-        
-        function updatePDFZoom() {
-            const iframe = document.querySelector('.pdf-embed');
-            if (iframe) {
-                iframe.style.transform = `scale(${pdfZoom})`;
-            }
-        }
-    </script>
-    
-    <!-- Prism.js for syntax highlighting -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
-    
-    <script>
-        // Enhanced code editor with syntax highlighting
-        function setupSyntaxHighlighting() {
-            const editor = document.querySelector('.develop-code-editor');
-            const container = document.querySelector('.code-editor-container');
-            
-            // Create a highlighted preview layer
-            const preview = document.createElement('pre');
-            preview.className = 'code-preview language-python';
-            preview.style.cssText = `
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                margin: 0;
-                padding: 16px;
-                font-family: 'SF Mono', Monaco, Consolas, monospace;
-                font-size: 13px;
-                line-height: 1.6;
-                pointer-events: none;
-                overflow: auto;
-                background: transparent;
-                border: none;
-            `;
-            
-            const code = document.createElement('code');
-            code.className = 'language-python';
-            preview.appendChild(code);
-            
-            // Make editor transparent to show highlighting underneath
-            editor.style.cssText += `
-                position: relative;
-                z-index: 1;
-                color: transparent;
-                caret-color: #d4d4d4;
-                background: transparent;
-            `;
-            
-            // Insert preview before editor
-            container.style.position = 'relative';
-            container.insertBefore(preview, editor);
-            
-            // Update highlighting on input
-            function updateHighlighting() {
-                code.textContent = editor.value;
-                Prism.highlightElement(code);
-                
-                // Sync scroll
-                preview.scrollTop = editor.scrollTop;
-                preview.scrollLeft = editor.scrollLeft;
-            }
-            
-            // Initial highlight
-            updateHighlighting();
-            
-            // Update on various events
-            editor.addEventListener('input', updateHighlighting);
-            editor.addEventListener('scroll', () => {
-                preview.scrollTop = editor.scrollTop;
-                preview.scrollLeft = editor.scrollLeft;
-            });
-            
-            // Handle tab key for indentation
-            editor.addEventListener('keydown', (e) => {
-                if (e.key === 'Tab') {
-                    e.preventDefault();
-                    const start = editor.selectionStart;
-                    const end = editor.selectionEnd;
-                    const spaces = '    '; // 4 spaces
+                setTimeout(() => {
+                    const existingSignals = Math.floor(totalCombinations * Math.random() * 0.3); // Simulate some existing
+                    const newSignals = totalCombinations - existingSignals;
                     
-                    editor.value = editor.value.substring(0, start) + spaces + editor.value.substring(end);
-                    editor.selectionStart = editor.selectionEnd = start + spaces.length;
-                    updateHighlighting();
-                }
-            });
+                    if (existingSignals > 0) {
+                        addOutput(`⚡ Found ${existingSignals} existing signals (skipped)`, 'info');
+                    }
+                    
+                    if (newSignals > 0) {
+                        addOutput(`🔥 Generating ${newSignals} new signal traces...`, 'info');
+                        
+                        // Simulate signal generation progress
+                        let processed = 0;
+                        const progressInterval = setInterval(() => {
+                            processed += Math.floor(Math.random() * 3) + 1;
+                            if (processed >= newSignals) {
+                                processed = newSignals;
+                                clearInterval(progressInterval);
+                                
+                                setTimeout(() => {
+                                    addOutput(`✓ Generated ${newSignals} signal traces`, 'success');
+                                    addOutput(`📊 Signals stored as: sig_${strategyName.toLowerCase()}_XXXXXX.parquet`, 'success');
+                                    addOutput(`📝 Registry updated with ${totalCombinations} total entries`, 'success');
+                                    addOutput('🎯 Ready for analysis! Use "Generate Notebook" to explore results', 'info');
+                                }, 500);
+                            } else {
+                                addOutput(`⏳ Progress: ${processed}/${newSignals} signals generated`, 'info');
+                            }
+                        }, 800);
+                    } else {
+                        addOutput('✓ All signals already exist in registry', 'success');
+                        addOutput('🎯 Ready for analysis! Use "Generate Notebook" to explore results', 'info');
+                    }
+                }, 1200);
+            }, 1000);
         }
-        
-        // Initialize syntax highlighting when page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            setupSyntaxHighlighting();
-        });
-        
-        // Re-initialize when loading different strategies
-        const originalLoadStrategy = window.loadStrategy;
-        window.loadStrategy = function(strategyId) {
-            originalLoadStrategy(strategyId);
-            setTimeout(setupSyntaxHighlighting, 100);
-        };
     </script>
 </body>
 </html>

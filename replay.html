@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strategy Replay - AlphaPulse</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 13px; 
+            background: #1e1e1e; 
+            color: #d4d4d4; 
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        /* Layout */
+        .app-container {
+            display: grid;
+            grid-template-rows: 32px 1fr;
+            height: 100vh;
+        }
+        
+        .header {
+            background: #007acc;
+            border-bottom: 1px solid #005a9e;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            font-size: 12px;
+        }
+        
+        .logo { 
+            color: white; 
+            font-weight: bold; 
+            margin-right: 20px;
+            font-size: 14px;
+            text-decoration: none;
+        }
+        
+        .header-nav {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+        }
+        
+        .header-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            transition: background 0.2s;
+            font-size: 12px;
+        }
+        
+        .header-nav a:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .header-nav a.active {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            background: #1e1e1e;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+        
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #4ec9b0;
+        }
+        
+        /* Main Layout */
+        .replay-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            grid-template-rows: auto 1fr;
+            height: calc(100vh - 32px);
+            background: #252526;
+        }
+        
+        /* Strategy Controls */
+        .strategy-controls {
+            grid-column: 1 / -1;
+            background: #2d2d30;
+            border-bottom: 1px solid #3e3e42;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        
+        /* Strategy Selector */
+        .strategy-selector {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+        
+        .selector-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .selector-label {
+            font-size: 11px;
+            color: #cccccc;
+            font-weight: 500;
+            min-width: 60px;
+        }
+        
+        .selector-input {
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            color: #cccccc;
+            padding: 6px 8px;
+            font-size: 11px;
+            border-radius: 3px;
+            min-width: 120px;
+        }
+        
+        .selector-input:focus {
+            outline: none;
+            border-color: #007acc;
+        }
+        
+        .date-input {
+            min-width: 100px;
+        }
+        
+        .date-separator {
+            font-size: 11px;
+            color: #858585;
+            margin: 0 4px;
+        }
+        
+        .strategy-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .strategy-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #cccccc;
+        }
+        
+        .strategy-meta {
+            font-size: 12px;
+            color: #858585;
+        }
+        
+        .replay-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+        }
+        
+        .control-btn {
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            color: #cccccc;
+            padding: 8px 12px;
+            font-size: 11px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .control-btn:hover {
+            background: #2a2a2a;
+            border-color: #525252;
+        }
+        
+        .control-btn.primary {
+            background: #007acc;
+            border-color: #007acc;
+            color: white;
+        }
+        
+        .control-btn.primary:hover {
+            background: #1a86d1;
+        }
+        
+        .control-btn.secondary {
+            background: #3e3e42;
+            border-color: #525252;
+            color: #cccccc;
+        }
+        
+        .control-btn.secondary:hover {
+            background: #525252;
+            border-color: #656565;
+        }
+        
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .replay-position {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: #858585;
+        }
+        
+        .position-slider {
+            width: 200px;
+            height: 4px;
+            background: #3e3e42;
+            border-radius: 2px;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .position-progress {
+            height: 100%;
+            background: #007acc;
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.1s;
+        }
+        
+        .position-handle {
+            position: absolute;
+            top: -4px;
+            width: 12px;
+            height: 12px;
+            background: #007acc;
+            border-radius: 50%;
+            cursor: grab;
+            transform: translateX(-50%);
+        }
+        
+        .position-handle:active {
+            cursor: grabbing;
+        }
+        
+        /* Chart Container */
+        .chart-container {
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            position: relative;
+            margin: 1px;
+        }
+        
+        .chart-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #858585;
+            font-size: 12px;
+            text-align: center;
+        }
+        
+        #lightweight_chart { 
+            height: 100%; 
+            width: 100%; 
+        }
+        
+        /* Right Panel */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            margin: 1px;
+        }
+        
+        .panel {
+            background: #252526;
+            border: 1px solid #3e3e42;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .panel-header {
+            background: #2d2d30;
+            padding: 8px 12px;
+            border-bottom: 1px solid #3e3e42;
+            font-weight: 500;
+            font-size: 11px;
+            color: #cccccc;
+            text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .panel-content {
+            flex: 1;
+            overflow-y: auto;
+            background: #1e1e1e;
+        }
+        
+        /* Current State Panel */
+        .current-state-panel {
+            flex: 0 0 200px;
+        }
+        
+        .state-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            padding: 12px;
+        }
+        
+        .state-item {
+            text-align: center;
+        }
+        
+        .state-label {
+            font-size: 10px;
+            color: #858585;
+            display: block;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        
+        .state-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #cccccc;
+        }
+        
+        .state-value.positive {
+            color: #4ec9b0;
+        }
+        
+        .state-value.negative {
+            color: #f48771;
+        }
+        
+        .state-value.neutral {
+            color: #dcdcaa;
+        }
+        
+        /* Indicators Panel */
+        .indicators-panel {
+            flex: 0 0 180px;
+        }
+        
+        .indicator-list {
+            padding: 8px;
+        }
+        
+        .indicator-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 8px;
+            margin-bottom: 4px;
+            background: #252526;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+        
+        .indicator-name {
+            color: #cccccc;
+        }
+        
+        .indicator-value {
+            font-family: monospace;
+            color: #4ec9b0;
+        }
+        
+        /* Event Log Panel */
+        .event-log-panel {
+            flex: 1;
+            min-height: 0;
+        }
+        
+        .event-log {
+            height: 100%;
+            overflow-y: auto;
+            padding: 8px;
+            font-family: 'SF Mono', Monaco, Consolas, monospace;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+        
+        .log-entry {
+            margin-bottom: 2px;
+            white-space: nowrap;
+            padding: 2px 0;
+        }
+        
+        .log-time {
+            color: #858585;
+        }
+        
+        .log-signal {
+            color: #4ec9b0;
+            font-weight: 500;
+        }
+        
+        .log-trade {
+            color: #569cd6;
+            font-weight: 500;
+        }
+        
+        .log-info {
+            color: #dcdcaa;
+        }
+        
+        .log-warning {
+            color: #d19a66;
+        }
+        
+        .log-error {
+            color: #f48771;
+            font-weight: 500;
+        }
+        
+        /* Bar Info Overlay */
+        .bar-info-overlay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(45, 45, 48, 0.95);
+            border: 1px solid #3e3e42;
+            border-radius: 4px;
+            padding: 12px;
+            font-size: 11px;
+            color: #cccccc;
+            min-width: 200px;
+            z-index: 1000;
+        }
+        
+        .bar-info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+        
+        .bar-info-label {
+            color: #858585;
+        }
+        
+        .bar-info-value {
+            color: #cccccc;
+            font-family: monospace;
+        }
+        
+        .bar-info-value.price {
+            color: #4ec9b0;
+        }
+        
+        .bar-info-value.volume {
+            color: #569cd6;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <a href="index.html" class="logo">AlphaPulse</a>
+            <nav class="header-nav">
+                <a href="develop.html">Develop</a>
+                <a href="replay.html" class="active">Replay</a>
+                <a href="research.html">Research</a>
+                <a href="deploy.html">Deploy</a>
+            </nav>
+            <div class="header-actions">
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span>Replay Ready</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="replay-container">
+            <!-- Strategy Selection -->
+            <div class="strategy-controls">
+                <div class="strategy-selector" id="strategySelector">
+                    <div class="selector-section">
+                        <label class="selector-label">Strategy:</label>
+                        <select class="selector-input" id="strategySelect" onchange="updateStrategySelection()">
+                            <option value="">Select Strategy...</option>
+                            <option value="momentum_volume">Momentum Volume</option>
+                            <option value="bollinger_bands">Bollinger Bands</option>
+                            <option value="mean_reversion">Mean Reversion</option>
+                            <option value="momentum_strategy">Momentum Strategy (from develop)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="selector-section">
+                        <label class="selector-label">Symbol:</label>
+                        <select class="selector-input" id="symbolSelect">
+                            <option value="SPY">SPY</option>
+                            <option value="QQQ">QQQ</option>
+                            <option value="IWM">IWM</option>
+                            <option value="TSLA">TSLA</option>
+                            <option value="AAPL">AAPL</option>
+                        </select>
+                    </div>
+                    
+                    <div class="selector-section">
+                        <label class="selector-label">Timeframe:</label>
+                        <select class="selector-input" id="timeframeSelect">
+                            <option value="1min">1 minute</option>
+                            <option value="5min" selected>5 minutes</option>
+                            <option value="15min">15 minutes</option>
+                            <option value="1h">1 hour</option>
+                            <option value="1d">1 day</option>
+                        </select>
+                    </div>
+                    
+                    <div class="selector-section">
+                        <label class="selector-label">Date Range:</label>
+                        <input type="date" class="selector-input date-input" id="startDate" value="2024-01-01">
+                        <span class="date-separator">to</span>
+                        <input type="date" class="selector-input date-input" id="endDate" value="2024-01-31">
+                    </div>
+                    
+                    <button class="control-btn primary" onclick="loadStrategy()" id="loadStrategyBtn">Load Strategy</button>
+                </div>
+                
+                <div class="strategy-info" id="strategyInfo" style="display: none;">
+                    <span class="strategy-name" id="loadedStrategyName">No strategy loaded</span>
+                    <span class="strategy-meta" id="loadedStrategyMeta">Select and load a strategy to begin</span>
+                </div>
+                
+                <div class="replay-controls" id="replayControls" style="display: none;">
+                    <div class="replay-position">
+                        <span id="currentBar">Bar 1 of 1000</span>
+                        <div class="position-slider" onclick="seekToPosition(event)">
+                            <div class="position-progress" id="positionProgress"></div>
+                            <div class="position-handle" id="positionHandle"></div>
+                        </div>
+                        <span id="currentDate">2024-01-02 09:30</span>
+                    </div>
+                    
+                    <button class="control-btn" onclick="stepBackward()">⏮ Step Back</button>
+                    <button class="control-btn primary" id="playPauseBtn" onclick="togglePlayPause()">▶ Play</button>
+                    <button class="control-btn" onclick="stepForward()">Step ⏭</button>
+                    <button class="control-btn" onclick="resetReplay()">⏹ Reset</button>
+                    <button class="control-btn secondary" onclick="showStrategySelector()">Change Strategy</button>
+                </div>
+            </div>
+            
+            <!-- Chart Container -->
+            <div class="chart-container">
+                <div id="lightweight_chart"></div>
+                <div id="chart-loading" class="chart-loading">Loading chart data...</div>
+                
+                <!-- Bar Info Overlay -->
+                <div class="bar-info-overlay" id="barInfoOverlay" style="display: none;">
+                    <div class="bar-info-row">
+                        <span class="bar-info-label">Time:</span>
+                        <span class="bar-info-value" id="barTime">-</span>
+                    </div>
+                    <div class="bar-info-row">
+                        <span class="bar-info-label">Open:</span>
+                        <span class="bar-info-value price" id="barOpen">-</span>
+                    </div>
+                    <div class="bar-info-row">
+                        <span class="bar-info-label">High:</span>
+                        <span class="bar-info-value price" id="barHigh">-</span>
+                    </div>
+                    <div class="bar-info-row">
+                        <span class="bar-info-label">Low:</span>
+                        <span class="bar-info-value price" id="barLow">-</span>
+                    </div>
+                    <div class="bar-info-row">
+                        <span class="bar-info-label">Close:</span>
+                        <span class="bar-info-value price" id="barClose">-</span>
+                    </div>
+                    <div class="bar-info-row">
+                        <span class="bar-info-label">Volume:</span>
+                        <span class="bar-info-value volume" id="barVolume">-</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Panel -->
+            <div class="right-panel">
+                <!-- Current State Panel -->
+                <div class="panel current-state-panel">
+                    <div class="panel-header">Current State</div>
+                    <div class="panel-content">
+                        <div class="state-grid">
+                            <div class="state-item">
+                                <span class="state-label">Position</span>
+                                <span class="state-value neutral" id="currentPosition">FLAT</span>
+                            </div>
+                            <div class="state-item">
+                                <span class="state-label">P&L</span>
+                                <span class="state-value" id="currentPnL">$0.00</span>
+                            </div>
+                            <div class="state-item">
+                                <span class="state-label">Signal</span>
+                                <span class="state-value neutral" id="currentSignal">NONE</span>
+                            </div>
+                            <div class="state-item">
+                                <span class="state-label">Exposure</span>
+                                <span class="state-value" id="currentExposure">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Indicators Panel -->
+                <div class="panel indicators-panel">
+                    <div class="panel-header">Indicators</div>
+                    <div class="panel-content">
+                        <div class="indicator-list" id="indicatorList">
+                            <div class="indicator-item">
+                                <span class="indicator-name">RSI(14)</span>
+                                <span class="indicator-value" id="rsi">45.2</span>
+                            </div>
+                            <div class="indicator-item">
+                                <span class="indicator-name">MACD</span>
+                                <span class="indicator-value" id="macd">-0.12</span>
+                            </div>
+                            <div class="indicator-item">
+                                <span class="indicator-name">BB %B</span>
+                                <span class="indicator-value" id="bbpercent">0.67</span>
+                            </div>
+                            <div class="indicator-item">
+                                <span class="indicator-name">Volume MA</span>
+                                <span class="indicator-value" id="volma">1.2M</span>
+                            </div>
+                            <div class="indicator-item">
+                                <span class="indicator-name">ATR(20)</span>
+                                <span class="indicator-value" id="atr">2.45</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Event Log Panel -->
+                <div class="panel event-log-panel">
+                    <div class="panel-header">
+                        Event Log
+                        <button class="btn-small" onclick="clearEventLog()">Clear</button>
+                    </div>
+                    <div class="panel-content">
+                        <div class="event-log" id="eventLog">
+                            <div class="log-entry">
+                                <span class="log-time">09:30:00</span> 
+                                <span class="log-info">INFO</span> 
+                                Strategy initialized: momentum_volume
+                            </div>
+                            <div class="log-entry">
+                                <span class="log-time">09:30:00</span> 
+                                <span class="log-info">INFO</span> 
+                                Loading historical data for SPY
+                            </div>
+                            <div class="log-entry">
+                                <span class="log-time">09:30:00</span> 
+                                <span class="log-info">INFO</span> 
+                                Ready for replay - 1000 bars loaded
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+    <script>
+        // Replay state
+        let chart = null;
+        let candlestickSeries = null;
+        let volumeSeries = null;
+        let smaFastSeries = null;
+        let smaSlowSeries = null;
+        let rsiSeries = null;
+        let macdSeries = null;
+        let bbUpperSeries = null;
+        let bbLowerSeries = null;
+        let isPlaying = false;
+        let currentBarIndex = 0;
+        let totalBars = 1000;
+        let replayInterval = null;
+        let mockData = [];
+        
+        // Initialize replay
+        window.addEventListener('load', initReplay);
+        
+        function initReplay() {
+            initLightweightChart();
+            // Don't generate data automatically - wait for strategy selection
+            addLogEntry('INFO', 'Replay system initialized');
+            addLogEntry('INFO', 'Select a strategy to begin replay');
+        }
+        
+        function initLightweightChart() {
+            if (typeof LightweightCharts === 'undefined') {
+                setTimeout(initLightweightChart, 500);
+                return;
+            }
+            
+            try {
+                const container = document.getElementById('lightweight_chart');
+                const containerRect = container.getBoundingClientRect();
+                
+                chart = LightweightCharts.createChart(container, {
+                    width: containerRect.width || 800,
+                    height: containerRect.height || 400,
+                    layout: {
+                        background: { type: 'solid', color: '#1e1e1e' },
+                        textColor: '#d4d4d4'
+                    },
+                    grid: {
+                        vertLines: { color: '#3e3e42' },
+                        horzLines: { color: '#3e3e42' }
+                    },
+                    crosshair: {
+                        mode: LightweightCharts.CrosshairMode.Normal,
+                        vertLine: {
+                            color: '#758696',
+                            width: 1,
+                            style: 0,
+                            visible: true,
+                            labelVisible: true
+                        },
+                        horzLine: {
+                            color: '#758696',
+                            width: 1,
+                            style: 0,
+                            visible: true,
+                            labelVisible: true
+                        }
+                    },
+                    rightPriceScale: {
+                        borderColor: '#3e3e42',
+                        borderVisible: true
+                    },
+                    timeScale: {
+                        borderColor: '#3e3e42',
+                        borderVisible: true,
+                        timeVisible: true,
+                        secondsVisible: false
+                    }
+                });
+                
+                candlestickSeries = chart.addCandlestickSeries({
+                    upColor: '#4ec9b0',
+                    downColor: '#f48771',
+                    borderUpColor: '#4ec9b0',
+                    borderDownColor: '#f48771',
+                    wickUpColor: '#4ec9b0',
+                    wickDownColor: '#f48771'
+                });
+                
+                volumeSeries = chart.addHistogramSeries({
+                    priceFormat: { type: 'volume' },
+                    priceScaleId: 'volume',
+                    scaleMargins: { top: 0.7, bottom: 0 }
+                });
+
+                // Add moving averages
+                smaFastSeries = chart.addLineSeries({
+                    color: '#2196F3',
+                    lineWidth: 2,
+                    title: 'SMA 20'
+                });
+
+                smaSlowSeries = chart.addLineSeries({
+                    color: '#FF9800',
+                    lineWidth: 2,
+                    title: 'SMA 50'
+                });
+
+                // Add Bollinger Bands
+                bbUpperSeries = chart.addLineSeries({
+                    color: '#9C27B0',
+                    lineWidth: 1,
+                    lineStyle: 2, // Dashed
+                    title: 'BB Upper'
+                });
+
+                bbLowerSeries = chart.addLineSeries({
+                    color: '#9C27B0',
+                    lineWidth: 1,
+                    lineStyle: 2, // Dashed
+                    title: 'BB Lower'
+                });
+
+                // Add RSI on separate scale
+                rsiSeries = chart.addLineSeries({
+                    color: '#FF5722',
+                    lineWidth: 2,
+                    priceScaleId: 'rsi',
+                    title: 'RSI'
+                });
+
+                // Configure RSI scale
+                chart.priceScale('rsi').applyOptions({
+                    scaleMargins: { top: 0.1, bottom: 0.1 },
+                    borderVisible: false,
+                });
+
+                // Add MACD on separate scale
+                macdSeries = chart.addLineSeries({
+                    color: '#4CAF50',
+                    lineWidth: 2,
+                    priceScaleId: 'macd',
+                    title: 'MACD'
+                });
+
+                // Configure MACD scale
+                chart.priceScale('macd').applyOptions({
+                    scaleMargins: { top: 0.05, bottom: 0.05 },
+                    borderVisible: false,
+                });
+                
+                window.addEventListener('resize', () => {
+                    const newRect = container.getBoundingClientRect();
+                    chart.applyOptions({ width: newRect.width, height: newRect.height });
+                });
+                
+                document.getElementById('chart-loading').style.display = 'none';
+                addLogEntry('INFO', 'Chart initialized successfully');
+            } catch (error) {
+                console.error('Chart error:', error);
+                addLogEntry('ERROR', `Chart initialization failed: ${error.message}`);
+            }
+        }
+        
+        function generateMockData() {
+            const startDate = new Date('2024-01-02T09:30:00');
+            let price = 450 + Math.random() * 20;
+            let closes = [];
+            
+            for (let i = 0; i < totalBars; i++) {
+                const time = new Date(startDate);
+                time.setMinutes(startDate.getMinutes() + i * 5); // 5-minute bars
+                
+                const open = price;
+                const change = (Math.random() - 0.5) * 4;
+                const close = Math.max(400, Math.min(500, open + change));
+                const high = Math.max(open, close) + Math.random() * 2;
+                const low = Math.min(open, close) - Math.random() * 2;
+                const volume = Math.floor(Math.random() * 2000000) + 500000;
+                
+                closes.push(close);
+                
+                // Calculate indicators
+                let sma20 = null, sma50 = null, rsi = null, bbUpper = null, bbLower = null, macd = null;
+                
+                if (i >= 19) { // SMA 20
+                    sma20 = closes.slice(-20).reduce((a, b) => a + b) / 20;
+                }
+                
+                if (i >= 49) { // SMA 50
+                    sma50 = closes.slice(-50).reduce((a, b) => a + b) / 50;
+                }
+                
+                if (i >= 19) { // Bollinger Bands
+                    const sma = sma20;
+                    const variance = closes.slice(-20).reduce((sum, val) => sum + Math.pow(val - sma, 2), 0) / 20;
+                    const stdDev = Math.sqrt(variance);
+                    bbUpper = sma + (2 * stdDev);
+                    bbLower = sma - (2 * stdDev);
+                }
+                
+                if (i >= 13) { // RSI
+                    const period = 14;
+                    const recentCloses = closes.slice(-period - 1);
+                    let gains = 0, losses = 0;
+                    
+                    for (let j = 1; j < recentCloses.length; j++) {
+                        const change = recentCloses[j] - recentCloses[j - 1];
+                        if (change > 0) gains += change;
+                        else losses -= change;
+                    }
+                    
+                    const avgGain = gains / period;
+                    const avgLoss = losses / period;
+                    const rs = avgGain / avgLoss;
+                    rsi = 100 - (100 / (1 + rs));
+                }
+                
+                if (i >= 25) { // Simple MACD
+                    const ema12 = closes.slice(-12).reduce((a, b) => a + b) / 12;
+                    const ema26 = closes.slice(-26).reduce((a, b) => a + b) / 26;
+                    macd = ema12 - ema26;
+                }
+                
+                mockData.push({
+                    time: Math.floor(time.getTime() / 1000),
+                    open: Number(open.toFixed(2)),
+                    high: Number(high.toFixed(2)),
+                    low: Number(low.toFixed(2)),
+                    close: Number(close.toFixed(2)),
+                    volume: volume,
+                    sma20: sma20 ? Number(sma20.toFixed(2)) : null,
+                    sma50: sma50 ? Number(sma50.toFixed(2)) : null,
+                    rsi: rsi ? Number(rsi.toFixed(2)) : null,
+                    macd: macd ? Number(macd.toFixed(4)) : null,
+                    bbUpper: bbUpper ? Number(bbUpper.toFixed(2)) : null,
+                    bbLower: bbLower ? Number(bbLower.toFixed(2)) : null
+                });
+                
+                price = close;
+            }
+            
+            addLogEntry('INFO', `Generated ${totalBars} bars with indicators`);
+        }
+        
+        function updateReplayState() {
+            if (currentBarIndex >= mockData.length) return;
+            
+            const currentBar = mockData[currentBarIndex];
+            const visibleData = mockData.slice(0, currentBarIndex + 1);
+            
+            // Update chart
+            if (candlestickSeries && volumeSeries) {
+                candlestickSeries.setData(visibleData.map(bar => ({
+                    time: bar.time,
+                    open: bar.open,
+                    high: bar.high,
+                    low: bar.low,
+                    close: bar.close
+                })));
+                
+                volumeSeries.setData(visibleData.map(bar => ({
+                    time: bar.time,
+                    value: bar.volume,
+                    color: bar.close >= bar.open ? '#4ec9b044' : '#f4877144'
+                })));
+
+                // Update indicators
+                const sma20Data = visibleData.filter(bar => bar.sma20 !== null).map(bar => ({
+                    time: bar.time,
+                    value: bar.sma20
+                }));
+                smaFastSeries.setData(sma20Data);
+
+                const sma50Data = visibleData.filter(bar => bar.sma50 !== null).map(bar => ({
+                    time: bar.time,
+                    value: bar.sma50
+                }));
+                smaSlowSeries.setData(sma50Data);
+
+                const bbUpperData = visibleData.filter(bar => bar.bbUpper !== null).map(bar => ({
+                    time: bar.time,
+                    value: bar.bbUpper
+                }));
+                bbUpperSeries.setData(bbUpperData);
+
+                const bbLowerData = visibleData.filter(bar => bar.bbLower !== null).map(bar => ({
+                    time: bar.time,
+                    value: bar.bbLower
+                }));
+                bbLowerSeries.setData(bbLowerData);
+
+                const rsiData = visibleData.filter(bar => bar.rsi !== null).map(bar => ({
+                    time: bar.time,
+                    value: bar.rsi
+                }));
+                rsiSeries.setData(rsiData);
+
+                const macdData = visibleData.filter(bar => bar.macd !== null).map(bar => ({
+                    time: bar.time,
+                    value: bar.macd
+                }));
+                macdSeries.setData(macdData);
+            }
+            
+            // Update UI elements
+            document.getElementById('currentBar').textContent = `Bar ${currentBarIndex + 1} of ${totalBars}`;
+            document.getElementById('currentDate').textContent = new Date(currentBar.time * 1000).toLocaleString();
+            
+            const progress = ((currentBarIndex + 1) / totalBars) * 100;
+            document.getElementById('positionProgress').style.width = `${progress}%`;
+            document.getElementById('positionHandle').style.left = `${progress}%`;
+            
+            // Update bar info overlay
+            updateBarInfo(currentBar);
+            
+            // Update indicators (mock values)
+            updateIndicators(currentBar);
+            
+            // Update current state
+            updateCurrentState(currentBar);
+            
+            // Generate strategy events
+            generateStrategyEvents(currentBar, currentBarIndex);
+        }
+        
+        function updateBarInfo(bar) {
+            const overlay = document.getElementById('barInfoOverlay');
+            overlay.style.display = 'block';
+            
+            document.getElementById('barTime').textContent = new Date(bar.time * 1000).toLocaleString();
+            document.getElementById('barOpen').textContent = `$${bar.open}`;
+            document.getElementById('barHigh').textContent = `$${bar.high}`;
+            document.getElementById('barLow').textContent = `$${bar.low}`;
+            document.getElementById('barClose').textContent = `$${bar.close}`;
+            document.getElementById('barVolume').textContent = bar.volume.toLocaleString();
+        }
+        
+        function updateIndicators(bar) {
+            // Update with actual calculated values
+            document.getElementById('rsi').textContent = bar.rsi ? bar.rsi.toFixed(1) : '--';
+            document.getElementById('macd').textContent = bar.macd ? bar.macd.toFixed(3) : '--';
+            
+            // Calculate Bollinger Band %B
+            if (bar.bbUpper && bar.bbLower) {
+                const bbPercent = (bar.close - bar.bbLower) / (bar.bbUpper - bar.bbLower);
+                document.getElementById('bbpercent').textContent = bbPercent.toFixed(2);
+            } else {
+                document.getElementById('bbpercent').textContent = '--';
+            }
+            
+            document.getElementById('volma').textContent = (bar.volume / 1000000).toFixed(1) + 'M';
+            
+            // Calculate ATR (simplified)
+            if (mockData.length > currentBarIndex + 1) {
+                const atr = bar.high - bar.low;
+                document.getElementById('atr').textContent = atr.toFixed(2);
+            } else {
+                document.getElementById('atr').textContent = '--';
+            }
+        }
+        
+        function updateCurrentState(bar) {
+            // Mock position state
+            const positions = ['FLAT', 'LONG', 'SHORT'];
+            const signals = ['NONE', 'BUY', 'SELL', 'EXIT'];
+            
+            const position = positions[Math.floor(Math.random() * positions.length)];
+            const signal = signals[Math.floor(Math.random() * signals.length)];
+            const pnl = (Math.random() - 0.5) * 1000;
+            const exposure = position === 'FLAT' ? 0 : Math.random() * 100;
+            
+            const positionEl = document.getElementById('currentPosition');
+            positionEl.textContent = position;
+            positionEl.className = `state-value ${position === 'LONG' ? 'positive' : position === 'SHORT' ? 'negative' : 'neutral'}`;
+            
+            const pnlEl = document.getElementById('currentPnL');
+            pnlEl.textContent = `$${pnl.toFixed(2)}`;
+            pnlEl.className = `state-value ${pnl > 0 ? 'positive' : pnl < 0 ? 'negative' : 'neutral'}`;
+            
+            const signalEl = document.getElementById('currentSignal');
+            signalEl.textContent = signal;
+            signalEl.className = `state-value ${signal === 'BUY' ? 'positive' : signal === 'SELL' ? 'negative' : 'neutral'}`;
+            
+            document.getElementById('currentExposure').textContent = `${exposure.toFixed(1)}%`;
+        }
+        
+        function generateStrategyEvents(bar, index) {
+            // Randomly generate strategy events
+            if (Math.random() < 0.1) { // 10% chance per bar
+                const events = [
+                    { type: 'SIGNAL', message: 'Generated BUY signal - momentum > threshold' },
+                    { type: 'TRADE', message: 'Executed LONG position - 100 shares @ $' + bar.close },
+                    { type: 'INFO', message: 'Volume spike detected - ' + (bar.volume / 1000000).toFixed(1) + 'M shares' },
+                    { type: 'WARNING', message: 'High volatility detected - ATR > 2.5' }
+                ];
+                
+                const event = events[Math.floor(Math.random() * events.length)];
+                const time = new Date(bar.time * 1000).toLocaleTimeString();
+                addLogEntry(event.type, event.message, time);
+            }
+        }
+        
+        function addLogEntry(type, message, time = null) {
+            const log = document.getElementById('eventLog');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            
+            const timeStr = time || new Date().toLocaleTimeString();
+            let typeClass = 'log-info';
+            
+            switch (type) {
+                case 'SIGNAL': typeClass = 'log-signal'; break;
+                case 'TRADE': typeClass = 'log-trade'; break;
+                case 'WARNING': typeClass = 'log-warning'; break;
+                case 'ERROR': typeClass = 'log-error'; break;
+                default: typeClass = 'log-info';
+            }
+            
+            entry.innerHTML = `
+                <span class="log-time">${timeStr}</span> 
+                <span class="${typeClass}">${type}</span> 
+                ${message}
+            `;
+            
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        // Control functions
+        function togglePlayPause() {
+            const btn = document.getElementById('playPauseBtn');
+            
+            if (isPlaying) {
+                isPlaying = false;
+                clearInterval(replayInterval);
+                btn.innerHTML = '▶ Play';
+                btn.classList.remove('primary');
+                addLogEntry('INFO', 'Replay paused');
+            } else {
+                isPlaying = true;
+                replayInterval = setInterval(() => {
+                    if (currentBarIndex < totalBars - 1) {
+                        currentBarIndex++;
+                        updateReplayState();
+                    } else {
+                        togglePlayPause(); // Auto-pause at end
+                        addLogEntry('INFO', 'Replay completed');
+                    }
+                }, 500); // 2 bars per second
+                btn.innerHTML = '⏸ Pause';
+                btn.classList.add('primary');
+                addLogEntry('INFO', 'Replay started');
+            }
+        }
+        
+        function stepForward() {
+            if (currentBarIndex < totalBars - 1) {
+                currentBarIndex++;
+                updateReplayState();
+                addLogEntry('INFO', `Stepped forward to bar ${currentBarIndex + 1}`);
+            }
+        }
+        
+        function stepBackward() {
+            if (currentBarIndex > 0) {
+                currentBarIndex--;
+                updateReplayState();
+                addLogEntry('INFO', `Stepped backward to bar ${currentBarIndex + 1}`);
+            }
+        }
+        
+        function resetReplay() {
+            if (isPlaying) {
+                togglePlayPause();
+            }
+            currentBarIndex = 0;
+            updateReplayState();
+            addLogEntry('INFO', 'Replay reset to beginning');
+        }
+        
+        function seekToPosition(event) {
+            const slider = event.currentTarget;
+            const rect = slider.getBoundingClientRect();
+            const position = (event.clientX - rect.left) / rect.width;
+            const newIndex = Math.floor(position * totalBars);
+            
+            currentBarIndex = Math.max(0, Math.min(totalBars - 1, newIndex));
+            updateReplayState();
+            addLogEntry('INFO', `Seeked to bar ${currentBarIndex + 1}`);
+        }
+        
+        function clearEventLog() {
+            document.getElementById('eventLog').innerHTML = '';
+            addLogEntry('INFO', 'Event log cleared');
+        }
+        
+        // Strategy selection functions
+        function updateStrategySelection() {
+            const strategySelect = document.getElementById('strategySelect');
+            const loadBtn = document.getElementById('loadStrategyBtn');
+            
+            if (strategySelect.value) {
+                loadBtn.disabled = false;
+                loadBtn.textContent = 'Load Strategy';
+            } else {
+                loadBtn.disabled = true;
+                loadBtn.textContent = 'Select Strategy';
+            }
+        }
+        
+        function loadStrategy() {
+            const strategy = document.getElementById('strategySelect').value;
+            const symbol = document.getElementById('symbolSelect').value;
+            const timeframe = document.getElementById('timeframeSelect').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            if (!strategy) {
+                addLogEntry('ERROR', 'Please select a strategy first');
+                return;
+            }
+            
+            addLogEntry('INFO', `Loading strategy: ${strategy}`);
+            addLogEntry('INFO', `Symbol: ${symbol}, Timeframe: ${timeframe}`);
+            addLogEntry('INFO', `Date range: ${startDate} to ${endDate}`);
+            
+            // Show loading state
+            const loadBtn = document.getElementById('loadStrategyBtn');
+            loadBtn.textContent = 'Loading...';
+            loadBtn.disabled = true;
+            
+            // Simulate loading process
+            setTimeout(() => {
+                // Update strategy info
+                document.getElementById('loadedStrategyName').textContent = strategy.replace('_', ' ');
+                document.getElementById('loadedStrategyMeta').textContent = `${symbol} • ${timeframe} • ${startDate} to ${endDate}`;
+                
+                // Hide selector, show info and controls
+                document.getElementById('strategySelector').style.display = 'none';
+                document.getElementById('strategyInfo').style.display = 'flex';
+                document.getElementById('replayControls').style.display = 'flex';
+                
+                // Initialize/regenerate data for new strategy
+                generateMockDataForStrategy(strategy, symbol, timeframe, startDate, endDate);
+                
+                // Reset replay state
+                currentBarIndex = 0;
+                if (isPlaying) togglePlayPause();
+                updateReplayState();
+                
+                addLogEntry('INFO', `Strategy ${strategy} loaded successfully`);
+                addLogEntry('INFO', `Generated ${totalBars} bars for replay`);
+            }, 2000);
+        }
+        
+        function showStrategySelector() {
+            // Show selector, hide info and controls
+            document.getElementById('strategySelector').style.display = 'flex';
+            document.getElementById('strategyInfo').style.display = 'none';
+            document.getElementById('replayControls').style.display = 'none';
+            
+            // Reset load button
+            const loadBtn = document.getElementById('loadStrategyBtn');
+            loadBtn.textContent = 'Load Strategy';
+            loadBtn.disabled = false;
+            
+            addLogEntry('INFO', 'Strategy selector opened');
+        }
+        
+        function generateMockDataForStrategy(strategy, symbol, timeframe, startDate, endDate) {
+            // Clear existing data
+            mockData = [];
+            
+            // Calculate date range
+            const start = new Date(startDate + 'T09:30:00');
+            const end = new Date(endDate + 'T16:00:00');
+            const daysDiff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+            
+            // Calculate bars based on timeframe
+            let barsPerDay;
+            switch(timeframe) {
+                case '1min': barsPerDay = 390; break; // 6.5 hours * 60 minutes
+                case '5min': barsPerDay = 78; break;  // 6.5 hours * 12 five-minute periods
+                case '15min': barsPerDay = 26; break;
+                case '1h': barsPerDay = 7; break;
+                case '1d': barsPerDay = 1; break;
+                default: barsPerDay = 78;
+            }
+            
+            totalBars = Math.min(daysDiff * barsPerDay, 2000); // Cap at 2000 bars
+            
+            // Base price depends on symbol
+            let basePrice;
+            switch(symbol) {
+                case 'SPY': basePrice = 450; break;
+                case 'QQQ': basePrice = 380; break;
+                case 'IWM': basePrice = 200; break;
+                case 'TSLA': basePrice = 180; break;
+                case 'AAPL': basePrice = 190; break;
+                default: basePrice = 100;
+            }
+            
+            // Strategy-specific behavior
+            let volatility = 0.02; // Default 2%
+            let trendBias = 0;      // Default no trend
+            
+            switch(strategy) {
+                case 'momentum_volume':
+                    volatility = 0.025;
+                    trendBias = 0.0002; // Slight upward bias
+                    break;
+                case 'bollinger_bands':
+                    volatility = 0.03;  // Higher volatility for mean reversion
+                    break;
+                case 'mean_reversion':
+                    volatility = 0.035;
+                    trendBias = -0.0001; // Slight downward bias
+                    break;
+                case 'momentum_strategy':
+                    volatility = 0.02;
+                    trendBias = 0.0003; // More upward momentum
+                    break;
+            }
+            
+            // Generate data with strategy-specific characteristics
+            let price = basePrice + (Math.random() - 0.5) * basePrice * 0.1;
+            let closes = [];
+            
+            const timeframeMins = timeframe === '1min' ? 1 : 
+                                 timeframe === '5min' ? 5 :
+                                 timeframe === '15min' ? 15 :
+                                 timeframe === '1h' ? 60 :
+                                 timeframe === '1d' ? 1440 : 5;
+            
+            for (let i = 0; i < totalBars; i++) {
+                const time = new Date(start);
+                time.setMinutes(start.getMinutes() + i * timeframeMins);
+                
+                const open = price;
+                const trend = trendBias * basePrice;
+                const randomWalk = (Math.random() - 0.5) * basePrice * volatility;
+                const close = Math.max(basePrice * 0.7, Math.min(basePrice * 1.3, open + trend + randomWalk));
+                
+                const high = Math.max(open, close) + Math.random() * basePrice * volatility * 0.5;
+                const low = Math.min(open, close) - Math.random() * basePrice * volatility * 0.5;
+                const volume = Math.floor(Math.random() * 2000000) + 500000;
+                
+                closes.push(close);
+                
+                // Calculate indicators (same as before)
+                let sma20 = null, sma50 = null, rsi = null, bbUpper = null, bbLower = null, macd = null;
+                
+                if (i >= 19) {
+                    sma20 = closes.slice(-20).reduce((a, b) => a + b) / 20;
+                }
+                
+                if (i >= 49) {
+                    sma50 = closes.slice(-50).reduce((a, b) => a + b) / 50;
+                }
+                
+                if (i >= 19) {
+                    const sma = sma20;
+                    const variance = closes.slice(-20).reduce((sum, val) => sum + Math.pow(val - sma, 2), 0) / 20;
+                    const stdDev = Math.sqrt(variance);
+                    bbUpper = sma + (2 * stdDev);
+                    bbLower = sma - (2 * stdDev);
+                }
+                
+                if (i >= 13) {
+                    const period = 14;
+                    const recentCloses = closes.slice(-period - 1);
+                    let gains = 0, losses = 0;
+                    
+                    for (let j = 1; j < recentCloses.length; j++) {
+                        const change = recentCloses[j] - recentCloses[j - 1];
+                        if (change > 0) gains += change;
+                        else losses -= change;
+                    }
+                    
+                    const avgGain = gains / period;
+                    const avgLoss = losses / period;
+                    const rs = avgGain / avgLoss;
+                    rsi = 100 - (100 / (1 + rs));
+                }
+                
+                if (i >= 25) {
+                    const ema12 = closes.slice(-12).reduce((a, b) => a + b) / 12;
+                    const ema26 = closes.slice(-26).reduce((a, b) => a + b) / 26;
+                    macd = ema12 - ema26;
+                }
+                
+                mockData.push({
+                    time: Math.floor(time.getTime() / 1000),
+                    open: Number(open.toFixed(2)),
+                    high: Number(high.toFixed(2)),
+                    low: Number(low.toFixed(2)),
+                    close: Number(close.toFixed(2)),
+                    volume: volume,
+                    sma20: sma20 ? Number(sma20.toFixed(2)) : null,
+                    sma50: sma50 ? Number(sma50.toFixed(2)) : null,
+                    rsi: rsi ? Number(rsi.toFixed(2)) : null,
+                    macd: macd ? Number(macd.toFixed(4)) : null,
+                    bbUpper: bbUpper ? Number(bbUpper.toFixed(2)) : null,
+                    bbLower: bbLower ? Number(bbLower.toFixed(2)) : null
+                });
+                
+                price = close;
+            }
+        }
+        
+        // Initialize strategy selector on load
+        window.addEventListener('load', () => {
+            updateStrategySelection();
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            // Only handle arrows when not typing in inputs
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+            
+            switch(e.key) {
+                case 'ArrowRight':
+                case 'ArrowDown':
+                    e.preventDefault();
+                    stepForward();
+                    break;
+                case 'ArrowLeft':
+                case 'ArrowUp':
+                    e.preventDefault();
+                    stepBackward();
+                    break;
+                case ' ':
+                case 'Space':
+                    e.preventDefault();
+                    togglePlayPause();
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    resetReplay();
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    currentBarIndex = totalBars - 1;
+                    updateReplayState();
+                    addLogEntry('INFO', 'Jumped to end');
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>
