@@ -255,6 +255,9 @@
                 grid-column: 1 / -1;
                 width: 100% !important;
                 margin-left: 0 !important;
+                height: calc(100vh - 32px);
+                max-height: calc(100vh - 32px);
+                overflow: hidden;
             }
             
             .header {
@@ -371,11 +374,16 @@
             background: #1e1e1e;
             position: relative;
             touch-action: manipulation;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .monaco-editor {
             height: 100%;
             width: 100%;
+            flex: 1;
+            min-height: 0;
         }
         
         .monaco-editor * {
@@ -783,13 +791,20 @@ The included momentum strategy demonstrates:
                 fontFamily: "'SF Mono', Monaco, Consolas, monospace",
                 lineNumbers: isMobile ? 'off' : 'on',
                 minimap: { enabled: !isMobile },
-                scrollBeyondLastLine: false,
+                scrollBeyondLastLine: true,  // Allow scrolling past last line
                 automaticLayout: true,
                 wordWrap: 'bounded',
                 renderLineHighlight: 'line',
                 cursorBlinking: 'smooth',
                 smoothScrolling: !isMobile,  // Disable smooth scrolling on mobile
                 folding: !isMobile,
+                scrollbar: {
+                    vertical: 'visible',
+                    horizontal: 'visible',
+                    verticalScrollbarSize: isMobile ? 10 : 14,
+                    horizontalScrollbarSize: isMobile ? 10 : 14,
+                    alwaysConsumeMouseWheel: false
+                },
                 glyphMargin: !isMobile,
                 lineDecorationsWidth: isMobile ? 5 : 10,
                 lineNumbersMinChars: isMobile ? 0 : 3,
