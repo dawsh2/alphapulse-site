@@ -529,6 +529,55 @@
         
         .strategy-search {
             display: none;
+            position: relative;
+        }
+        
+        .strategy-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .strategy-suggestions.active {
+            display: block;
+        }
+        
+        .suggestion-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #cccccc;
+            border-bottom: 1px solid #2d2d30;
+            transition: background 0.2s;
+        }
+        
+        .suggestion-item:hover,
+        .suggestion-item.selected {
+            background: #094771;
+            color: white;
+        }
+        
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        
+        .suggestion-item .strategy-name {
+            font-weight: 500;
+        }
+        
+        .suggestion-item .strategy-desc {
+            font-size: 11px;
+            color: #858585;
+            margin-top: 2px;
         }
         
         .header-nav.mobile-hidden {
@@ -751,7 +800,8 @@
             <div class="strategy-controls">
                 <div class="strategy-selector" id="strategySelector">
                     <div class="strategy-search">
-                        <input type="text" placeholder="Search strategies..." id="strategySearchInput" onkeyup="searchStrategies(event)">
+                        <input type="text" placeholder="Search strategies..." id="strategySearchInput" onkeyup="searchStrategies(event)" oninput="showSuggestions()" onfocus="showSuggestions()" onblur="hideSuggestions(event)">
+                        <div class="strategy-suggestions" id="strategySuggestions"></div>
                     </div>
                     <div class="selector-section">
                         <label class="selector-label">Strategy:</label>
@@ -1683,21 +1733,134 @@
             initMobileNav();
         });
         
-        // Strategy search function
-        function searchStrategies(event) {
-            if (event.key === 'Enter') {
-                const searchTerm = event.target.value.toLowerCase();
-                const strategySelect = document.getElementById('strategySelect');
-                
-                // Find matching strategy
-                for (let i = 0; i < strategySelect.options.length; i++) {
-                    if (strategySelect.options[i].text.toLowerCase().includes(searchTerm)) {
-                        strategySelect.selectedIndex = i;
-                        updateStrategySelection();
-                        break;
-                    }
+        // Strategy data with descriptions
+        const strategyData = [
+            { value: 'momentum_volume', name: 'Momentum Volume', desc: 'Combines momentum with volume analysis' },
+            { value: 'bollinger_bands', name: 'Bollinger Bands', desc: 'Mean reversion using BB indicators' },
+            { value: 'mean_reversion', name: 'Mean Reversion', desc: 'Classic mean reversion strategy' },
+            { value: 'momentum_strategy', name: 'Momentum Strategy', desc: 'Pure momentum-based approach' }
+        ];
+        
+        let selectedSuggestionIndex = -1;
+        
+        // Show autocomplete suggestions
+        function showSuggestions() {
+            const input = document.getElementById('strategySearchInput');
+            const searchTerm = input.value.toLowerCase();
+            const suggestions = document.getElementById('strategySuggestions');
+            
+            if (searchTerm.length === 0) {
+                suggestions.classList.remove('active');
+                return;
+            }
+            
+            // Filter strategies
+            const matches = strategyData.filter(strategy => 
+                strategy.name.toLowerCase().includes(searchTerm) ||
+                strategy.desc.toLowerCase().includes(searchTerm)
+            );
+            
+            if (matches.length === 0) {
+                suggestions.classList.remove('active');
+                return;
+            }
+            
+            // Build suggestions HTML
+            suggestions.innerHTML = matches.map((strategy, index) => `
+                <div class="suggestion-item" data-value="${strategy.value}" data-index="${index}" 
+                     onmousedown="selectStrategy('${strategy.value}', '${strategy.name}')">
+                    <div class="strategy-name">${highlightMatch(strategy.name, searchTerm)}</div>
+                    <div class="strategy-desc">${strategy.desc}</div>
+                </div>
+            `).join('');
+            
+            suggestions.classList.add('active');
+            selectedSuggestionIndex = -1;
+        }
+        
+        // Hide suggestions
+        function hideSuggestions(event) {
+            // Delay to allow click events on suggestions
+            setTimeout(() => {
+                document.getElementById('strategySuggestions').classList.remove('active');
+            }, 200);
+        }
+        
+        // Highlight matching text
+        function highlightMatch(text, searchTerm) {
+            const regex = new RegExp(`(${searchTerm})`, 'gi');
+            return text.replace(regex, '<strong>$1</strong>');
+        }
+        
+        // Select a strategy from suggestions
+        function selectStrategy(value, name) {
+            const strategySelect = document.getElementById('strategySelect');
+            const searchInput = document.getElementById('strategySearchInput');
+            
+            // Update select element
+            for (let i = 0; i < strategySelect.options.length; i++) {
+                if (strategySelect.options[i].value === value) {
+                    strategySelect.selectedIndex = i;
+                    break;
                 }
             }
+            
+            // Update search input
+            searchInput.value = name;
+            
+            // Hide suggestions and trigger update
+            document.getElementById('strategySuggestions').classList.remove('active');
+            updateStrategySelection();
+        }
+        
+        // Strategy search function with arrow key navigation
+        function searchStrategies(event) {
+            const suggestions = document.getElementById('strategySuggestions');
+            const suggestionItems = suggestions.querySelectorAll('.suggestion-item');
+            
+            if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                selectedSuggestionIndex = Math.min(selectedSuggestionIndex + 1, suggestionItems.length - 1);
+                updateSelectedSuggestion(suggestionItems);
+            } else if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                selectedSuggestionIndex = Math.max(selectedSuggestionIndex - 1, -1);
+                updateSelectedSuggestion(suggestionItems);
+            } else if (event.key === 'Enter') {
+                event.preventDefault();
+                if (selectedSuggestionIndex >= 0 && suggestionItems[selectedSuggestionIndex]) {
+                    const item = suggestionItems[selectedSuggestionIndex];
+                    const value = item.getAttribute('data-value');
+                    const name = item.querySelector('.strategy-name').textContent;
+                    selectStrategy(value, name);
+                } else {
+                    // Original enter behavior
+                    const searchTerm = event.target.value.toLowerCase();
+                    const strategySelect = document.getElementById('strategySelect');
+                    
+                    for (let i = 0; i < strategySelect.options.length; i++) {
+                        if (strategySelect.options[i].text.toLowerCase().includes(searchTerm)) {
+                            strategySelect.selectedIndex = i;
+                            updateStrategySelection();
+                            break;
+                        }
+                    }
+                }
+            } else if (event.key === 'Escape') {
+                hideSuggestions();
+                selectedSuggestionIndex = -1;
+            }
+        }
+        
+        // Update visual selection
+        function updateSelectedSuggestion(items) {
+            items.forEach((item, index) => {
+                if (index === selectedSuggestionIndex) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
         }
 
         // Keyboard navigation

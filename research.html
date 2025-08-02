@@ -96,6 +96,7 @@
             display: grid;
             grid-template-columns: 250px 1fr;
             height: calc(100vh - 32px);
+            overflow: hidden;
         }
 
         .sidebar {
@@ -218,8 +219,10 @@
         .notebook-content {
             flex: 1;
             overflow-y: auto;
+            overflow-x: hidden;
             padding: 0;
             background: #1e1e1e;
+            -webkit-overflow-scrolling: touch;
         }
 
         .cell {
