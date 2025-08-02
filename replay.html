@@ -651,11 +651,11 @@
         .mobile-info-drawer {
             display: none;
             position: fixed;
-            bottom: 0;
+            bottom: 56px; /* Above controls */
             left: 0;
             right: 0;
             background: #1e1e1e;
-            border-top: 1px solid #3e3e42;
+            border-top: 2px solid #3e3e42;
             max-height: 60vh;
             z-index: 1050;
             transform: translateY(calc(100% - 40px)); /* Show just the handle */
@@ -677,11 +677,17 @@
         }
         
         .drawer-handle-bar {
-            width: 40px;
-            height: 4px;
-            background: #666;
-            border-radius: 2px;
+            width: 60px;
+            height: 5px;
+            background: #007acc;
+            border-radius: 3px;
             margin: 0 auto 8px;
+        }
+        
+        #drawerHandleText {
+            color: #007acc;
+            font-weight: 600;
+            font-size: 14px;
         }
         
         .drawer-tabs {
@@ -725,18 +731,18 @@
         .mobile-config-btn {
             display: none;
             position: fixed;
-            top: 40px;
-            right: 10px;
-            width: 44px;
-            height: 44px;
+            top: 80px;
+            right: 16px;
+            width: 56px;
+            height: 56px;
             background: #007acc;
             border: none;
             border-radius: 50%;
             color: white;
-            font-size: 24px;
+            font-size: 28px;
             cursor: pointer;
-            z-index: 1000;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            z-index: 1200;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
             transition: all 0.2s;
         }
         
@@ -2108,14 +2114,25 @@
         }
         
         function selectMobileStrategy(strategyId) {
-            // Load the strategy
-            loadStrategy(strategyId);
+            // Generate mock data
+            generateMockData();
+            if (mockData.length > 0) {
+                candlestickSeries.setData(mockData);
+                chart.timeScale().fitContent();
+            }
+            
+            // Update UI to show loaded strategy
+            addLogEntry('INFO', `Strategy loaded: ${strategyId}`);
+            addLogEntry('INFO', 'Ready for replay - 1000 bars loaded');
+            
+            // Enable mobile play button
+            const mobilePlayBtn = document.getElementById('mobilePlayBtn');
+            if (mobilePlayBtn) {
+                mobilePlayBtn.disabled = false;
+            }
             
             // Close the menu
             toggleConfigMenu();
-            
-            // Update UI
-            addLogEntry('INFO', `Strategy loaded: ${strategyId}`);
         }
         
         // Strategy data with descriptions
@@ -2308,11 +2325,40 @@
                 drawer.classList.add('open');
                 handle.textContent = 'Hide Details';
                 
-                // Copy event log content
-                const desktopLog = document.getElementById('eventLog');
-                const mobileLog = document.getElementById('mobileEventLog');
+                // Update all mobile displays
+                updateMobileDisplays();
+            }
+        }
+        
+        function updateMobileDisplays() {
+            // Copy event log content
+            const desktopLog = document.getElementById('eventLog');
+            const mobileLog = document.getElementById('mobileEventLog');
+            if (desktopLog && mobileLog) {
                 mobileLog.innerHTML = desktopLog.innerHTML;
             }
+            
+            // Update mobile state values
+            const position = document.getElementById('positionStatus');
+            const pnl = document.getElementById('openPnL');
+            const signal = document.getElementById('currentSignal');
+            const exposure = document.getElementById('exposure');
+            
+            if (position) document.getElementById('mobilePosition').textContent = position.textContent;
+            if (pnl) document.getElementById('mobilePnL').textContent = pnl.textContent;
+            if (signal) document.getElementById('mobileSignal').textContent = signal.textContent;
+            if (exposure) document.getElementById('mobileExposure').textContent = exposure.textContent;
+            
+            // Update indicators
+            const rsi = document.getElementById('rsi');
+            const macd = document.getElementById('macd');
+            const bbpercent = document.getElementById('bbpercent');
+            const volma = document.getElementById('volma');
+            
+            if (rsi) document.getElementById('mobileRsi').textContent = rsi.textContent;
+            if (macd) document.getElementById('mobileMacd').textContent = macd.textContent;
+            if (bbpercent) document.getElementById('mobileBbPercent').textContent = bbpercent.textContent;
+            if (volma) document.getElementById('mobileVolMa').textContent = volma.textContent;
         }
         
         function switchDrawerTab(tab) {
