@@ -33,6 +33,17 @@
             align-items: center;
             padding: 0 12px;
         }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 4px;
+            margin-right: 12px;
+        }
 
         .header-content {
             display: flex;
@@ -52,6 +63,11 @@
             display: flex;
             gap: 20px;
             flex: 1;
+            transition: all 0.3s ease;
+        }
+        
+        .nav.mobile-hidden {
+            display: none;
         }
 
         .nav a {
@@ -346,14 +362,137 @@
             text-decoration: underline;
             color: #4ec9b0;
         }
+        /* Mobile Responsive Design */
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .header {
+                height: auto;
+                min-height: 32px;
+                padding: 8px 12px;
+                flex-wrap: wrap;
+                position: relative;
+            }
+            
+            .nav {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: #007acc;
+                flex-direction: column;
+                gap: 0;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+                z-index: 1000;
+            }
+            
+            .nav a {
+                padding: 12px 16px;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                font-size: 14px;
+            }
+            
+            .nav a:last-child {
+                border-bottom: none;
+            }
+            
+            .logo {
+                font-size: 13px;
+                margin-right: 15px;
+            }
+            
+            .content-wrapper.split {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr auto;
+            }
+            
+            .main {
+                padding: 15px;
+                max-width: none;
+            }
+            
+            .content-wrapper.split .main {
+                border-right: none;
+                border-bottom: 1px solid #3e3e42;
+            }
+            
+            .comments-panel {
+                max-height: 40vh;
+                padding: 15px;
+            }
+            
+            .item {
+                padding: 12px;
+                margin-bottom: 15px;
+            }
+            
+            .item:hover {
+                transform: none;
+            }
+            
+            .rank {
+                font-size: 12px;
+                width: 20px;
+                margin-right: 8px;
+            }
+            
+            .comment-preview {
+                padding: 8px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 6px 8px;
+            }
+            
+            .logo {
+                font-size: 12px;
+                margin-right: 10px;
+            }
+            
+            .main {
+                padding: 12px;
+            }
+            
+            .item {
+                padding: 10px;
+                margin-bottom: 12px;
+            }
+            
+            .rank {
+                font-size: 11px;
+                width: 18px;
+                margin-right: 6px;
+            }
+            
+            .comment-preview {
+                padding: 6px;
+                font-size: 11px;
+            }
+            
+            .comments-panel {
+                padding: 12px;
+                max-height: 50vh;
+            }
+            
+            .close-btn {
+                font-size: 18px;
+                padding: 2px 6px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="app-container">
         <div class="header">
             <div class="header-content">
+                <button class="mobile-menu-btn" onclick="toggleMobileNav()">☰</button>
                 <a href="index.html" class="logo">AlphaPulse</a>
-                <div class="nav">
+                <div class="nav" id="nav">
                     <a href="develop.html">Develop</a>
                     <a href="replay.html">Replay</a>
                     <a href="research.html">Research</a>
