@@ -12,6 +12,9 @@
     <!-- Prism for syntax highlighting -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     
+    <!-- Marked for markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
     <!-- Page-specific styles -->
     <style>
         /* Layout */
@@ -2009,6 +2012,13 @@ print(f"Cells created: {len(notebook.cells)}")`
         
         // Load Options Flow Scanner notebook
         function loadOptionsFlowNotebook() {
+            // Clear existing content without confirmation
+            const container = document.getElementById('notebookContent');
+            container.innerHTML = '';
+            
+            // Set title
+            document.querySelector('.notebook-title-input').value = 'Options Flow Scanner';
+            
             const notebookContent = {
                 title: 'Options Flow Scanner',
                 cells: [
@@ -2089,7 +2099,70 @@ plt.show()`,
                 ]
             };
             
-            loadTemplate(null, notebookContent);
+            // Add cells directly
+            let cellCounter = 1;
+            notebookContent.cells.forEach((cellData) => {
+                const cellId = `cell-${cellCounter++}`;
+                const cellElement = createCellElement(cellData.type, cellId, cellData.content);
+                container.appendChild(cellElement);
+                
+                // Add output if exists
+                if (cellData.output) {
+                    const outputDiv = document.createElement('div');
+                    outputDiv.className = 'code-output';
+                    outputDiv.innerHTML = `<pre>${cellData.output}</pre>`;
+                    cellElement.appendChild(outputDiv);
+                }
+                
+                // Initialize Monaco for code cells
+                if (cellData.type === 'code' && monacoLoaded) {
+                    setTimeout(() => initMonacoForCell(cellId, cellData.content), 100);
+                }
+            });
+            
+            // Add the "Add Cell" button
+            const addCellBtn = document.createElement('div');
+            addCellBtn.className = 'add-cell';
+            addCellBtn.onclick = addCell;
+            addCellBtn.innerHTML = '<span>+</span> Add Cell';
+            container.appendChild(addCellBtn);
+        }
+        
+        // Helper function to create cell element
+        function createCellElement(type, cellId, content = '') {
+            const cellElement = document.createElement('div');
+            cellElement.className = `cell ${type}-cell`;
+            cellElement.id = cellId;
+            cellElement.onclick = function(e) { 
+                if (e.target === this || e.target.classList.contains('code-input')) {
+                    selectCell(this); 
+                }
+            };
+            
+            if (type === 'markdown') {
+                cellElement.innerHTML = `
+                    <div class="cell-toolbar">
+                        <button class="cell-btn" onclick="runCell(this)">▶</button>
+                        <button class="cell-btn" onclick="deleteCell(this)">✕</button>
+                    </div>
+                    <div class="markdown-content">${marked.parse(content)}</div>
+                    <textarea class="markdown-input" style="display: none;">${content}</textarea>
+                `;
+            } else if (type === 'code') {
+                cellElement.innerHTML = `
+                    <div class="cell-toolbar">
+                        <button class="cell-btn" onclick="runCell(this)">▶</button>
+                        <button class="cell-btn" onclick="deleteCell(this)">✕</button>
+                    </div>
+                    <div class="code-input">
+                        <div class="line-numbers"></div>
+                        <div class="monaco-cell-container" id="monaco-${cellId}"></div>
+                        <textarea class="code-textarea" style="display: none;">${content}</textarea>
+                    </div>
+                `;
+            }
+            
+            return cellElement;
         }
         
         // Create new notebook
