@@ -1478,6 +1478,29 @@ print(f"Cells created: {len(notebook.cells)}")`
             // Initialize Monaco
             initMonaco();
             
+            // Check if notebook was passed from index.html
+            const openWithNotebook = sessionStorage.getItem('openWithNotebook');
+            const notebookTitle = sessionStorage.getItem('notebookTitle');
+            const notebookType = sessionStorage.getItem('notebookType');
+            
+            if (openWithNotebook === 'true' && notebookType === 'options-flow') {
+                console.log('Opening notebook from index.html:', notebookTitle);
+                
+                // Switch to notebooks tab
+                const notebooksTabBtn = document.querySelector('[onclick*="notebooks"]');
+                if (notebooksTabBtn) {
+                    switchTab('notebooks', notebooksTabBtn);
+                }
+                
+                // Load the Options Flow Scanner notebook
+                loadOptionsFlowNotebook();
+                
+                // Clear sessionStorage
+                sessionStorage.removeItem('openWithNotebook');
+                sessionStorage.removeItem('notebookTitle');
+                sessionStorage.removeItem('notebookType');
+            }
+            
             // Verify tab content exists
             const tabs = ['snippetsTab', 'templatesTab', 'notebooksTab'];
             tabs.forEach(tabId => {
@@ -1982,6 +2005,91 @@ print(f"Cells created: {len(notebook.cells)}")`
                     sidebar.classList.remove('open');
                 }
             }
+        }
+        
+        // Load Options Flow Scanner notebook
+        function loadOptionsFlowNotebook() {
+            const notebookContent = {
+                title: 'Options Flow Scanner',
+                cells: [
+                    {
+                        type: 'markdown',
+                        content: '# Options Flow Scanner\n\nReal-time scanner for unusual options activity and large block trades.'
+                    },
+                    {
+                        type: 'code',
+                        content: `import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Configuration for options flow scanner
+FLOW_THRESHOLD = 1000000  # $1M minimum
+VOLUME_RATIO = 5.0       # 5x average volume
+IV_PERCENTILE = 90       # High IV percentile`
+                    },
+                    {
+                        type: 'code',
+                        content: `# Scan for unusual options activity
+def scan_options_flow(symbol_list):
+    orders = []
+    
+    for symbol in symbol_list:
+        options = get_options_chain(symbol)
+        
+        for option in options:
+            if (option.volume > option.avg_volume * VOLUME_RATIO and
+                option.premium * option.volume > FLOW_THRESHOLD):
+                
+                orders.append({
+                    'symbol': symbol,
+                    'strike': option.strike,
+                    'expiry': option.expiry,
+                    'type': option.type,
+                    'volume': option.volume,
+                    'premium': option.premium,
+                    'flow': option.premium * option.volume
+                })
+    
+    return pd.DataFrame(orders).sort_values('flow', ascending=False)`
+                    },
+                    {
+                        type: 'code',
+                        content: `# Run the scanner
+top_symbols = ['SPY', 'QQQ', 'AAPL', 'TSLA', 'NVDA', 'AMD', 'MSFT', 'AMZN', 'META', 'GOOGL']
+unusual_flows = scan_options_flow(top_symbols)
+print(f"Found {len(unusual_flows)} unusual options flows")`,
+                        output: `Found 47 unusual options flows
+
+Top 5 flows:
+TSLA 300C 12/15 - Volume: 25,432 - Flow: $12.7M
+NVDA 500C 01/19 - Volume: 18,221 - Flow: $9.1M  
+SPY 430P 12/08 - Volume: 45,123 - Flow: $8.9M
+AAPL 185C 12/15 - Volume: 22,145 - Flow: $6.6M
+QQQ 380C 12/22 - Volume: 15,432 - Flow: $5.4M`
+                    },
+                    {
+                        type: 'markdown',
+                        content: '## Flow Analysis\n\nThe scanner identified significant bullish activity in tech names, particularly TSLA and NVDA with large call volumes. SPY puts suggest hedging activity.'
+                    },
+                    {
+                        type: 'code',
+                        content: `# Visualize options flow by sector
+import matplotlib.pyplot as plt
+
+sector_flows = unusual_flows.groupby('sector')['flow'].sum()
+plt.figure(figsize=(10, 6))
+sector_flows.plot(kind='bar', color='#4ec9b0')
+plt.title('Options Flow by Sector')
+plt.ylabel('Total Flow ($M)')
+plt.xlabel('Sector')
+plt.xticks(rotation=45)
+plt.show()`,
+                        output: '[Bar chart showing Technology sector with highest flow at $45M, followed by Consumer Discretionary at $23M]'
+                    }
+                ]
+            };
+            
+            loadTemplate(null, notebookContent);
         }
         
         // Create new notebook

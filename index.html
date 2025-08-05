@@ -810,17 +810,45 @@
         
         /* AI Chat Terminal */
         .ai-chat-terminal {
-            position: absolute;
+            position: fixed;
             bottom: 0;
-            left: 0;
-            right: 0;
+            right: var(--space-6);
+            width: 400px;
             height: 300px;
+            min-width: 300px;
+            min-height: 200px;
+            max-width: 80vw;
+            max-height: 80vh;
             background: var(--color-bg-primary);
-            border-top: 2px solid var(--color-text-primary);
+            border: 2px solid var(--color-text-primary);
             display: none;
             flex-direction: column;
-            z-index: 15;
-            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+            z-index: var(--z-fixed);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            margin-bottom: calc(var(--space-6) + 56px + var(--space-3));
+            overflow: hidden;
+        }
+        
+        .ai-chat-resize-handle {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 20px;
+            height: 20px;
+            cursor: nwse-resize;
+            z-index: 10;
+        }
+        
+        .ai-chat-resize-handle::after {
+            content: '';
+            position: absolute;
+            bottom: 3px;
+            right: 3px;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 0 10px 10px;
+            border-color: transparent transparent var(--color-text-tertiary) transparent;
         }
         
         .ai-chat-terminal.open {
@@ -834,6 +862,8 @@
             padding: var(--space-3) var(--space-4);
             background: var(--color-bg-secondary);
             border-bottom: 1px solid var(--color-border-primary);
+            cursor: move;
+            user-select: none;
         }
         
         .ai-chat-title {
@@ -893,7 +923,7 @@
         }
         
         .ai-chat-prompt {
-            color: var(--color-accent-primary);
+            color: var(--color-text-primary);
             font-family: var(--font-family-mono);
             font-weight: var(--font-weight-bold);
         }
@@ -1328,6 +1358,140 @@
                 min-height: 200px;
             }
         }
+        
+        /* Notebook Viewer */
+        .notebook-viewer {
+            position: fixed;
+            right: 0;
+            top: var(--header-height);
+            bottom: 0;
+            width: 50%;
+            background: var(--color-bg-primary);
+            border-left: 1px solid var(--color-border-primary);
+            box-shadow: -4px 0 8px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .notebook-header {
+            padding: var(--space-4);
+            background: var(--color-bg-secondary);
+            border-bottom: 1px solid var(--color-border-primary);
+        }
+        
+        .notebook-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+        
+        .notebook-title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            font-family: var(--font-family-mono);
+            flex: 1;
+            text-align: center;
+            margin: 0 var(--space-3);
+        }
+        
+        .notebook-action-btn {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+            padding: 0.5rem 1rem;
+            background: var(--color-bg-primary);
+            border: 3px solid var(--color-text-primary);
+            border-radius: var(--radius-md);
+            box-shadow: -3px 5px var(--color-text-primary);
+            transition: all 150ms ease-in-out;
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+        
+        .notebook-action-btn:hover {
+            color: var(--color-bg-primary);
+            background: var(--color-text-primary);
+            transform: translate(2px, -2px);
+            box-shadow: -5px 7px var(--color-text-primary);
+        }
+        
+        .notebook-action-btn:active {
+            transform: translate(-1px, 2px);
+            box-shadow: -2px 3px var(--color-text-primary);
+        }
+        
+        .notebook-close {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            padding: 0.3rem 0.6rem;
+            background: var(--color-bg-primary);
+            border: 3px solid var(--color-text-primary);
+            border-radius: var(--radius-md);
+            box-shadow: -3px 5px var(--color-text-primary);
+            transition: all 150ms ease-in-out;
+            cursor: pointer;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+        
+        .notebook-close:hover {
+            color: var(--color-bg-primary);
+            background: var(--color-text-primary);
+            transform: translate(2px, -2px);
+            box-shadow: -5px 7px var(--color-text-primary);
+        }
+        
+        .notebook-close:active {
+            transform: translate(-1px, 2px);
+            box-shadow: -2px 3px var(--color-text-primary);
+        }
+        
+        .notebook-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-4);
+        }
+        
+        /* Notebook Cells */
+        .notebook-cell {
+            margin-bottom: var(--space-4);
+            border: 1px solid var(--color-border-primary);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+        
+        .cell-type {
+            padding: var(--space-2) var(--space-3);
+            background: var(--color-bg-tertiary);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-wide);
+            color: var(--color-text-secondary);
+        }
+        
+        .cell-content {
+            padding: var(--space-4);
+            background: var(--color-bg-secondary);
+        }
+        
+        .cell-content pre {
+            margin: 0;
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+        }
+        
+        .cell-output {
+            padding: var(--space-4);
+            background: var(--color-bg-primary);
+            border-top: 1px solid var(--color-border-primary);
+        }
     </style>
 </head>
 <body>
@@ -1616,38 +1780,6 @@
                                 <iframe class="pdf-frame" id="pdfFrame" src=""></iframe>
                             </div>
                             
-                            <!-- AI Chat Button -->
-                            <button class="ai-chat-button" onclick="toggleAIChat()" title="Ask AI about this PDF">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                                    <circle cx="9" cy="10" r="1"></circle>
-                                    <circle cx="15" cy="10" r="1"></circle>
-                                </svg>
-                            </button>
-                            
-                            <!-- AI Chat Terminal -->
-                            <div class="ai-chat-terminal" id="aiChatTerminal">
-                                <div class="ai-chat-header">
-                                    <div class="ai-chat-title">
-                                        <span>AI Assistant</span>
-                                        <span style="font-size: var(--font-size-xs); color: var(--color-text-tertiary);">Ask about this PDF</span>
-                                    </div>
-                                    <button class="ai-chat-close" onclick="closeAIChat()">×</button>
-                                </div>
-                                <div class="ai-chat-messages" id="aiChatMessages">
-                                    <div class="ai-message assistant">Hello! I can help you understand this PDF. What would you like to know?</div>
-                                </div>
-                                <div class="ai-chat-input-wrapper">
-                                    <span class="ai-chat-prompt">></span>
-                                    <input 
-                                        type="text" 
-                                        class="ai-chat-input" 
-                                        id="aiChatInput" 
-                                        placeholder="Ask a question about this PDF..."
-                                        onkeypress="handleAIChatInput(event)"
-                                    />
-                                </div>
-                            </div>
                         </div>
                         
                         <!-- Comments Panel -->
@@ -1931,6 +2063,60 @@
         </main>
     </div>
     
+    <!-- AI Chat Terminal (Global) -->
+    <div class="ai-chat-terminal" id="aiChatTerminal">
+        <div class="ai-chat-header">
+            <div class="ai-chat-title">
+                <span>AI Assistant</span>
+                <span style="font-size: var(--font-size-xs); color: var(--color-text-tertiary);">How can I help you?</span>
+            </div>
+            <button class="ai-chat-close" onclick="closeAIChat()">×</button>
+        </div>
+        <div class="ai-chat-messages" id="aiChatMessages">
+            <div class="ai-message assistant">Hello! I can help you with trading strategies, market analysis, and understanding documents. What would you like to know?</div>
+        </div>
+        <div class="ai-chat-input-wrapper">
+            <span class="ai-chat-prompt">></span>
+            <input 
+                type="text" 
+                class="ai-chat-input" 
+                id="aiChatInput" 
+                placeholder="Ask a question..."
+                onkeypress="handleAIChatInput(event)"
+            />
+        </div>
+        <div class="ai-chat-resize-handle"></div>
+    </div>
+    
+    <!-- Notebook Viewer -->
+    <div class="notebook-viewer" id="notebookViewer" style="display: none;">
+        <div class="notebook-header">
+            <div class="notebook-actions">
+                <button class="notebook-action-btn" onclick="openInResearch()" title="Open in Research Tab">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+                        <!-- Spiral binding -->
+                        <circle cx="4" cy="4" r="1.5"></circle>
+                        <circle cx="4" cy="8" r="1.5"></circle>
+                        <circle cx="4" cy="12" r="1.5"></circle>
+                        <circle cx="4" cy="16" r="1.5"></circle>
+                        <circle cx="4" cy="20" r="1.5"></circle>
+                        <!-- Notebook pages -->
+                        <rect x="7" y="2" width="14" height="20" rx="1"></rect>
+                        <!-- Lines on pages -->
+                        <line x1="10" y1="7" x2="18" y2="7"></line>
+                        <line x1="10" y1="11" x2="18" y2="11"></line>
+                        <line x1="10" y1="15" x2="16" y2="15"></line>
+                    </svg>
+                </button>
+                <span class="notebook-title">Options Flow Scanner</span>
+                <button class="notebook-close" onclick="closeNotebook()">×</button>
+            </div>
+        </div>
+        <div class="notebook-content" id="notebookContent">
+            <!-- Notebook cells will be loaded here -->
+        </div>
+    </div>
+    
     <!-- Layout Manager -->
     <script src="layout.js"></script>
     
@@ -2033,28 +2219,46 @@
         
         // AI Chat Functions
         let aiChatOpen = false;
+        let isDragging = false;
+        let isResizing = false;
+        let currentX;
+        let currentY;
+        let initialX;
+        let initialY;
+        let xOffset = 0;
+        let yOffset = 0;
+        let startWidth;
+        let startHeight;
+        let startX;
+        let startY;
         
         function toggleAIChat() {
             const terminal = document.getElementById('aiChatTerminal');
-            const button = document.querySelector('.ai-chat-button');
+            const button = document.querySelector('.global-ai-chat-button');
             
             if (aiChatOpen) {
                 closeAIChat();
             } else {
                 terminal.classList.add('open');
-                button.style.display = 'none';
+                if (button) button.classList.add('hidden');
                 document.getElementById('aiChatInput').focus();
                 aiChatOpen = true;
+                
+                // Initialize drag functionality
+                initDrag();
             }
         }
         
+        // Make it globally available
+        window.toggleGlobalAIChat = toggleAIChat;
+        
         function closeAIChat() {
             const terminal = document.getElementById('aiChatTerminal');
-            const button = document.querySelector('.ai-chat-button');
+            const button = document.querySelector('.global-ai-chat-button');
             
-            if (terminal && button) {
+            if (terminal) {
                 terminal.classList.remove('open');
-                button.style.display = 'flex';
+                if (button) button.classList.remove('hidden');
                 aiChatOpen = false;
             }
         }
@@ -2167,7 +2371,7 @@ if __name__ == "__main__":
             } else {
                 // Generic implementation template
                 implementationCode = `"""
-Implementation of: ${pdfTitle}
+Implementation of: ${pdfTitle.trim()}
 
 TODO: Add paper-specific implementation details
 """
@@ -2203,12 +2407,163 @@ class PaperImplementation:
             window.location.href = 'develop.html';
         }
         
+        // Notebook functions
+        let notebookOpen = false;
+        
+        function openNotebook(title) {
+            const notebookViewer = document.getElementById('notebookViewer');
+            const notebookContent = document.getElementById('notebookContent');
+            const notebookTitle = document.querySelector('.notebook-title');
+            
+            // Set title
+            notebookTitle.textContent = title || 'Options Flow Scanner';
+            
+            // Generate notebook content
+            const cells = generateNotebookCells();
+            notebookContent.innerHTML = cells;
+            
+            // Show notebook
+            notebookViewer.style.display = 'flex';
+            notebookOpen = true;
+        }
+        
+        function closeNotebook() {
+            const notebookViewer = document.getElementById('notebookViewer');
+            notebookViewer.style.display = 'none';
+            notebookOpen = false;
+        }
+        
+        function generateNotebookCells() {
+            return `
+                <div class="notebook-cell">
+                    <div class="cell-type">Markdown</div>
+                    <div class="cell-content">
+                        <h2>Options Flow Scanner</h2>
+                        <p>Real-time scanner for unusual options activity and large block trades.</p>
+                    </div>
+                </div>
+                
+                <div class="notebook-cell">
+                    <div class="cell-type">Code</div>
+                    <div class="cell-content">
+                        <pre>import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Configuration for options flow scanner
+FLOW_THRESHOLD = 1000000  # $1M minimum
+VOLUME_RATIO = 5.0       # 5x average volume
+IV_PERCENTILE = 90       # High IV percentile</pre>
+                    </div>
+                </div>
+                
+                <div class="notebook-cell">
+                    <div class="cell-type">Code</div>
+                    <div class="cell-content">
+                        <pre># Scan for unusual options activity
+def scan_options_flow(symbol_list):
+    orders = []
+    
+    for symbol in symbol_list:
+        options = get_options_chain(symbol)
+        
+        for option in options:
+            if (option.volume > option.avg_volume * VOLUME_RATIO and
+                option.premium * option.volume > FLOW_THRESHOLD):
+                
+                orders.append({
+                    'symbol': symbol,
+                    'strike': option.strike,
+                    'expiry': option.expiry,
+                    'type': option.type,
+                    'volume': option.volume,
+                    'premium': option.premium,
+                    'flow': option.premium * option.volume
+                })
+    
+    return pd.DataFrame(orders).sort_values('flow', ascending=False)</pre>
+                    </div>
+                </div>
+                
+                <div class="notebook-cell">
+                    <div class="cell-type">Code</div>
+                    <div class="cell-content">
+                        <pre># Run the scanner
+top_symbols = ['SPY', 'QQQ', 'AAPL', 'TSLA', 'NVDA', 'AMD', 'MSFT', 'AMZN', 'META', 'GOOGL']
+unusual_flows = scan_options_flow(top_symbols)
+print(f"Found {len(unusual_flows)} unusual options flows")</pre>
+                    </div>
+                    <div class="cell-output">
+                        <pre>Found 47 unusual options flows
+
+Top 5 flows:
+TSLA 300C 12/15 - Volume: 25,432 - Flow: $12.7M
+NVDA 500C 01/19 - Volume: 18,221 - Flow: $9.1M  
+SPY 430P 12/08 - Volume: 45,123 - Flow: $8.9M
+AAPL 185C 12/15 - Volume: 22,145 - Flow: $6.6M
+QQQ 380C 12/22 - Volume: 15,432 - Flow: $5.4M</pre>
+                    </div>
+                </div>
+                
+                <div class="notebook-cell">
+                    <div class="cell-type">Markdown</div>
+                    <div class="cell-content">
+                        <h3>Flow Analysis</h3>
+                        <p>The scanner identified significant bullish activity in tech names, particularly TSLA and NVDA with large call volumes. SPY puts suggest hedging activity.</p>
+                    </div>
+                </div>
+                
+                <div class="notebook-cell">
+                    <div class="cell-type">Code</div>
+                    <div class="cell-content">
+                        <pre># Visualize options flow by sector
+import matplotlib.pyplot as plt
+
+sector_flows = unusual_flows.groupby('sector')['flow'].sum()
+plt.figure(figsize=(10, 6))
+sector_flows.plot(kind='bar', color='#4ec9b0')
+plt.title('Options Flow by Sector')
+plt.ylabel('Total Flow ($M)')
+plt.xlabel('Sector')
+plt.xticks(rotation=45)
+plt.show()</pre>
+                    </div>
+                    <div class="cell-output">
+                        <p style="color: var(--color-text-secondary); font-style: italic;">
+                            [Bar chart showing Technology sector with highest flow at $45M, followed by Consumer Discretionary at $23M]
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function openInResearch() {
+            // Save notebook data to sessionStorage
+            sessionStorage.setItem('notebookTitle', 'Options Flow Scanner');
+            sessionStorage.setItem('notebookType', 'options-flow');
+            sessionStorage.setItem('openWithNotebook', 'true');
+            
+            // Navigate to research tab
+            window.location.href = 'research.html';
+        }
+        
         // Add click handlers to arXiv links
         document.querySelectorAll('a[href*="arxiv.org"]').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const title = link.textContent;
                 openPdfReader(link.href, title);
+            });
+        });
+        
+        // Add click handler for Options Flow Scanner
+        document.querySelectorAll('.article-headline').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const title = link.textContent.trim();
+                if (title.includes('Options Flow Scanner')) {
+                    openNotebook(title);
+                }
             });
         });
         
@@ -2446,6 +2801,106 @@ class PaperImplementation:
                 openComments(articleId, articleTitle);
             });
         });
+        
+        // Draggable and Resizable functionality for AI Chat
+        function initDrag() {
+            const terminal = document.getElementById('aiChatTerminal');
+            const header = terminal.querySelector('.ai-chat-header');
+            const resizeHandle = terminal.querySelector('.ai-chat-resize-handle');
+            
+            header.addEventListener('mousedown', dragStart);
+            resizeHandle.addEventListener('mousedown', resizeStart);
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+        }
+        
+        function dragStart(e) {
+            const terminal = document.getElementById('aiChatTerminal');
+            
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
+            
+            if (e.target.closest('.ai-chat-header') && !e.target.closest('button')) {
+                isDragging = true;
+                terminal.style.transition = 'none';
+            }
+        }
+        
+        function resizeStart(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const terminal = document.getElementById('aiChatTerminal');
+            isResizing = true;
+            
+            startX = e.clientX;
+            startY = e.clientY;
+            startWidth = parseInt(document.defaultView.getComputedStyle(terminal).width, 10);
+            startHeight = parseInt(document.defaultView.getComputedStyle(terminal).height, 10);
+            
+            terminal.style.transition = 'none';
+        }
+        
+        function handleMouseMove(e) {
+            if (isDragging) {
+                drag(e);
+            } else if (isResizing) {
+                resize(e);
+            }
+        }
+        
+        function handleMouseUp(e) {
+            if (isDragging) {
+                dragEnd(e);
+            } else if (isResizing) {
+                resizeEnd(e);
+            }
+        }
+        
+        function drag(e) {
+            e.preventDefault();
+            
+            currentX = e.clientX - initialX;
+            currentY = e.clientY - initialY;
+            
+            xOffset = currentX;
+            yOffset = currentY;
+            
+            const terminal = document.getElementById('aiChatTerminal');
+            terminal.style.transform = `translate(${currentX}px, ${currentY}px)`;
+        }
+        
+        function resize(e) {
+            e.preventDefault();
+            
+            const terminal = document.getElementById('aiChatTerminal');
+            const newWidth = startWidth - (e.clientX - startX);
+            const newHeight = startHeight - (e.clientY - startY);
+            
+            // Apply constraints
+            const constrainedWidth = Math.max(300, Math.min(newWidth, window.innerWidth * 0.8));
+            const constrainedHeight = Math.max(200, Math.min(newHeight, window.innerHeight * 0.8));
+            
+            terminal.style.width = constrainedWidth + 'px';
+            terminal.style.height = constrainedHeight + 'px';
+        }
+        
+        function dragEnd(e) {
+            initialX = currentX;
+            initialY = currentY;
+            
+            isDragging = false;
+            
+            const terminal = document.getElementById('aiChatTerminal');
+            terminal.style.transition = '';
+        }
+        
+        function resizeEnd(e) {
+            isResizing = false;
+            
+            const terminal = document.getElementById('aiChatTerminal');
+            terminal.style.transition = '';
+        }
     </script>
 </body>
 </html>

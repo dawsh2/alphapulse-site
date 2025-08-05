@@ -40,14 +40,32 @@
         }
         
         .sidebar-header {
-            padding: var(--space-3) var(--space-4);
+            padding: var(--space-2) var(--space-3);
             background: var(--color-bg-tertiary);
             border-bottom: 1px solid var(--color-border-primary);
+        }
+        
+        .explorer-search {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-family: inherit;
             font-weight: var(--font-weight-medium);
             font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            color: var(--color-text-primary);
+            padding: var(--space-2);
+        }
+        
+        .explorer-search::placeholder {
             color: var(--color-text-tertiary);
+        }
+        
+        .explorer-search:focus {
+            background: var(--color-bg-primary);
+            border-radius: var(--radius-sm);
         }
         
         .file-list {
@@ -68,8 +86,13 @@
         }
         
         .file-item:hover {
-            background: var(--color-bg-tertiary);
-            color: var(--color-text-primary);
+            background: var(--color-text-primary);
+            color: var(--color-bg-primary);
+        }
+        
+        .file-item:hover .file-icon {
+            color: var(--color-bg-primary);
+            opacity: 1;
         }
         
         .file-item.active {
@@ -108,6 +131,108 @@
             display: flex;
             flex: 1;
             overflow: hidden;
+            height: calc(100vh - var(--header-height) - 40px); /* Account for header and tabs */
+        }
+        
+        /* Split Tabs Container */
+        .tabs-container.split-tabs {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .editor-tabs-section {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-right: 1px solid var(--color-border-primary);
+            padding-right: var(--space-2);
+        }
+        
+        .pdf-tabs-section {
+            flex: 1;
+            padding-left: var(--space-2);
+        }
+        
+        .pdf-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 var(--space-4);
+            height: 40px;
+        }
+        
+        /* PDF Viewer */
+        .pdf-viewer {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--color-bg-secondary);
+            border-left: 1px solid var(--color-border-primary);
+            position: relative;
+        }
+        
+        .pdf-viewer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-3) var(--space-4);
+            background: var(--color-bg-tertiary);
+            border-bottom: 1px solid var(--color-border-primary);
+        }
+        
+        .pdf-viewer-title {
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-primary);
+        }
+        
+        .pdf-viewer-close {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            padding: 0.2rem 0.5rem;
+            background: var(--color-bg-primary);
+            border: 3px solid var(--color-text-primary);
+            border-radius: var(--radius-md);
+            box-shadow: -3px 5px var(--color-text-primary);
+            transition: all 150ms ease-in-out;
+            cursor: pointer;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+        
+        .pdf-viewer-close:hover {
+            color: var(--color-bg-primary);
+            background: var(--color-text-primary);
+            transform: translate(2px, -2px);
+            box-shadow: -5px 7px var(--color-text-primary);
+        }
+        
+        .pdf-viewer-close:active {
+            transform: translate(-1px, 2px);
+            box-shadow: -2px 3px var(--color-text-primary);
+        }
+        
+        .pdf-viewer-content {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pdf-viewer-frame {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            transform: scale(1.65);
+            transform-origin: 0 0;
         }
         
         .pdf-viewer {
@@ -117,6 +242,7 @@
             flex-direction: column;
             background: var(--color-bg-secondary);
             position: relative;
+            overflow: hidden;
         }
         
         .pdf-viewer-header {
@@ -135,11 +261,22 @@
             color: var(--color-text-primary);
         }
         
-        .pdf-viewer-frame {
+        .pdf-viewer-content {
             flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pdf-viewer-frame {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
+            height: 100%;
             border: none;
             background: #525659;
+            transform: scale(1.65); /* Scale up to 165% zoom to fill horizontally */
+            transform-origin: center center;
         }
         
         /* PDF Viewer Close Button */
@@ -178,6 +315,7 @@
             width: 50%;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
         
         /* AI Chat Button */
@@ -221,6 +359,50 @@
         }
         
         /* AI Chat Terminal */
+        /* Global AI Chat Terminal */
+        .global-ai-terminal {
+            position: fixed;
+            bottom: 0;
+            right: var(--space-6);
+            width: 400px;
+            height: 300px;
+            min-width: 300px;
+            min-height: 200px;
+            max-width: 80vw;
+            max-height: 80vh;
+            background: var(--color-bg-primary);
+            border: 2px solid var(--color-text-primary);
+            display: none;
+            flex-direction: column;
+            z-index: var(--z-fixed);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            margin-bottom: calc(var(--space-6) + 56px + var(--space-3));
+            overflow: hidden;
+        }
+        
+        .ai-chat-resize-handle {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 20px;
+            height: 20px;
+            cursor: nwse-resize;
+            z-index: 10;
+        }
+        
+        .ai-chat-resize-handle::after {
+            content: '';
+            position: absolute;
+            bottom: 3px;
+            right: 3px;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 0 10px 10px;
+            border-color: transparent transparent var(--color-text-tertiary) transparent;
+        }
+        
+        /* PDF-specific AI Chat Terminal */
         .ai-chat-terminal {
             position: absolute;
             bottom: 0;
@@ -234,6 +416,10 @@
             z-index: 15;
         }
         
+        .global-ai-terminal.open {
+            display: flex;
+        }
+        
         .ai-chat-terminal.open {
             display: flex;
         }
@@ -245,6 +431,8 @@
             padding: var(--space-3) var(--space-4);
             background: var(--color-bg-secondary);
             border-bottom: 1px solid var(--color-border-primary);
+            cursor: move;
+            user-select: none;
         }
         
         .ai-chat-title {
@@ -304,7 +492,7 @@
         }
         
         .ai-chat-prompt {
-            color: var(--color-accent-primary);
+            color: var(--color-text-primary);
             font-family: var(--font-family-mono);
             font-weight: var(--font-weight-bold);
         }
@@ -323,35 +511,121 @@
             color: var(--color-text-tertiary);
         }
         
-        .editor-header {
-            background: var(--color-bg-secondary);
+        /* Tabs */
+        .tabs-container {
+            background: var(--color-bg-tertiary);
             border-bottom: 1px solid var(--color-border-primary);
-            padding: var(--space-3) var(--space-4);
+            padding: 0 var(--space-2);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            min-height: 48px;
+            min-height: 40px;
+            overflow-x: auto;
+            scrollbar-width: thin;
         }
         
-        .filename {
+        .tabs {
+            display: flex;
+            align-items: center;
+            gap: var(--space-1);
+        }
+        
+        .tab {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-3);
+            background: var(--color-bg-secondary);
+            border: 1px solid var(--color-border-primary);
+            border-bottom: none;
+            border-radius: var(--radius-md) var(--radius-md) 0 0;
             font-family: var(--font-family-mono);
-            font-weight: var(--font-weight-medium);
-            color: var(--color-text-primary);
             font-size: var(--font-size-sm);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            position: relative;
+            min-width: 100px;
+            max-width: 200px;
+        }
+        
+        .tab:hover {
+            background: var(--color-bg-primary);
+        }
+        
+        .tab.active {
+            background: var(--color-bg-primary);
+            border-bottom: 1px solid var(--color-bg-primary);
+            margin-bottom: -1px;
+        }
+        
+        .tab-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .tab-close {
+            background: none;
+            border: none;
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-tertiary);
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            transition: all var(--transition-fast);
+        }
+        
+        .tab-close:hover {
+            background: var(--color-bg-tertiary);
+            color: var(--color-text-primary);
+        }
+        
+        .new-tab-btn {
+            padding: var(--space-2);
+            background: transparent;
+            border: 1px dashed var(--color-border-primary);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-tertiary);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .new-tab-btn:hover {
+            background: var(--color-bg-secondary);
+            border-color: var(--color-border-secondary);
+            color: var(--color-text-primary);
         }
         
         .editor-actions {
             display: flex;
             gap: var(--space-2);
+            align-items: center;
+            padding-right: var(--space-2);
         }
         
-        /* Run Button with AlphaPulse shadow box style */
-        .run-button {
+        
+        /* Close File Button with AlphaPulse shadow box style */
+        .close-file-button {
             font-family: var(--font-family-mono);
-            font-size: var(--font-size-base);
-            font-weight: var(--font-weight-semibold);
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
             color: var(--color-text-primary);
-            padding: 0.4rem 0.8rem;
+            padding: 0.3rem 0.6rem;
             background: var(--color-bg-primary);
             border: 3px solid var(--color-text-primary);
             border-radius: var(--radius-md);
@@ -362,23 +636,19 @@
             align-items: center;
             justify-content: center;
             margin-bottom: 5px;
+            line-height: 1;
         }
         
-        .run-button:hover {
+        .close-file-button:hover {
             color: var(--color-bg-primary);
             background: var(--color-text-primary);
             transform: translate(2px, -2px);
             box-shadow: -5px 7px var(--color-text-primary);
         }
         
-        .run-button:active {
+        .close-file-button:active {
             transform: translate(-1px, 2px);
             box-shadow: -2px 3px var(--color-text-primary);
-        }
-        
-        .run-button svg {
-            width: 16px;
-            height: 16px;
         }
         
         /* Console Button with AlphaPulse shadow box style */
@@ -540,7 +810,7 @@
         }
         
         .output-panel.open {
-            height: 250px;
+            height: 300px;
         }
         
         .output-header {
@@ -629,6 +899,103 @@
         .output-line.success { color: var(--color-accent-secondary); }
         .output-line.error { color: var(--color-accent-danger); }
         .output-line.warning { color: var(--color-accent-warning); }
+        
+        /* Terminal Input */
+        .terminal-input-wrapper {
+            display: flex;
+            align-items: center;
+            padding: var(--space-3) var(--space-4);
+            background: var(--color-bg-secondary);
+            border-top: 1px solid var(--color-border-primary);
+            gap: var(--space-3);
+        }
+        
+        .terminal-prompt {
+            color: var(--color-accent-primary);
+            font-family: var(--font-family-mono);
+            font-weight: var(--font-weight-bold);
+        }
+        
+        .terminal-input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--color-text-primary);
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            outline: none;
+        }
+        
+        .terminal-input::placeholder {
+            color: var(--color-text-tertiary);
+        }
+        
+        /* Bottom AI Chat Button */
+        .ai-chat-button-bottom {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+            padding: 0.4rem 0.8rem;
+            background: var(--color-bg-primary);
+            border: 3px solid var(--color-text-primary);
+            border-radius: var(--radius-md);
+            box-shadow: -3px 5px var(--color-text-primary);
+            transition: all 150ms ease-in-out;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 5px;
+        }
+        
+        .ai-chat-button-bottom:hover {
+            color: var(--color-bg-primary);
+            background: var(--color-text-primary);
+            transform: translate(2px, -2px);
+            box-shadow: -5px 7px var(--color-text-primary);
+        }
+        
+        .ai-chat-button-bottom:active {
+            transform: translate(-1px, 2px);
+            box-shadow: -2px 3px var(--color-text-primary);
+        }
+        
+        .ai-chat-button-bottom svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        /* AI Chat Close Button */
+        .ai-chat-close-btn {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            padding: 0.2rem 0.4rem;
+            background: var(--color-bg-primary);
+            border: 2px solid var(--color-text-primary);
+            border-radius: var(--radius-sm);
+            box-shadow: -2px 3px var(--color-text-primary);
+            transition: all 150ms ease-in-out;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+        
+        .ai-chat-close-btn:hover {
+            color: var(--color-bg-primary);
+            background: var(--color-text-primary);
+            transform: translate(1px, -1px);
+            box-shadow: -3px 4px var(--color-text-primary);
+        }
+        
+        .ai-chat-close-btn:active {
+            transform: translate(-0.5px, 1px);
+            box-shadow: -1px 2px var(--color-text-primary);
+        }
         
         /* Welcome screen */
         .welcome {
@@ -754,11 +1121,30 @@
             <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
             
             <div class="editor-container">
-                <div class="editor-header">
-                    <span class="filename" id="filename">strategy.py</span>
+                <div class="tabs-container">
+                    <div class="tabs" id="tabsList">
+                        <div class="tab active" data-file="strategy.py" onclick="switchTab('strategy.py')">
+                            <span class="tab-name">strategy.py</span>
+                            <button class="tab-close" onclick="closeTab(event, 'strategy.py')">×</button>
+                        </div>
+                        <button class="new-tab-btn" onclick="createNewTab()" title="New File">+</button>
+                    </div>
                     <div class="editor-actions">
-                        <button class="run-button" onclick="runCode()">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <button class="console-button" onclick="saveFile()" title="Save File">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                <polyline points="7 3 7 8 15 8"></polyline>
+                            </svg>
+                        </button>
+                        <button class="console-button" onclick="openTerminal()" title="Open Terminal">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="4 17 10 11 4 5"></polyline>
+                                <line x1="12" y1="19" x2="20" y2="19"></line>
+                            </svg>
+                        </button>
+                        <button class="console-button" onclick="runCode()" title="Run Code">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polygon points="5 3 19 12 5 21 5 3"></polygon>
                             </svg>
                         </button>
@@ -803,42 +1189,21 @@
                         <div class="output-line info">AlphaPulse Development Environment v1.0.0</div>
                         <div class="output-line info">Ready.</div>
                     </div>
-                </div>
-                
-                <div class="action-panel">
-                    <div class="action-group">
-                        <button class="console-button" onclick="openTerminal()" style="padding: 0.4rem 0.7rem;">
-                            <span style="font-size: var(--font-size-base); line-height: 1;">&gt;_</span>
-                        </button>
-                        <button class="console-button" onclick="checkSyntax()">
-                            <span>Check Syntax</span>
-                        </button>
-                        <button class="btn btn-secondary btn-sm" onclick="exportYAML()">
-                            Export Config
-                        </button>
-                    </div>
-                    
-                    <div class="action-group">
-                        <button class="btn btn-primary btn-sm" onclick="generateSignals()">
-                            Generate Signals
-                        </button>
-                        <button class="btn btn-secondary btn-sm" onclick="runBacktest()">
-                            Backtest
-                        </button>
-                    </div>
-                    
-                    <div class="action-group">
-                        <button class="btn btn-accent btn-sm" onclick="generateNotebook()">
-                            Generate Notebook
-                        </button>
-                        <button class="btn btn-ghost btn-sm" onclick="toggleOutput()" id="outputBtn">
-                            Terminal
-                        </button>
+                    <div class="terminal-input-wrapper">
+                        <span class="terminal-prompt">&gt;</span>
+                        <input 
+                            type="text" 
+                            class="terminal-input" 
+                            id="terminalInput" 
+                            placeholder="Enter command..."
+                            onkeypress="handleTerminalInput(event)"
+                        />
                     </div>
                 </div>
             </div>
             </div>
     </div>
+    
     
     <!-- Layout Manager -->
     <script src="layout.js"></script>
@@ -939,6 +1304,8 @@ risk:
         };
         
         let currentFile = 'strategy.py';
+        let openTabs = ['strategy.py'];
+        let tabCounter = 1;
         let sidebarOpen = false;
         let monacoEditor = null;
         let isDesktop = window.innerWidth > 768;
@@ -999,13 +1366,78 @@ risk:
         function initMonacoEditor() {
             require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' }});
             require(['vs/editor/editor.main'], function() {
+                // Define custom AlphaPulse themes
+                monaco.editor.defineTheme('alphapulse-light', {
+                    base: 'vs',
+                    inherit: true,
+                    rules: [
+                        { token: 'comment', foreground: '7d8590', fontStyle: 'italic' },
+                        { token: 'keyword', foreground: 'cf222e' },
+                        { token: 'string', foreground: '0a3069' },
+                        { token: 'number', foreground: '0550ae' },
+                        { token: 'function', foreground: '8250df' },
+                        { token: 'variable', foreground: '33332d' },
+                        { token: 'type', foreground: '116329' },
+                        { token: 'delimiter', foreground: '666660' },
+                        { token: 'operator', foreground: 'cf222e' }
+                    ],
+                    colors: {
+                        'editor.background': '#faf8f3',
+                        'editor.foreground': '#33332d',
+                        'editor.lineHighlightBackground': '#f5f2ea',
+                        'editor.selectionBackground': '#e8e4d9',
+                        'editor.inactiveSelectionBackground': '#ede8dd',
+                        'editorLineNumber.foreground': '#999990',
+                        'editorLineNumber.activeForeground': '#33332d',
+                        'editorCursor.foreground': '#0969da',
+                        'editor.wordHighlightBackground': '#e8e4d9',
+                        'editorWhitespace.foreground': '#d0d0ca',
+                        'editorIndentGuide.background': '#e5e0d5',
+                        'editorIndentGuide.activeBackground': '#d8d2c4',
+                        'editorBracketMatch.background': '#e8e4d9',
+                        'editorBracketMatch.border': '#d8d2c4'
+                    }
+                });
+                
+                monaco.editor.defineTheme('alphapulse-dark', {
+                    base: 'vs-dark',
+                    inherit: true,
+                    rules: [
+                        { token: 'comment', foreground: '8b949e', fontStyle: 'italic' },
+                        { token: 'keyword', foreground: 'ff7b72' },
+                        { token: 'string', foreground: 'a5d6ff' },
+                        { token: 'number', foreground: '79c0ff' },
+                        { token: 'function', foreground: 'd2a8ff' },
+                        { token: 'variable', foreground: 'f0f6fc' },
+                        { token: 'type', foreground: '7ee787' },
+                        { token: 'delimiter', foreground: '8b949e' },
+                        { token: 'operator', foreground: 'ff7b72' }
+                    ],
+                    colors: {
+                        'editor.background': '#1e2028',
+                        'editor.foreground': '#f0f6fc',
+                        'editor.lineHighlightBackground': '#262931',
+                        'editor.selectionBackground': '#2e323b',
+                        'editor.inactiveSelectionBackground': '#353943',
+                        'editorLineNumber.foreground': '#6e7681',
+                        'editorLineNumber.activeForeground': '#f0f6fc',
+                        'editorCursor.foreground': '#58a6ff',
+                        'editor.wordHighlightBackground': '#2e323b',
+                        'editorWhitespace.foreground': '#484f58',
+                        'editorIndentGuide.background': '#383c45',
+                        'editorIndentGuide.activeBackground': '#42474f',
+                        'editorBracketMatch.background': '#2e323b',
+                        'editorBracketMatch.border': '#42474f'
+                    }
+                });
+                
                 // Get current theme
                 const theme = document.documentElement.getAttribute('data-theme') || 'light';
                 
                 monacoEditor = monaco.editor.create(document.getElementById('monaco-editor'), {
                     value: files[currentFile] || '',
                     language: getMonacoLanguage(currentFile),
-                    theme: theme === 'dark' ? 'vs-dark' : 'vs',
+                    theme: theme === 'dark' ? 'alphapulse-dark' : 'alphapulse-light',
                     automaticLayout: true,
                     minimap: {
                         enabled: true,
@@ -1013,9 +1445,12 @@ risk:
                         showSlider: 'always',
                         renderCharacters: true
                     },
-                    fontSize: 14,
-                    fontFamily: "'IBM Plex Mono', 'SF Mono', Monaco, Consolas, monospace",
+                    fontSize: 15,
+                    fontFamily: "'IBM Plex Mono', 'JetBrains Mono', 'SF Mono', Monaco, Consolas, monospace",
                     fontLigatures: true,
+                    fontWeight: '400',
+                    letterSpacing: 0.5,
+                    lineHeight: 22,
                     scrollBeyondLastLine: false,
                     lineNumbers: 'on',
                     renderWhitespace: 'selection',
@@ -1129,7 +1564,7 @@ risk:
                 
                 // Listen for theme changes
                 window.addEventListener('alphapulse:themechange', (e) => {
-                    const newTheme = e.detail.theme === 'dark' ? 'vs-dark' : 'vs';
+                    const newTheme = e.detail.theme === 'dark' ? 'alphapulse-dark' : 'alphapulse-light';
                     monaco.editor.setTheme(newTheme);
                 });
             });
@@ -1176,7 +1611,6 @@ risk:
             }
             
             // Update UI
-            document.getElementById('filename').textContent = filename;
             document.querySelectorAll('.file-item').forEach(item => {
                 item.classList.toggle('active', item.textContent.trim() === filename);
             });
@@ -1199,7 +1633,104 @@ risk:
         }
         
         function openFile(filename) {
+            // Add to tabs if not already open
+            if (!openTabs.includes(filename)) {
+                openTabs.push(filename);
+                addTabToUI(filename);
+            }
+            
+            // Switch to the tab
+            switchTab(filename);
+        }
+        
+        // Tab management functions
+        function switchTab(filename) {
+            if (!files[filename]) return;
+            
+            currentFile = filename;
+            
+            // Update active tab
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.file === filename) {
+                    tab.classList.add('active');
+                }
+            });
+            
+            // Load file content
             loadFile(filename);
+        }
+        
+        function closeTab(event, filename) {
+            event.stopPropagation();
+            
+            const tabIndex = openTabs.indexOf(filename);
+            if (tabIndex === -1) return;
+            
+            // Don't close if it's the only tab
+            if (openTabs.length === 1) {
+                alert('Cannot close the last tab');
+                return;
+            }
+            
+            // Remove from open tabs
+            openTabs.splice(tabIndex, 1);
+            
+            // Remove tab from UI
+            const tab = event.target.closest('.tab');
+            tab.remove();
+            
+            // If closing current tab, switch to another
+            if (currentFile === filename) {
+                const newIndex = Math.max(0, tabIndex - 1);
+                switchTab(openTabs[newIndex]);
+            }
+        }
+        
+        function createNewTab() {
+            const filename = `untitled${tabCounter}.py`;
+            
+            // Create new file
+            files[filename] = '# New file\n';
+            tabCounter++;
+            
+            // Add to tabs
+            openTabs.push(filename);
+            addTabToUI(filename);
+            
+            // Switch to new tab
+            switchTab(filename);
+        }
+        
+        function addTabToUI(filename) {
+            const tabsContainer = document.getElementById('tabsList');
+            const newTabBtn = tabsContainer.querySelector('.new-tab-btn');
+            
+            const tab = document.createElement('div');
+            tab.className = 'tab';
+            tab.dataset.file = filename;
+            tab.onclick = () => switchTab(filename);
+            tab.innerHTML = `
+                <span class="tab-name">${filename}</span>
+                <button class="tab-close" onclick="closeTab(event, '${filename}')">×</button>
+            `;
+            
+            tabsContainer.insertBefore(tab, newTabBtn);
+        }
+        
+        // Filter files based on search input
+        function filterFiles(searchTerm) {
+            const fileItems = document.querySelectorAll('.file-item');
+            const searchLower = searchTerm.toLowerCase();
+            
+            fileItems.forEach(item => {
+                const filename = item.querySelector('span:last-child').textContent.toLowerCase();
+                if (filename.includes(searchLower)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
         }
         
         function toggleSidebar() {
@@ -1242,11 +1773,7 @@ risk:
         }
         
         function updateButtonState() {
-            const panel = document.getElementById('outputPanel');
-            const btn = document.getElementById('outputBtn');
-            if (btn) {
-                btn.textContent = 'Terminal';
-            }
+            // No longer needed since we don't have the output button
         }
         
         // Generate Notebook function
@@ -1403,9 +1930,118 @@ execution:
             showOutput();
         }
         
+        function saveFile() {
+            // Save current file to localStorage (in a real app, this would save to server)
+            if (currentFile && files[currentFile] !== undefined) {
+                const editor = document.querySelector('.editor');
+                if (editor) {
+                    files[currentFile] = editor.value;
+                    console.log(`Saved ${currentFile}`);
+                    
+                    // Show a brief save indicator
+                    const tab = document.querySelector(`.tab[data-file="${currentFile}"]`);
+                    if (tab) {
+                        const originalText = tab.querySelector('.tab-name').textContent;
+                        tab.querySelector('.tab-name').textContent = `${originalText} ✓`;
+                        setTimeout(() => {
+                            tab.querySelector('.tab-name').textContent = originalText;
+                        }, 1000);
+                    }
+                }
+            }
+        }
+        
         function runCode() {
             runBacktest();
         }
+        
+        function closeCurrentFile() {
+            // Show welcome screen
+            const editorWrapper = document.getElementById('editorWrapper');
+            editorWrapper.innerHTML = `
+                <div class="welcome">
+                    <h2>AlphaPulse Development</h2>
+                    <p>Select a file from the sidebar to start coding your trading strategies.</p>
+                    <button class="btn btn-primary" onclick="toggleSidebar()">Open Files</button>
+                </div>
+            `;
+            
+            // Clear current file
+            currentFile = null;
+            
+            // Remove active state from all files
+            document.querySelectorAll('.file-item').forEach(item => {
+                item.classList.remove('active');
+            });
+        }
+        
+        // Handle terminal input
+        function handleTerminalInput(event) {
+            if (event.key === 'Enter') {
+                const input = document.getElementById('terminalInput');
+                const command = input.value.trim();
+                
+                if (command) {
+                    // Add user command to output
+                    addOutput(`> ${command}`, 'info');
+                    
+                    // Process mock commands
+                    if (command === 'help') {
+                        addOutput('Available commands:', 'info');
+                        addOutput('  help      - Show this help message', 'info');
+                        addOutput('  run       - Run the current file', 'info');
+                        addOutput('  test      - Run tests', 'info');
+                        addOutput('  clear     - Clear terminal', 'info');
+                        addOutput('  ls        - List files', 'info');
+                        addOutput('  pwd       - Print working directory', 'info');
+                    } else if (command === 'run') {
+                        runCode();
+                    } else if (command === 'test') {
+                        addOutput('Running tests...', 'info');
+                        setTimeout(() => {
+                            addOutput('✓ All tests passed (5/5)', 'success');
+                        }, 1000);
+                    } else if (command === 'clear') {
+                        const output = document.getElementById('outputContent');
+                        output.innerHTML = '<div class="output-line info">Terminal cleared.</div>';
+                    } else if (command === 'ls') {
+                        addOutput('strategy.py', 'info');
+                        addOutput('signals.py', 'info');
+                        addOutput('config.yaml', 'info');
+                        addOutput('backtest.json', 'info');
+                        addOutput('README.md', 'info');
+                    } else if (command === 'pwd') {
+                        addOutput('/alphapulse/strategies', 'info');
+                    } else {
+                        addOutput(`Command not found: ${command}`, 'error');
+                    }
+                    
+                    // Clear input
+                    input.value = '';
+                }
+            }
+        }
+        
+        // Make functions globally available for onclick handlers
+        window.runCode = runCode;
+        window.closePdfViewer = closePdfViewer;
+        window.toggleAIChat = toggleAIChat;
+        window.closeAIChat = closeAIChat;
+        window.handleAIChatInput = handleAIChatInput;
+        window.openFile = openFile;
+        window.toggleSidebar = toggleSidebar;
+        window.formatCode = formatCode;
+        window.checkSyntax = checkSyntax;
+        window.exportYAML = exportYAML;
+        window.generateSignals = generateSignals;
+        window.runBacktest = runBacktest;
+        window.generateNotebook = generateNotebook;
+        window.showOutput = showOutput;
+        window.hideOutput = hideOutput;
+        window.openTerminal = openTerminal;
+        window.filterFiles = filterFiles;
+        window.closeCurrentFile = closeCurrentFile;
+        window.handleTerminalInput = handleTerminalInput;
         
         // Handle window resize
         window.addEventListener('resize', () => {
@@ -1438,31 +2074,44 @@ execution:
         
         // Create split view with PDF
         function createSplitView(pdfUrl, pdfTitle) {
+            console.log('createSplitView called with:', pdfUrl, pdfTitle);
+            
             const container = document.querySelector('.editor-container');
-            const editorHeader = document.querySelector('.editor-header');
+            const tabsContainer = document.querySelector('.tabs-container');
             const editorWrapper = document.querySelector('.editor-wrapper');
+            
+            if (!container || !tabsContainer || !editorWrapper) {
+                console.error('Required elements not found:', {container, tabsContainer, editorWrapper});
+                return;
+            }
+            
+            // Create new tabs container with split layout
+            const splitTabsContainer = document.createElement('div');
+            splitTabsContainer.className = 'tabs-container split-tabs';
+            splitTabsContainer.innerHTML = `
+                <div class="editor-tabs-section">
+                    ${tabsContainer.innerHTML}
+                </div>
+                <div class="pdf-tabs-section">
+                    <div class="pdf-header-bar">
+                        <span class="pdf-viewer-title">${pdfTitle}</span>
+                        <button class="pdf-viewer-close" onclick="closePdfViewer()">×</button>
+                    </div>
+                </div>
+            `;
             
             // Create split view wrapper
             const splitView = document.createElement('div');
             splitView.className = 'split-view';
+            splitView.style.height = 'calc(100vh - var(--header-height) - 40px)'; // Ensure proper height
             
-            // Create PDF viewer
+            // Create PDF viewer (without header since it's now in tabs)
             const pdfViewer = document.createElement('div');
             pdfViewer.className = 'pdf-viewer';
             pdfViewer.innerHTML = `
-                <div class="pdf-viewer-header">
-                    <span class="pdf-viewer-title">${pdfTitle}</span>
-                    <button class="pdf-viewer-close" onclick="closePdfViewer()">×</button>
+                <div class="pdf-viewer-content">
+                    <iframe class="pdf-viewer-frame" src="${pdfUrl}"></iframe>
                 </div>
-                <iframe class="pdf-viewer-frame" src="${pdfUrl}"></iframe>
-                <!-- AI Chat Button -->
-                <button class="ai-chat-button" onclick="toggleAIChat()" title="Ask AI about this PDF">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                        <circle cx="9" cy="10" r="1"></circle>
-                        <circle cx="15" cy="10" r="1"></circle>
-                    </svg>
-                </button>
                 <!-- AI Chat Terminal -->
                 <div class="ai-chat-terminal" id="aiChatTerminal">
                     <div class="ai-chat-header">
@@ -1470,7 +2119,7 @@ execution:
                             <span>AI Assistant</span>
                             <span style="font-size: var(--font-size-xs); color: var(--color-text-tertiary);">Help with implementation</span>
                         </div>
-                        <button class="ai-chat-close" onclick="closeAIChat()">×</button>
+                        <button class="ai-chat-close-btn" onclick="closeAIChat()">×</button>
                     </div>
                     <div class="ai-chat-messages" id="aiChatMessages">
                         <div class="ai-message assistant">Hello! I can help you implement ideas from this PDF. What would you like to code?</div>
@@ -1492,17 +2141,58 @@ execution:
             const editorHalf = document.createElement('div');
             editorHalf.className = 'editor-half';
             
+            // Save reference to output panel
+            const outputPanel = document.getElementById('outputPanel');
+            
+            // Get editor header (might not have this element)
+            const editorHeader = document.querySelector('.editor-header');
+            
             // Move editor components to the editor half
-            editorHalf.appendChild(editorHeader);
+            if (editorHeader) {
+                editorHalf.appendChild(editorHeader);
+            }
             editorHalf.appendChild(editorWrapper);
+            
+            // Re-append output panel to editor half
+            if (outputPanel) {
+                editorHalf.appendChild(outputPanel);
+            }
             
             // Assemble split view (editor on left, PDF on right)
             splitView.appendChild(editorHalf);
             splitView.appendChild(pdfViewer);
             
-            // Clear container and add split view
+            // Clear container and rebuild with split tabs and split view
             container.innerHTML = '';
+            container.appendChild(splitTabsContainer);
             container.appendChild(splitView);
+            
+            console.log('Split view created successfully');
+            
+            // Debug: Check if iframe is loading
+            const iframe = pdfViewer.querySelector('.pdf-viewer-frame');
+            if (iframe) {
+                console.log('PDF iframe src:', iframe.src);
+                iframe.onload = () => console.log('PDF iframe loaded successfully');
+                iframe.onerror = (e) => console.error('PDF iframe error:', e);
+            }
+            
+            // Re-attach event listeners to tabs
+            splitTabsContainer.querySelectorAll('.tab').forEach(tab => {
+                tab.onclick = () => switchTab(tab.dataset.file);
+            });
+            
+            // Re-attach event listener to new tab button
+            const newTabBtn = splitTabsContainer.querySelector('.new-tab-btn');
+            if (newTabBtn) {
+                newTabBtn.onclick = createNewTab;
+            }
+            
+            // Re-attach close button listeners
+            splitTabsContainer.querySelectorAll('.tab-close').forEach(closeBtn => {
+                const filename = closeBtn.closest('.tab').dataset.file;
+                closeBtn.onclick = (e) => closeTab(e, filename);
+            });
         }
         
         // Close PDF viewer and restore normal view
@@ -1512,29 +2202,76 @@ execution:
         
         // AI Chat Functions
         let aiChatOpen = false;
+        let globalAIChatOpen = false;
+        let isDragging = false;
+        let isResizing = false;
+        let currentX;
+        let currentY;
+        let initialX;
+        let initialY;
+        let xOffset = 0;
+        let yOffset = 0;
+        let startWidth;
+        let startHeight;
+        let startX;
+        let startY;
         
         function toggleAIChat() {
             const terminal = document.getElementById('aiChatTerminal');
-            const button = document.querySelector('.ai-chat-button');
+            const button = document.querySelector('.global-ai-chat-button');
             
             if (aiChatOpen) {
                 closeAIChat();
-            } else {
+            } else if (terminal) {
                 terminal.classList.add('open');
-                button.style.display = 'none';
+                if (button) button.classList.add('hidden');
                 document.getElementById('aiChatInput').focus();
                 aiChatOpen = true;
+            } else {
+                // No PDF open, use global AI chat
+                toggleGlobalAIChat();
             }
         }
         
+        function toggleGlobalAIChat() {
+            const terminal = document.getElementById('globalAITerminal');
+            const button = document.querySelector('.global-ai-chat-button');
+            
+            if (globalAIChatOpen) {
+                closeGlobalAIChat();
+            } else {
+                terminal.classList.add('open');
+                if (button) button.classList.add('hidden');
+                document.getElementById('globalAIInput').focus();
+                globalAIChatOpen = true;
+                
+                // Initialize drag functionality
+                initGlobalDrag();
+            }
+        }
+        
+        // Make it globally available
+        window.toggleGlobalAIChat = toggleGlobalAIChat;
+        
         function closeAIChat() {
             const terminal = document.getElementById('aiChatTerminal');
-            const button = document.querySelector('.ai-chat-button');
+            const button = document.querySelector('.global-ai-chat-button');
             
-            if (terminal && button) {
+            if (terminal) {
                 terminal.classList.remove('open');
-                button.style.display = 'flex';
+                if (button) button.classList.remove('hidden');
                 aiChatOpen = false;
+            }
+        }
+        
+        function closeGlobalAIChat() {
+            const terminal = document.getElementById('globalAITerminal');
+            const button = document.querySelector('.global-ai-chat-button');
+            
+            if (terminal) {
+                terminal.classList.remove('open');
+                if (button) button.classList.remove('hidden');
+                globalAIChatOpen = false;
             }
         }
         
@@ -1624,9 +2361,168 @@ execution:
             
             // Create split view if PDF was passed
             if (openWithPdf === 'true' && pdfUrl && pdfTitle) {
+                console.log('Opening with PDF:', pdfUrl, pdfTitle);
                 setTimeout(() => createSplitView(pdfUrl, pdfTitle), 200);
             }
         });
+        
+        function handleGlobalAIChatInput(event) {
+            if (event.key === 'Enter') {
+                const input = document.getElementById('globalAIInput');
+                const messages = document.getElementById('globalAIMessages');
+                const question = input.value.trim();
+                
+                if (question) {
+                    // Add user message
+                    const userMsg = document.createElement('div');
+                    userMsg.className = 'ai-message user';
+                    userMsg.textContent = question;
+                    messages.appendChild(userMsg);
+                    
+                    // Clear input
+                    input.value = '';
+                    
+                    // Simulate AI response
+                    setTimeout(() => {
+                        const aiMsg = document.createElement('div');
+                        aiMsg.className = 'ai-message assistant';
+                        aiMsg.textContent = 'I can help you with that coding task. Let me analyze your question and provide a solution...';
+                        messages.appendChild(aiMsg);
+                        
+                        // Scroll to bottom
+                        messages.scrollTop = messages.scrollHeight;
+                    }, 1000);
+                    
+                    // Scroll to bottom
+                    messages.scrollTop = messages.scrollHeight;
+                }
+            }
+        }
+        
+        // Draggable and Resizable functionality for Global AI Chat
+        function initGlobalDrag() {
+            const terminal = document.getElementById('globalAITerminal');
+            const header = terminal.querySelector('.ai-chat-header');
+            const resizeHandle = terminal.querySelector('.ai-chat-resize-handle');
+            
+            header.addEventListener('mousedown', dragStart);
+            resizeHandle.addEventListener('mousedown', resizeStart);
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+        }
+        
+        function dragStart(e) {
+            const terminal = document.getElementById('globalAITerminal');
+            
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
+            
+            if (e.target.closest('.ai-chat-header') && !e.target.closest('button')) {
+                isDragging = true;
+                terminal.style.transition = 'none';
+            }
+        }
+        
+        function resizeStart(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const terminal = document.getElementById('globalAITerminal');
+            isResizing = true;
+            
+            startX = e.clientX;
+            startY = e.clientY;
+            startWidth = parseInt(document.defaultView.getComputedStyle(terminal).width, 10);
+            startHeight = parseInt(document.defaultView.getComputedStyle(terminal).height, 10);
+            
+            terminal.style.transition = 'none';
+        }
+        
+        function handleMouseMove(e) {
+            if (isDragging) {
+                drag(e);
+            } else if (isResizing) {
+                resize(e);
+            }
+        }
+        
+        function handleMouseUp(e) {
+            if (isDragging) {
+                dragEnd(e);
+            } else if (isResizing) {
+                resizeEnd(e);
+            }
+        }
+        
+        function drag(e) {
+            e.preventDefault();
+            
+            currentX = e.clientX - initialX;
+            currentY = e.clientY - initialY;
+            
+            xOffset = currentX;
+            yOffset = currentY;
+            
+            const terminal = document.getElementById('globalAITerminal');
+            terminal.style.transform = `translate(${currentX}px, ${currentY}px)`;
+        }
+        
+        function resize(e) {
+            e.preventDefault();
+            
+            const terminal = document.getElementById('globalAITerminal');
+            const newWidth = startWidth - (e.clientX - startX);
+            const newHeight = startHeight - (e.clientY - startY);
+            
+            // Apply constraints
+            const constrainedWidth = Math.max(300, Math.min(newWidth, window.innerWidth * 0.8));
+            const constrainedHeight = Math.max(200, Math.min(newHeight, window.innerHeight * 0.8));
+            
+            terminal.style.width = constrainedWidth + 'px';
+            terminal.style.height = constrainedHeight + 'px';
+        }
+        
+        function dragEnd(e) {
+            initialX = currentX;
+            initialY = currentY;
+            
+            isDragging = false;
+            
+            const terminal = document.getElementById('globalAITerminal');
+            terminal.style.transition = '';
+        }
+        
+        function resizeEnd(e) {
+            isResizing = false;
+            
+            const terminal = document.getElementById('globalAITerminal');
+            terminal.style.transition = '';
+        }
     </script>
+    
+    <!-- Global AI Chat Terminal -->
+    <div class="global-ai-terminal" id="globalAITerminal">
+        <div class="ai-chat-header">
+            <div class="ai-chat-title">
+                <span>AI Assistant</span>
+                <span style="font-size: var(--font-size-xs); color: var(--color-text-tertiary);">How can I help you code?</span>
+            </div>
+            <button class="ai-chat-close-btn" onclick="closeGlobalAIChat()">×</button>
+        </div>
+        <div class="ai-chat-messages" id="globalAIMessages">
+            <div class="ai-message assistant">Hello! I can help you with coding, debugging, and implementing trading strategies. What would you like to work on?</div>
+        </div>
+        <div class="ai-chat-input-wrapper">
+            <span class="ai-chat-prompt">></span>
+            <input 
+                type="text" 
+                class="ai-chat-input" 
+                id="globalAIInput" 
+                placeholder="Ask a coding question..."
+                onkeypress="handleGlobalAIChatInput(event)"
+            />
+        </div>
+        <div class="ai-chat-resize-handle"></div>
+    </div>
 </body>
 </html>

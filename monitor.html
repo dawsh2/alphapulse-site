@@ -715,21 +715,35 @@
                 width: chartElement.clientWidth,
                 height: chartElement.clientHeight,
                 layout: {
-                    background: { color: isDark ? '#0d1117' : '#ffffff' },
+                    background: { color: isDark ? '#1e2028' : '#faf8f3' },
                     textColor: isDark ? '#f0f6fc' : '#33332d',
                 },
                 grid: {
-                    vertLines: { color: isDark ? '#30363d' : '#e1e1db' },
-                    horzLines: { color: isDark ? '#30363d' : '#e1e1db' },
+                    vertLines: { color: isDark ? '#383c45' : '#e5e0d5' },
+                    horzLines: { color: isDark ? '#383c45' : '#e5e0d5' },
                 },
                 crosshair: {
                     mode: LightweightCharts.CrosshairMode.Normal,
+                    vertLine: {
+                        color: isDark ? '#4d525b' : '#d8d2c4',
+                        width: 1,
+                        style: 3,
+                        labelBackgroundColor: isDark ? '#262931' : '#f5f2ea'
+                    },
+                    horzLine: {
+                        color: isDark ? '#4d525b' : '#d8d2c4',
+                        width: 1,
+                        style: 3,
+                        labelBackgroundColor: isDark ? '#262931' : '#f5f2ea'
+                    }
                 },
                 rightPriceScale: {
-                    borderColor: isDark ? '#30363d' : '#e1e1db',
+                    borderColor: isDark ? '#383c45' : '#e5e0d5',
+                    backgroundColor: isDark ? '#1e2028' : '#faf8f3',
                 },
                 timeScale: {
-                    borderColor: isDark ? '#30363d' : '#e1e1db',
+                    borderColor: isDark ? '#383c45' : '#e5e0d5',
+                    backgroundColor: isDark ? '#1e2028' : '#faf8f3',
                     timeVisible: true,
                     secondsVisible: false,
                 },

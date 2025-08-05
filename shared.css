@@ -93,15 +93,18 @@
     --z-tooltip: 1070;
 }
 
-/* Light Theme Colors */
+/* Light Theme Colors - Eggshell Tones */
 :root[data-theme="light"],
 :root {
     /* Background Colors */
-    --color-bg-primary: #ffffff;
-    --color-bg-secondary: #f8f8f8;
-    --color-bg-tertiary: #f0f0f0;
-    --color-bg-accent: #e8f4f8;
-    --color-bg-code: #f6f8fa;
+    --color-bg-primary: #faf8f3;      /* Eggshell white */
+    --color-bg-secondary: #f5f2ea;    /* Warmer secondary */
+    --color-bg-tertiary: #ede8dd;     /* Warmer tertiary */
+    --color-bg-accent: #e8f0f4;       /* Soft blue accent */
+    --color-bg-code: #f4f1e8;
+    
+    /* RGB values for rgba usage */
+    --color-bg-primary-rgb: 250, 248, 243;
     
     /* Text Colors */
     --color-text-primary: #33332d;
@@ -112,9 +115,9 @@
     --color-text-link-hover: #0550ae;
     
     /* Border Colors */
-    --color-border-primary: #e1e1db;
-    --color-border-secondary: #d0d0ca;
-    --color-border-tertiary: #c0c0ba;
+    --color-border-primary: #e5e0d5;     /* Warmer border */
+    --color-border-secondary: #d8d2c4;   /* Warmer secondary */
+    --color-border-tertiary: #ccc5b3;    /* Warmer tertiary */
     
     /* Accent Colors */
     --color-accent-primary: #4ec9b0;
@@ -128,14 +131,17 @@
     --color-focus-ring: rgba(9, 105, 218, 0.3);
 }
 
-/* Dark Theme Colors */
+/* Dark Theme Colors - Softer Dark */
 :root[data-theme="dark"] {
     /* Background Colors */
-    --color-bg-primary: #0d1117;
-    --color-bg-secondary: #161b22;
-    --color-bg-tertiary: #21262d;
-    --color-bg-accent: #1f2937;
-    --color-bg-code: #161b22;
+    --color-bg-primary: #1e2028;      /* Softer dark */
+    --color-bg-secondary: #262931;    /* Lighter secondary */
+    --color-bg-tertiary: #2e323b;     /* Lighter tertiary */
+    --color-bg-accent: #353943;       /* Muted accent */
+    --color-bg-code: #2a2d36;
+    
+    /* RGB values for rgba usage */
+    --color-bg-primary-rgb: 30, 32, 40;
     
     /* Text Colors */
     --color-text-primary: #f0f6fc;
@@ -146,9 +152,9 @@
     --color-text-link-hover: #79c0ff;
     
     /* Border Colors */
-    --color-border-primary: #30363d;
-    --color-border-secondary: #3f4651;
-    --color-border-tertiary: #484f58;
+    --color-border-primary: #383c45;     /* Softer border */
+    --color-border-secondary: #42474f;   /* Lighter secondary */
+    --color-border-tertiary: #4d525b;    /* Lighter tertiary */
     
     /* Accent Colors */
     --color-accent-primary: #4ec9b0;
@@ -740,6 +746,53 @@ pre code {
 .rounded-lg { border-radius: var(--radius-lg); }
 .shadow { box-shadow: var(--shadow-md); }
 .shadow-lg { box-shadow: var(--shadow-lg); }
+
+/* ============================================
+   Global AI Chat Button
+   ============================================ */
+.global-ai-chat-button {
+    position: fixed;
+    bottom: var(--space-6);
+    right: var(--space-6);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    padding: 0.8rem;
+    background: var(--color-bg-primary);
+    border: 3px solid var(--color-text-primary);
+    border-radius: var(--radius-md);
+    box-shadow: -3px 5px var(--color-text-primary);
+    transition: all 150ms ease-in-out;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-fixed);
+    margin-bottom: 5px;
+}
+
+.global-ai-chat-button:hover {
+    color: var(--color-bg-primary);
+    background: var(--color-text-primary);
+    transform: translate(2px, -2px);
+    box-shadow: -5px 7px var(--color-text-primary);
+}
+
+.global-ai-chat-button:active {
+    transform: translate(-1px, 2px);
+    box-shadow: -2px 3px var(--color-text-primary);
+}
+
+.global-ai-chat-button svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Hide button when AI chat is open */
+.global-ai-chat-button.hidden {
+    display: none;
+}
 
 /* ============================================
    Animations
