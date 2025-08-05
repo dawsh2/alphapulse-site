@@ -391,7 +391,7 @@
         
         .code-textarea {
             width: 100%;
-            min-height: 100px;
+            min-height: 80px;
             padding: 0;
             margin: 0;
             background: transparent;
@@ -404,6 +404,32 @@
             line-height: inherit;
             white-space: pre;
             overflow: auto;
+        }
+        
+        /* Compact Monaco for notebooks */
+        .monaco-cell-editor {
+            width: 100%;
+            height: auto;
+            min-height: 60px;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+        
+        /* Hide Monaco decorations for cleaner look */
+        .monaco-cell-editor .monaco-editor {
+            background: transparent !important;
+        }
+        
+        .monaco-cell-editor .monaco-editor .margin {
+            background: transparent !important;
+        }
+        
+        .monaco-cell-editor .monaco-scrollable-element > .scrollbar {
+            display: none !important;
+        }
+        
+        .monaco-cell-editor .monaco-editor .scroll-decoration {
+            display: none !important;
         }
         
         /* Autocomplete Popup */
@@ -1018,9 +1044,8 @@ fig.show()</textarea>
     <!-- Layout Manager -->
     <script src="layout.js"></script>
     
-    <!-- Prism.js for syntax highlighting -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <!-- Monaco Editor for code cells -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
     
     <!-- Marked.js for Markdown -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -1169,6 +1194,8 @@ print(f"Cells created: {len(notebook.cells)}")`
         
         let activeCell = null;
         let cellCounter = 5;
+        let monacoEditors = new Map();
+        let monacoLoaded = false;
         
         // Notebook templates
         const notebookTemplates = {
@@ -1303,6 +1330,141 @@ print(f"Cells created: {len(notebook.cells)}")`
             }
         };
         
+        // Initialize Monaco for research page
+        function initMonaco() {
+            require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' }});
+            require(['vs/editor/editor.main'], function() {
+                monacoLoaded = true;
+                
+                // Register ADMF custom language features
+                monaco.languages.registerCompletionItemProvider('python', {
+                    provideCompletionItems: (model, position) => {
+                        const suggestions = [
+                            {
+                                label: 'admf.load_signals',
+                                kind: monaco.languages.CompletionItemKind.Function,
+                                insertText: 'admf.load_signals(${1:strategy_type}, ${2:min_sharpe=1.0})',
+                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                                documentation: 'Load strategy signals from registry'
+                            },
+                            {
+                                label: 'performance_table',
+                                kind: monaco.languages.CompletionItemKind.Function,
+                                insertText: 'performance_table(${1:signals})',
+                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                                documentation: 'Generate performance metrics table'
+                            },
+                            {
+                                label: 'plot_equity_curves',
+                                kind: monaco.languages.CompletionItemKind.Function,
+                                insertText: 'plot_equity_curves(${1:signals}, benchmark="${2:SPY}")',
+                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                                documentation: 'Plot strategy equity curves'
+                            }
+                        ];
+                        return { suggestions };
+                    }
+                });
+                
+                // Initialize existing code cells with Monaco
+                initializeExistingCells();
+                
+                console.log('Monaco loaded for research page');
+            });
+        }
+        
+        // Initialize existing cells with Monaco
+        function initializeExistingCells() {
+            document.querySelectorAll('.code-cell').forEach(cell => {
+                const textarea = cell.querySelector('.code-textarea');
+                if (textarea && !cell.querySelector('.monaco-cell-editor')) {
+                    createCompactMonacoForCell(cell, textarea.value);
+                }
+            });
+        }
+        
+        // Create compact Monaco editor for a cell
+        function createCompactMonacoForCell(cell, initialValue = '') {
+            const cellId = cell.id;
+            const codeInput = cell.querySelector('.code-input');
+            const textarea = cell.querySelector('.code-textarea');
+            
+            // Hide textarea
+            if (textarea) {
+                textarea.style.display = 'none';
+            }
+            
+            // Create Monaco container
+            const monacoContainer = document.createElement('div');
+            monacoContainer.className = 'monaco-cell-editor';
+            monacoContainer.id = `monaco-${cellId}`;
+            
+            codeInput.appendChild(monacoContainer);
+            
+            // Calculate optimal height based on content
+            const lineCount = (initialValue.match(/\n/g) || []).length + 1;
+            const minHeight = Math.max(60, Math.min(200, lineCount * 19 + 10));
+            monacoContainer.style.height = `${minHeight}px`;
+            
+            // Create Monaco editor with minimal UI
+            const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'vs-dark' : 'vs';
+            const editor = monaco.editor.create(monacoContainer, {
+                value: initialValue,
+                language: 'python',
+                theme: theme,
+                automaticLayout: true,
+                minimap: { enabled: false },
+                fontSize: 13,
+                fontFamily: "'IBM Plex Mono', 'SF Mono', Monaco, Consolas, monospace",
+                lineNumbers: 'off',
+                glyphMargin: false,
+                folding: false,
+                lineDecorationsWidth: 0,
+                lineNumbersMinChars: 0,
+                renderLineHighlight: 'none',
+                scrollBeyondLastLine: false,
+                wordWrap: 'on',
+                contextmenu: false,
+                quickSuggestions: true,
+                suggestOnTriggerCharacters: true,
+                parameterHints: { enabled: true },
+                hover: { enabled: true },
+                bracketPairColorization: { enabled: true },
+                scrollbar: {
+                    vertical: 'hidden',
+                    horizontal: 'hidden',
+                    alwaysConsumeMouseWheel: false
+                },
+                overviewRulerLanes: 0,
+                hideCursorInOverviewRuler: true,
+                overviewRulerBorder: false
+            });
+            
+            // Store editor reference
+            monacoEditors.set(cellId, editor);
+            
+            // Auto-resize based on content
+            editor.onDidChangeModelContent(() => {
+                const model = editor.getModel();
+                if (model) {
+                    const lineCount = model.getLineCount();
+                    const newHeight = Math.max(60, Math.min(300, lineCount * 19 + 10));
+                    monacoContainer.style.height = `${newHeight}px`;
+                    editor.layout();
+                    
+                    // Update textarea for compatibility
+                    if (textarea) {
+                        textarea.value = editor.getValue();
+                    }
+                }
+            });
+            
+            // Initial layout
+            setTimeout(() => editor.layout(), 100);
+            
+            return editor;
+        }
+        
         // Initialize
         function init() {
             console.log('Initializing research page...');
@@ -1312,6 +1474,9 @@ print(f"Cells created: {len(notebook.cells)}")`
             
             // Set active cell
             activeCell = document.getElementById('cell-1');
+            
+            // Initialize Monaco
+            initMonaco();
             
             // Verify tab content exists
             const tabs = ['snippetsTab', 'templatesTab', 'notebooksTab'];
@@ -1635,11 +1800,21 @@ print(f"Cells created: {len(notebook.cells)}")`
                     </div>
                     <div class="code-input">
                         <div class="code-editor">
-                            <textarea class="code-textarea" onkeydown="handleKeyDown(event, this)" oninput="handleInput(event, this)"># Type code here</textarea>
+                            <textarea class="code-textarea" onkeydown="handleKeyDown(event, this)" oninput="handleInput(event, this)" style="display: none;"># Type code here</textarea>
                         </div>
                         <div class="autocomplete-popup" id="autocomplete-${cellCounter}"></div>
                     </div>
                 `;
+                
+                // Add to DOM first
+                container.insertBefore(newCell, addCellBtn);
+                
+                // Create compact Monaco editor for the new cell if Monaco is loaded
+                if (monacoLoaded) {
+                    setTimeout(() => {
+                        createCompactMonacoForCell(newCell, '# Type code here');
+                    }, 100);
+                }
             } else {
                 newCell.innerHTML = `
                     <div class="cell-toolbar">
@@ -1652,7 +1827,9 @@ print(f"Cells created: {len(notebook.cells)}")`
                 `;
             }
             
-            container.insertBefore(newCell, addCellBtn);
+            if (type !== 'code') {
+                container.insertBefore(newCell, addCellBtn);
+            }
             selectCell(newCell);
         }
         

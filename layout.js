@@ -12,9 +12,8 @@
             { path: 'index.html', name: 'Home', title: 'AlphaPulse' },
             { path: 'index-v3.html', name: 'Home', title: 'AlphaPulse Daily' },
             { path: 'develop.html', name: 'Develop', title: 'Develop - AlphaPulse' },
-            { path: 'replay.html', name: 'Replay', title: 'Replay - AlphaPulse' },
             { path: 'research.html', name: 'Research', title: 'Research - AlphaPulse' },
-            { path: 'deploy.html', name: 'Deploy', title: 'Deploy - AlphaPulse' }
+            { path: 'monitor.html', name: 'Monitor', title: 'Monitor - AlphaPulse' }
         ],
         themes: {
             light: 'light',
@@ -120,7 +119,7 @@
                     <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle menu">
                         ${getMenuIcon()}
                     </button>
-                    <a href="index.html" class="logo">AlphaPulse</a>
+                    <a href="index.html" class="logo"><span class="prompt">></span> <span id="logo-text"></span><span id="logo-cursor" class="cursor">_</span></a>
                     <nav class="nav ${state.isMobileMenuOpen ? 'mobile-open' : ''}" id="main-nav">
                         <div class="nav-links">
                             ${generateNavLinks()}
@@ -156,6 +155,70 @@
         if (!document.querySelector('.app-container')) {
             document.body.classList.add('app-container');
         }
+        
+        // Animate logo text on first load
+        animateLogoText();
+    }
+
+    /**
+     * Animate logo text with typing effect
+     */
+    function animateLogoText() {
+        const logoText = document.getElementById('logo-text');
+        const cursor = document.getElementById('logo-cursor');
+        
+        if (!logoText || !cursor) return;
+        
+        // Check if animation has already been played this session
+        const hasAnimated = sessionStorage.getItem('alphapulse_logo_animated');
+        if (hasAnimated) {
+            // If already animated, just show the full text without animation
+            logoText.textContent = 'AlphaPulse';
+            cursor.style.display = 'none';
+            // Keep the prompt visible
+            return;
+        }
+        
+        const text = 'AlphaPulse';
+        let index = 0;
+        
+        // Start with cursor visible
+        cursor.style.display = 'inline-block';
+        
+        // Function to get human-like typing delay
+        function getTypingDelay() {
+            // Base delay between 80-150ms with occasional pauses
+            const baseDelay = 80 + Math.random() * 70;
+            // 15% chance of a longer pause (thinking)
+            if (Math.random() < 0.15) {
+                return baseDelay + 100 + Math.random() * 200;
+            }
+            return baseDelay;
+        }
+        
+        // Type out the text with variable delays
+        function typeNextChar() {
+            if (index < text.length) {
+                logoText.textContent += text[index];
+                index++;
+                setTimeout(typeNextChar, getTypingDelay());
+            } else {
+                // After typing is complete, let cursor blink 2-3 times (3 seconds)
+                setTimeout(() => {
+                    cursor.classList.add('hide');
+                    // Remove only the cursor after fade out, keep prompt
+                    setTimeout(() => {
+                        cursor.style.display = 'none';
+                    }, 300);
+                }, 3000);
+                
+                // Mark as animated for this session
+                sessionStorage.setItem('alphapulse_logo_animated', 'true');
+            }
+        }
+        
+        // Start typing
+        setTimeout(typeNextChar, 500); // Small initial delay
     }
 
     /**

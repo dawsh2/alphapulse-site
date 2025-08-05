@@ -102,6 +102,50 @@
             background: var(--color-bg-primary);
         }
         
+        /* Split View for PDF */
+        .split-view {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .pdf-viewer {
+            width: 50%;
+            border-right: 1px solid var(--color-border-primary);
+            display: flex;
+            flex-direction: column;
+            background: var(--color-bg-secondary);
+        }
+        
+        .pdf-viewer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-3) var(--space-4);
+            background: var(--color-bg-tertiary);
+            border-bottom: 1px solid var(--color-border-primary);
+        }
+        
+        .pdf-viewer-title {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-primary);
+        }
+        
+        .pdf-viewer-frame {
+            flex: 1;
+            width: 100%;
+            border: none;
+            background: #525659;
+        }
+        
+        .editor-half {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+        }
+        
         .editor-header {
             background: var(--color-bg-secondary);
             border-bottom: 1px solid var(--color-border-primary);
@@ -205,6 +249,31 @@
             align-items: center;
         }
         
+        /* Action Panel Enhancements */
+        .action-panel {
+            border-top: 1px solid var(--color-border-primary);
+            padding: var(--space-3) var(--space-4);
+            background: var(--color-bg-secondary);
+            display: flex;
+            gap: var(--space-4);
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .action-group {
+            display: flex;
+            gap: var(--space-2);
+            align-items: center;
+        }
+        
+        .action-group:not(:last-child)::after {
+            content: '';
+            width: 1px;
+            height: 24px;
+            background: var(--color-border-primary);
+            margin-left: var(--space-2);
+        }
+        
         /* Output Panel */
         .output-panel {
             height: 0;
@@ -245,6 +314,27 @@
             font-size: 12px;
             line-height: 1.6;
             background: var(--color-bg-primary);
+        }
+        
+        .output-line {
+            margin-bottom: var(--space-1);
+            padding: var(--space-1) 0;
+        }
+        
+        .output-line.info {
+            color: var(--color-text-secondary);
+        }
+        
+        .output-line.success {
+            color: var(--color-success-emphasis);
+        }
+        
+        .output-line.error {
+            color: var(--color-danger-emphasis);
+        }
+        
+        .output-line.warning {
+            color: var(--color-warning-emphasis);
         }
         
         .output-line {
@@ -415,21 +505,32 @@
                 </div>
                 
                 <div class="action-panel">
-                    <button class="btn btn-secondary btn-sm" onclick="checkSyntax()">
-                        Check Syntax
-                    </button>
-                    <button class="btn btn-secondary btn-sm" onclick="exportYAML()">
-                        Export Config
-                    </button>
-                    <button class="btn btn-primary btn-sm" onclick="generateSignals()">
-                        Generate Signals
-                    </button>
-                    <button class="btn btn-secondary btn-sm" onclick="runBacktest()">
-                        Backtest
-                    </button>
-                    <button class="btn btn-ghost btn-sm" onclick="toggleOutput()" id="outputBtn">
-                        Terminal
-                    </button>
+                    <div class="action-group">
+                        <button class="btn btn-secondary btn-sm" onclick="checkSyntax()">
+                            Check Syntax
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="exportYAML()">
+                            Export Config
+                        </button>
+                    </div>
+                    
+                    <div class="action-group">
+                        <button class="btn btn-primary btn-sm" onclick="generateSignals()">
+                            Generate Signals
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="runBacktest()">
+                            Backtest
+                        </button>
+                    </div>
+                    
+                    <div class="action-group">
+                        <button class="btn btn-accent btn-sm" onclick="generateNotebook()">
+                            Generate Notebook
+                        </button>
+                        <button class="btn btn-ghost btn-sm" onclick="toggleOutput()" id="outputBtn">
+                            Terminal
+                        </button>
+                    </div>
                 </div>
             </div>
             </div>
@@ -615,29 +716,123 @@ risk:
                     theme: theme === 'dark' ? 'vs-dark' : 'vs',
                     automaticLayout: true,
                     minimap: {
-                        enabled: true
+                        enabled: true,
+                        side: 'right',
+                        showSlider: 'always',
+                        renderCharacters: true
                     },
                     fontSize: 14,
                     fontFamily: "'IBM Plex Mono', 'SF Mono', Monaco, Consolas, monospace",
+                    fontLigatures: true,
                     scrollBeyondLastLine: false,
                     lineNumbers: 'on',
                     renderWhitespace: 'selection',
                     wordWrap: 'off',
                     folding: true,
+                    foldingHighlight: true,
+                    foldingStrategy: 'indentation',
+                    showFoldingControls: 'always',
                     glyphMargin: true,
                     contextmenu: true,
-                    quickSuggestions: true,
+                    quickSuggestions: {
+                        other: true,
+                        comments: true,
+                        strings: true
+                    },
                     suggestOnTriggerCharacters: true,
                     acceptSuggestionOnEnter: 'on',
                     tabCompletion: 'on',
+                    wordBasedSuggestions: true,
                     parameterHints: {
+                        enabled: true,
+                        cycle: true
+                    },
+                    codeLens: true,
+                    lightbulb: {
                         enabled: true
-                    }
+                    },
+                    bracketPairColorization: {
+                        enabled: true
+                    },
+                    guides: {
+                        bracketPairs: true,
+                        bracketPairsHorizontal: true,
+                        highlightActiveBracketPair: true,
+                        indentation: true,
+                        highlightActiveIndentation: true
+                    },
+                    renderLineHighlight: 'all',
+                    renderValidationDecorations: 'on',
+                    smoothScrolling: true,
+                    cursorBlinking: 'smooth',
+                    cursorSmoothCaretAnimation: 'on'
                 });
                 
                 // Update file content on change
                 monacoEditor.onDidChangeModelContent(() => {
                     files[currentFile] = monacoEditor.getValue();
+                });
+                
+                // Add custom ADMF completions for Python
+                if (getMonacoLanguage(currentFile) === 'python') {
+                    monaco.languages.registerCompletionItemProvider('python', {
+                        provideCompletionItems: (model, position) => {
+                            const suggestions = [
+                                {
+                                    label: 'admf.load_signals',
+                                    kind: monaco.languages.CompletionItemKind.Function,
+                                    insertText: 'admf.load_signals(${1:strategy_type}, ${2:min_sharpe=1.0})',
+                                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                                    documentation: 'Load strategy signals from registry',
+                                    detail: 'ADMF Library'
+                                },
+                                {
+                                    label: 'admf.load_executions',
+                                    kind: monaco.languages.CompletionItemKind.Function,
+                                    insertText: 'admf.load_executions(${1:signal_hash})',
+                                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                                    documentation: 'Load execution traces',
+                                    detail: 'ADMF Library'
+                                },
+                                {
+                                    label: 'plot_equity_curves',
+                                    kind: monaco.languages.CompletionItemKind.Function,
+                                    insertText: 'plot_equity_curves(${1:signals}, benchmark="${2:SPY}")',
+                                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                                    documentation: 'Plot strategy equity curves with benchmark',
+                                    detail: 'Analysis Library'
+                                },
+                                {
+                                    label: 'performance_table',
+                                    kind: monaco.languages.CompletionItemKind.Function,
+                                    insertText: 'performance_table(${1:signals})',
+                                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                                    documentation: 'Generate performance metrics table',
+                                    detail: 'Analysis Library'
+                                },
+                                {
+                                    label: 'calculate_sharpe_ratio',
+                                    kind: monaco.languages.CompletionItemKind.Function,
+                                    insertText: 'calculate_sharpe_ratio(${1:returns}, risk_free_rate=${2:0.02})',
+                                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                                    documentation: 'Calculate Sharpe ratio for returns series',
+                                    detail: 'Analysis Library'
+                                }
+                            ];
+                            
+                            return { suggestions };
+                        }
+                    });
+                }
+                
+                // Add command palette shortcuts
+                monacoEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyP, () => {
+                    monacoEditor.trigger('', 'editor.action.quickCommand', '');
+                });
+                
+                // Add format document shortcut
+                monacoEditor.addCommand(monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KeyF, () => {
+                    monacoEditor.trigger('', 'editor.action.formatDocument', '');
                 });
                 
                 // Listen for theme changes
@@ -759,6 +954,54 @@ risk:
             const btn = document.getElementById('outputBtn');
             if (btn) {
                 btn.textContent = 'Terminal';
+            }
+        }
+        
+        // Generate Notebook function
+        function generateNotebook() {
+            const currentContent = getCurrentFileContent();
+            
+            if (!currentContent || currentContent.trim() === '') {
+                showOutput();
+                addOutput('Error: No code content to generate notebook from', 'error');
+                return;
+            }
+            
+            showOutput();
+            addOutput('Generating analysis notebook...', 'info');
+            
+            // Simulate notebook generation process
+            setTimeout(() => {
+                addOutput('Analyzing code structure...', 'info');
+            }, 500);
+            
+            setTimeout(() => {
+                addOutput('Detecting strategy parameters...', 'info');
+            }, 1000);
+            
+            setTimeout(() => {
+                addOutput('Creating notebook template...', 'info');
+            }, 1500);
+            
+            setTimeout(() => {
+                addOutput('Notebook generated successfully!', 'success');
+                addOutput('Opening notebook in Research tab...', 'info');
+                
+                // Open notebook in new tab/window
+                const notebookUrl = 'research.html';
+                window.open(notebookUrl, '_blank');
+                
+                addOutput('Notebook opened in Research tab', 'success');
+            }, 2000);
+        }
+        
+        // Helper to get current file content
+        function getCurrentFileContent() {
+            if (isDesktop && monacoEditor) {
+                return monacoEditor.getValue();
+            } else {
+                const textarea = document.getElementById('editorTextarea');
+                return textarea ? textarea.value : '';
             }
         }
         
@@ -896,8 +1139,97 @@ execution:
             }
         });
         
+        // Create split view with PDF
+        function createSplitView(pdfUrl, pdfTitle) {
+            const container = document.querySelector('.editor-container');
+            const editorHeader = document.querySelector('.editor-header');
+            const editorWrapper = document.querySelector('.editor-wrapper');
+            
+            // Create split view wrapper
+            const splitView = document.createElement('div');
+            splitView.className = 'split-view';
+            
+            // Create PDF viewer
+            const pdfViewer = document.createElement('div');
+            pdfViewer.className = 'pdf-viewer';
+            pdfViewer.innerHTML = `
+                <div class="pdf-viewer-header">
+                    <span class="pdf-viewer-title">${pdfTitle}</span>
+                    <button class="btn btn-ghost btn-sm" onclick="closePdfViewer()">×</button>
+                </div>
+                <iframe class="pdf-viewer-frame" src="${pdfUrl}"></iframe>
+            `;
+            
+            // Create editor half wrapper
+            const editorHalf = document.createElement('div');
+            editorHalf.className = 'editor-half';
+            
+            // Move editor components to the editor half
+            editorHalf.appendChild(editorHeader);
+            editorHalf.appendChild(editorWrapper);
+            
+            // Assemble split view
+            splitView.appendChild(pdfViewer);
+            splitView.appendChild(editorHalf);
+            
+            // Clear container and add split view
+            container.innerHTML = '';
+            container.appendChild(splitView);
+        }
+        
+        // Close PDF viewer and restore normal view
+        function closePdfViewer() {
+            location.reload(); // Simple way to restore original layout
+        }
+        
         // Initialize on load
-        window.addEventListener('load', initEditor);
+        window.addEventListener('load', () => {
+            // Check if code was passed from index.html
+            const passedCode = sessionStorage.getItem('editorCode');
+            const passedFilename = sessionStorage.getItem('editorFilename');
+            const pdfUrl = sessionStorage.getItem('pdfUrl');
+            const pdfTitle = sessionStorage.getItem('pdfTitle');
+            const openWithPdf = sessionStorage.getItem('openWithPdf');
+            
+            if (passedCode) {
+                // Load the passed code
+                files[passedFilename || 'paper_implementation.py'] = passedCode;
+                currentFile = passedFilename || 'paper_implementation.py';
+                
+                // Add the new file to the file list if it doesn't exist
+                if (!document.querySelector(`[onclick="loadFile('${currentFile}')"]`)) {
+                    const fileList = document.querySelector('.file-list');
+                    const newFileItem = document.createElement('div');
+                    newFileItem.className = 'file-item active';
+                    newFileItem.onclick = () => loadFile(currentFile);
+                    newFileItem.innerHTML = `
+                        <span class="file-icon">PY</span>
+                        <span>${currentFile}</span>
+                    `;
+                    fileList.appendChild(newFileItem);
+                }
+                
+                // Clear sessionStorage
+                sessionStorage.removeItem('editorCode');
+                sessionStorage.removeItem('editorFilename');
+                sessionStorage.removeItem('pdfUrl');
+                sessionStorage.removeItem('pdfTitle');
+                sessionStorage.removeItem('openWithPdf');
+            }
+            
+            // Initialize editor
+            initEditor();
+            
+            // If we have passed code, load the file
+            if (passedCode) {
+                setTimeout(() => loadFile(currentFile), 100);
+            }
+            
+            // Create split view if PDF was passed
+            if (openWithPdf === 'true' && pdfUrl && pdfTitle) {
+                setTimeout(() => createSplitView(pdfUrl, pdfTitle), 200);
+            }
+        });
     </script>
 </body>
 </html>
