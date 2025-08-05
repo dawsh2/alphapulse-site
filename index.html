@@ -158,11 +158,30 @@
         }
         
         .article:hover {
-            background-color: var(--color-bg-secondary);
+            background-color: var(--color-text-primary);
+            color: var(--color-bg-primary);
             margin-left: calc(-1 * var(--space-4));
             margin-right: calc(-1 * var(--space-4));
             padding-left: var(--space-4);
             padding-right: var(--space-4);
+        }
+        
+        .article:hover .article-rank,
+        .article:hover .article-headline,
+        .article:hover .article-source,
+        .article:hover .article-meta,
+        .article:hover .article-meta a {
+            color: var(--color-bg-primary);
+        }
+        
+        .article:hover .article-source .dot {
+            background: var(--color-bg-primary);
+        }
+        
+        .article:hover .tag {
+            color: var(--color-bg-primary);
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: var(--color-bg-primary);
         }
         
         .article-rank {
@@ -191,7 +210,6 @@
         }
         
         .article-headline:hover {
-            color: var(--color-accent-primary);
             text-decoration: none;
         }
         
@@ -286,8 +304,7 @@
         }
         
         .article-meta a:hover {
-            color: var(--color-text-primary);
-            text-decoration: underline;
+            text-decoration: none;
         }
         
         /* Right Column - Modified Grid */
@@ -756,24 +773,34 @@
             position: absolute;
             bottom: var(--space-4);
             right: var(--space-4);
-            width: 48px;
-            height: 48px;
-            background: var(--color-text-primary);
-            color: var(--color-bg-primary);
-            border: none;
-            border-radius: 50%;
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+            padding: 0.6rem;
+            background: var(--color-bg-primary);
+            border: 3px solid var(--color-text-primary);
+            border-radius: var(--radius-md);
+            box-shadow: -3px 5px var(--color-text-primary);
+            transition: all 150ms ease-in-out;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-            transition: all var(--transition-fast);
             z-index: 10;
+            margin-bottom: 5px;
         }
         
         .ai-chat-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            color: var(--color-bg-primary);
+            background: var(--color-text-primary);
+            transform: translate(2px, -2px);
+            box-shadow: -5px 7px var(--color-text-primary);
+        }
+        
+        .ai-chat-button:active {
+            transform: translate(-1px, 2px);
+            box-shadow: -2px 3px var(--color-text-primary);
         }
         
         .ai-chat-button svg {
@@ -957,24 +984,34 @@
         }
         
         .pdf-close {
-            background: none;
-            border: none;
-            font-size: var(--font-size-2xl);
-            color: var(--color-text-secondary);
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            padding: 0.3rem 0.6rem;
+            background: var(--color-bg-primary);
+            border: 3px solid var(--color-text-primary);
+            border-radius: var(--radius-md);
+            box-shadow: -3px 5px var(--color-text-primary);
+            transition: all 150ms ease-in-out;
             cursor: pointer;
-            padding: 0;
-            width: 32px;
-            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: var(--radius-md);
-            transition: all var(--transition-fast);
+            margin-bottom: 5px;
+            line-height: 1;
         }
         
         .pdf-close:hover {
-            background: var(--color-bg-tertiary);
-            color: var(--color-text-primary);
+            color: var(--color-bg-primary);
+            background: var(--color-text-primary);
+            transform: translate(2px, -2px);
+            box-shadow: -5px 7px var(--color-text-primary);
+        }
+        
+        .pdf-close:active {
+            transform: translate(-1px, 2px);
+            box-shadow: -2px 3px var(--color-text-primary);
         }
         
         /* Floating close button for overlays */
@@ -983,9 +1020,6 @@
             position: absolute;
             top: var(--space-2);
             right: var(--space-2);
-            background: var(--color-bg-primary);
-            border: 1px solid var(--color-border-primary);
-            box-shadow: var(--shadow-md);
             z-index: 10;
         }
         
@@ -1054,24 +1088,34 @@
         }
         
         .comments-close {
-            background: none;
-            border: none;
-            font-size: var(--font-size-2xl);
-            color: var(--color-text-secondary);
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            padding: 0.3rem 0.6rem;
+            background: var(--color-bg-primary);
+            border: 3px solid var(--color-text-primary);
+            border-radius: var(--radius-md);
+            box-shadow: -3px 5px var(--color-text-primary);
+            transition: all 150ms ease-in-out;
             cursor: pointer;
-            padding: 0;
-            width: 32px;
-            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: var(--radius-md);
-            transition: all var(--transition-fast);
+            margin-bottom: 5px;
+            line-height: 1;
         }
         
         .comments-close:hover {
-            background: var(--color-bg-tertiary);
-            color: var(--color-text-primary);
+            color: var(--color-bg-primary);
+            background: var(--color-text-primary);
+            transform: translate(2px, -2px);
+            box-shadow: -5px 7px var(--color-text-primary);
+        }
+        
+        .comments-close:active {
+            transform: translate(-1px, 2px);
+            box-shadow: -2px 3px var(--color-text-primary);
         }
         
         .comments-container {

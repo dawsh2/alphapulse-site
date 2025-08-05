@@ -115,6 +115,7 @@
             display: flex;
             flex-direction: column;
             background: var(--color-bg-secondary);
+            position: relative;
         }
         
         .pdf-viewer-header {
@@ -140,10 +141,185 @@
             background: #525659;
         }
         
+        /* PDF Viewer Close Button */
+        .pdf-viewer-close {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            padding: 0.3rem 0.6rem;
+            background: var(--color-bg-primary);
+            border: 3px solid var(--color-text-primary);
+            border-radius: var(--radius-md);
+            box-shadow: -3px 5px var(--color-text-primary);
+            transition: all 150ms ease-in-out;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 5px;
+            line-height: 1;
+        }
+        
+        .pdf-viewer-close:hover {
+            color: var(--color-bg-primary);
+            background: var(--color-text-primary);
+            transform: translate(2px, -2px);
+            box-shadow: -5px 7px var(--color-text-primary);
+        }
+        
+        .pdf-viewer-close:active {
+            transform: translate(-1px, 2px);
+            box-shadow: -2px 3px var(--color-text-primary);
+        }
+        
         .editor-half {
             width: 50%;
             display: flex;
             flex-direction: column;
+        }
+        
+        /* AI Chat Button */
+        .ai-chat-button {
+            position: absolute;
+            bottom: var(--space-4);
+            right: var(--space-4);
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+            padding: 0.6rem;
+            background: var(--color-bg-primary);
+            border: 3px solid var(--color-text-primary);
+            border-radius: var(--radius-md);
+            box-shadow: -3px 5px var(--color-text-primary);
+            transition: all 150ms ease-in-out;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            margin-bottom: 5px;
+        }
+        
+        .ai-chat-button:hover {
+            color: var(--color-bg-primary);
+            background: var(--color-text-primary);
+            transform: translate(2px, -2px);
+            box-shadow: -5px 7px var(--color-text-primary);
+        }
+        
+        .ai-chat-button:active {
+            transform: translate(-1px, 2px);
+            box-shadow: -2px 3px var(--color-text-primary);
+        }
+        
+        .ai-chat-button svg {
+            width: 24px;
+            height: 24px;
+        }
+        
+        /* AI Chat Terminal */
+        .ai-chat-terminal {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 300px;
+            background: var(--color-bg-primary);
+            border-top: 2px solid var(--color-text-primary);
+            display: none;
+            flex-direction: column;
+            z-index: 15;
+        }
+        
+        .ai-chat-terminal.open {
+            display: flex;
+        }
+        
+        .ai-chat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-3) var(--space-4);
+            background: var(--color-bg-secondary);
+            border-bottom: 1px solid var(--color-border-primary);
+        }
+        
+        .ai-chat-title {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+        
+        .ai-chat-close {
+            background: none;
+            border: none;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            font-size: var(--font-size-lg);
+            padding: var(--space-1);
+            line-height: 1;
+        }
+        
+        .ai-chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-4);
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+        }
+        
+        .ai-message {
+            margin-bottom: var(--space-3);
+            line-height: 1.6;
+        }
+        
+        .ai-message.user {
+            color: var(--color-text-secondary);
+        }
+        
+        .ai-message.user::before {
+            content: "> ";
+            color: var(--color-accent-primary);
+            font-weight: var(--font-weight-bold);
+        }
+        
+        .ai-message.assistant {
+            color: var(--color-text-primary);
+            padding-left: var(--space-4);
+        }
+        
+        .ai-chat-input-wrapper {
+            display: flex;
+            align-items: center;
+            padding: var(--space-3) var(--space-4);
+            background: var(--color-bg-secondary);
+            border-top: 1px solid var(--color-border-primary);
+            gap: var(--space-3);
+        }
+        
+        .ai-chat-prompt {
+            color: var(--color-accent-primary);
+            font-family: var(--font-family-mono);
+            font-weight: var(--font-weight-bold);
+        }
+        
+        .ai-chat-input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--color-text-primary);
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            outline: none;
+        }
+        
+        .ai-chat-input::placeholder {
+            color: var(--color-text-tertiary);
         }
         
         .editor-header {
@@ -166,6 +342,78 @@
         .editor-actions {
             display: flex;
             gap: var(--space-2);
+        }
+        
+        /* Run Button with AlphaPulse shadow box style */
+        .run-button {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+            padding: 0.4rem 0.8rem;
+            background: var(--color-bg-primary);
+            border: 3px solid var(--color-text-primary);
+            border-radius: var(--radius-md);
+            box-shadow: -3px 5px var(--color-text-primary);
+            transition: all 150ms ease-in-out;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 5px;
+        }
+        
+        .run-button:hover {
+            color: var(--color-bg-primary);
+            background: var(--color-text-primary);
+            transform: translate(2px, -2px);
+            box-shadow: -5px 7px var(--color-text-primary);
+        }
+        
+        .run-button:active {
+            transform: translate(-1px, 2px);
+            box-shadow: -2px 3px var(--color-text-primary);
+        }
+        
+        .run-button svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        /* Console Button with AlphaPulse shadow box style */
+        .console-button {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+            padding: 0.4rem 0.8rem;
+            background: var(--color-bg-primary);
+            border: 3px solid var(--color-text-primary);
+            border-radius: var(--radius-md);
+            box-shadow: -3px 5px var(--color-text-primary);
+            transition: all 150ms ease-in-out;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            margin-bottom: 5px;
+        }
+        
+        .console-button:hover {
+            color: var(--color-bg-primary);
+            background: var(--color-text-primary);
+            transform: translate(2px, -2px);
+            box-shadow: -5px 7px var(--color-text-primary);
+        }
+        
+        .console-button:active {
+            transform: translate(-1px, 2px);
+            box-shadow: -2px 3px var(--color-text-primary);
+        }
+        
+        .console-button svg {
+            width: 16px;
+            height: 16px;
         }
         
         /* Editor */
@@ -471,8 +719,11 @@
                 <div class="editor-header">
                     <span class="filename" id="filename">strategy.py</span>
                     <div class="editor-actions">
-                        <button class="btn btn-ghost btn-sm" onclick="formatCode()">Format</button>
-                        <button class="btn btn-primary btn-sm" onclick="runCode()">Run</button>
+                        <button class="run-button" onclick="runCode()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                            </svg>
+                        </button>
                     </div>
                 </div>
                 
@@ -506,8 +757,11 @@
                 
                 <div class="action-panel">
                     <div class="action-group">
-                        <button class="btn btn-secondary btn-sm" onclick="checkSyntax()">
-                            Check Syntax
+                        <button class="console-button" onclick="openTerminal()" style="padding: 0.4rem 0.7rem;">
+                            <span style="font-size: var(--font-size-base); line-height: 1;">&gt;_</span>
+                        </button>
+                        <button class="console-button" onclick="checkSyntax()">
+                            <span>Check Syntax</span>
                         </button>
                         <button class="btn btn-secondary btn-sm" onclick="exportYAML()">
                             Export Config
@@ -1005,6 +1259,11 @@ risk:
             }
         }
         
+        function openTerminal() {
+            showOutput();
+            addOutput('> Terminal ready', 'info');
+        }
+        
         function checkSyntax() {
             showOutput();
             addOutput('Checking syntax...', 'info');
@@ -1155,9 +1414,40 @@ execution:
             pdfViewer.innerHTML = `
                 <div class="pdf-viewer-header">
                     <span class="pdf-viewer-title">${pdfTitle}</span>
-                    <button class="btn btn-ghost btn-sm" onclick="closePdfViewer()">×</button>
+                    <button class="pdf-viewer-close" onclick="closePdfViewer()">×</button>
                 </div>
                 <iframe class="pdf-viewer-frame" src="${pdfUrl}"></iframe>
+                <!-- AI Chat Button -->
+                <button class="ai-chat-button" onclick="toggleAIChat()" title="Ask AI about this PDF">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        <circle cx="9" cy="10" r="1"></circle>
+                        <circle cx="15" cy="10" r="1"></circle>
+                    </svg>
+                </button>
+                <!-- AI Chat Terminal -->
+                <div class="ai-chat-terminal" id="aiChatTerminal">
+                    <div class="ai-chat-header">
+                        <div class="ai-chat-title">
+                            <span>AI Assistant</span>
+                            <span style="font-size: var(--font-size-xs); color: var(--color-text-tertiary);">Help with implementation</span>
+                        </div>
+                        <button class="ai-chat-close" onclick="closeAIChat()">×</button>
+                    </div>
+                    <div class="ai-chat-messages" id="aiChatMessages">
+                        <div class="ai-message assistant">Hello! I can help you implement ideas from this PDF. What would you like to code?</div>
+                    </div>
+                    <div class="ai-chat-input-wrapper">
+                        <span class="ai-chat-prompt">></span>
+                        <input 
+                            type="text" 
+                            class="ai-chat-input" 
+                            id="aiChatInput" 
+                            placeholder="Ask about implementation details..."
+                            onkeypress="handleAIChatInput(event)"
+                        />
+                    </div>
+                </div>
             `;
             
             // Create editor half wrapper
@@ -1168,9 +1458,9 @@ execution:
             editorHalf.appendChild(editorHeader);
             editorHalf.appendChild(editorWrapper);
             
-            // Assemble split view
-            splitView.appendChild(pdfViewer);
+            // Assemble split view (editor on left, PDF on right)
             splitView.appendChild(editorHalf);
+            splitView.appendChild(pdfViewer);
             
             // Clear container and add split view
             container.innerHTML = '';
@@ -1180,6 +1470,75 @@ execution:
         // Close PDF viewer and restore normal view
         function closePdfViewer() {
             location.reload(); // Simple way to restore original layout
+        }
+        
+        // AI Chat Functions
+        let aiChatOpen = false;
+        
+        function toggleAIChat() {
+            const terminal = document.getElementById('aiChatTerminal');
+            const button = document.querySelector('.ai-chat-button');
+            
+            if (aiChatOpen) {
+                closeAIChat();
+            } else {
+                terminal.classList.add('open');
+                button.style.display = 'none';
+                document.getElementById('aiChatInput').focus();
+                aiChatOpen = true;
+            }
+        }
+        
+        function closeAIChat() {
+            const terminal = document.getElementById('aiChatTerminal');
+            const button = document.querySelector('.ai-chat-button');
+            
+            if (terminal && button) {
+                terminal.classList.remove('open');
+                button.style.display = 'flex';
+                aiChatOpen = false;
+            }
+        }
+        
+        function handleAIChatInput(event) {
+            if (event.key === 'Enter') {
+                const input = document.getElementById('aiChatInput');
+                const messages = document.getElementById('aiChatMessages');
+                const question = input.value.trim();
+                
+                if (question) {
+                    // Add user message
+                    const userMsg = document.createElement('div');
+                    userMsg.className = 'ai-message user';
+                    userMsg.textContent = question;
+                    messages.appendChild(userMsg);
+                    
+                    // Clear input
+                    input.value = '';
+                    
+                    // Simulate AI response
+                    setTimeout(() => {
+                        const aiMsg = document.createElement('div');
+                        aiMsg.className = 'ai-message assistant';
+                        
+                        // Mock responses for code implementation
+                        if (question.toLowerCase().includes('implement') || question.toLowerCase().includes('code')) {
+                            aiMsg.textContent = 'I can help you implement this. Based on the PDF, here\'s a starting structure:\n\n1. Create a GNN class with graph convolutional layers\n2. Implement the forward pass with node embeddings\n3. Add the momentum calculation logic\n\nWould you like me to generate the initial boilerplate code?';
+                        } else if (question.toLowerCase().includes('architecture')) {
+                            aiMsg.textContent = 'The paper describes a 3-layer GCN architecture:\n- Input layer: Node features (returns, volume, volatility)\n- Hidden layers: 64 units each with ReLU activation\n- Output: Return predictions\n\nThe graph edges are based on correlation thresholds.';
+                        } else if (question.toLowerCase().includes('data')) {
+                            aiMsg.textContent = 'For data preparation:\n1. Calculate rolling correlations between assets\n2. Create adjacency matrix (threshold at 0.6 correlation)\n3. Extract features: past returns, volume, volatility\n4. Normalize features using StandardScaler';
+                        } else if (question.toLowerCase().includes('training')) {
+                            aiMsg.textContent = 'Training details from the paper:\n- Optimizer: AdamW with lr=0.001\n- Batch size: 32 graphs\n- Loss: MSE for return prediction\n- Epochs: 100 with early stopping\n- Train/Val/Test split: 60/20/20';
+                        } else {
+                            aiMsg.textContent = `I see you're asking about "${question}". Based on this PDF about Graph Neural Networks for momentum strategies, I can help with implementation details, architecture design, or data preparation. What specific aspect would you like to explore?`;
+                        }
+                        
+                        messages.appendChild(aiMsg);
+                        messages.scrollTop = messages.scrollHeight;
+                    }, 800);
+                }
+            }
         }
         
         // Initialize on load
