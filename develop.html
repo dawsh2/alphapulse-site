@@ -100,6 +100,7 @@
             display: flex;
             flex-direction: column;
             background: var(--color-bg-primary);
+            position: relative;
         }
         
         /* Split View for PDF */
@@ -524,13 +525,18 @@
         
         /* Output Panel */
         .output-panel {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
             height: 0;
             background: var(--color-bg-secondary);
-            border-top: 1px solid var(--color-border-primary);
+            border-top: 2px solid var(--color-text-primary);
             transition: height var(--transition-base);
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            z-index: 10;
         }
         
         .output-panel.open {
@@ -552,6 +558,36 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: var(--color-text-tertiary);
+        }
+        
+        .output-close {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            padding: 0.2rem 0.4rem;
+            background: var(--color-bg-primary);
+            border: 2px solid var(--color-text-primary);
+            border-radius: var(--radius-sm);
+            box-shadow: -2px 3px var(--color-text-primary);
+            transition: all 150ms ease-in-out;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+        
+        .output-close:hover {
+            color: var(--color-bg-primary);
+            background: var(--color-text-primary);
+            transform: translate(1px, -1px);
+            box-shadow: -3px 4px var(--color-text-primary);
+        }
+        
+        .output-close:active {
+            transform: translate(-0.5px, 1px);
+            box-shadow: -1px 2px var(--color-text-primary);
         }
         
         .output-content {
@@ -688,7 +724,9 @@
         <div class="develop-container" id="developContainer">
             <div class="main-area">
                 <aside class="sidebar" id="sidebar">
-                <div class="sidebar-header">EXPLORER</div>
+                <div class="sidebar-header">
+                    <input type="text" class="explorer-search" placeholder="EXPLORER" onkeyup="filterFiles(this.value)">
+                </div>
                 <div class="file-list">
                     <div class="file-item active" onclick="openFile('strategy.py')">
                         <span class="file-icon">py</span>
@@ -755,6 +793,18 @@
                     </div>
                 </div>
                 
+                <!-- Console/Output Panel -->
+                <div class="output-panel" id="outputPanel">
+                    <div class="output-header">
+                        <div class="output-title">TERMINAL</div>
+                        <button class="output-close" onclick="hideOutput()">&times;</button>
+                    </div>
+                    <div class="output-content" id="outputContent">
+                        <div class="output-line info">AlphaPulse Development Environment v1.0.0</div>
+                        <div class="output-line info">Ready.</div>
+                    </div>
+                </div>
+                
                 <div class="action-panel">
                     <div class="action-group">
                         <button class="console-button" onclick="openTerminal()" style="padding: 0.4rem 0.7rem;">
@@ -788,18 +838,6 @@
                 </div>
             </div>
             </div>
-            
-            <!-- Console/Output Panel -->
-            <div class="output-panel" id="outputPanel">
-            <div class="output-header">
-                <div class="output-title">TERMINAL</div>
-                <button class="btn btn-ghost btn-sm" onclick="hideOutput()" style="font-size: 20px; padding: 0 var(--space-2);">&times;</button>
-            </div>
-            <div class="output-content" id="outputContent">
-                <div class="output-line info">AlphaPulse Development Environment v1.0.0</div>
-                <div class="output-line info">Ready.</div>
-            </div>
-        </div>
     </div>
     
     <!-- Layout Manager -->
